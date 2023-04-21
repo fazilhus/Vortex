@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include <Vortex.hpp>
 
 class Sandbox : public Vortex::Application {

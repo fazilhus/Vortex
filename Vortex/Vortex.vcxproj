@@ -15,9 +15,11 @@
     <ClInclude Include="headers\Vortex\Application.hpp" />
     <ClInclude Include="headers\Vortex\Core.hpp" />
     <ClInclude Include="headers\Vortex\EntryPoint.hpp" />
+    <ClInclude Include="headers\Vortex\Log.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sources\Vortex\Application.cpp" />
+    <ClCompile Include="sources\Vortex\Log.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -66,7 +68,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINDLL;_UNICODE;UNICODE;VT_PLATFORM_WIN;VT_BUILD_DLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)$(ProjectName)\headers</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)$(ProjectName)\headers;$(SolutionDir)Vortex\vendor\spdlog\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
@@ -90,7 +92,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINDLL;_UNICODE;UNICODE;VT_PLATFORM_WIN;VT_BUILD_DLL</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)$(ProjectName)\headers</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)$(ProjectName)\headers;$(SolutionDir)Vortex\vendor\spdlog\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>

@@ -27,9 +27,15 @@
     <ClInclude Include="headers\Vortex\EntryPoint.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="headers\Vortex\Log.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sources\Vortex\Application.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sources\Vortex\Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

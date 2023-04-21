@@ -4,7 +4,7 @@
 
 namespace Vortex {
 
-	class VERTEX_API Application {
+	class VORTEX_API Application {
 	public:
 		Application();
 		virtual ~Application();
