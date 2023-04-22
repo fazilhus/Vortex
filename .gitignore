@@ -352,5 +352,6 @@ MigrationBackup/
 bin
 bin-int
 *.sln
-*.vsproj
-*.vsproj.filters
+*.vcxproj
+*.vcxproj.filters
+*.vcsproj.user
