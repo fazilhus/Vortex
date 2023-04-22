@@ -1,6 +1,6 @@
 #pragma once
 
-#include <sstream>
+#include "vtpch.hpp"
 
 #include "Event.hpp"
 

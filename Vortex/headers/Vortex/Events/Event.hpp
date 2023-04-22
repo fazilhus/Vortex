@@ -1,7 +1,6 @@
 #pragma once
 
-#include <string>
-#include <functional>
+#include "vtpch.hpp"
 
 #include "Vortex/Core.hpp"
 

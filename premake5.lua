@@ -17,6 +17,9 @@ project "Vortex"
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
+    pchheader "vtpch.hpp"
+    pchsource "Vortex/sources/vtpch.cpp"
+
     files {
         "%{prj.name}/headers/**.hpp",
         "%{prj.name}/sources/**.cpp"

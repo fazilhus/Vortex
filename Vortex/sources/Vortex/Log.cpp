@@ -1,4 +1,4 @@
-#include "spdlog/sinks/stdout_color_sinks.h"
+#include "vtpch.hpp"
 
 #include "Vortex/Log.hpp"
 

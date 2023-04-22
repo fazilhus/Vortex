@@ -1,9 +1,6 @@
 #pragma once
 
-#include <memory>
-
-#include "spdlog/spdlog.h"
-#include "spdlog/fmt/ostr.h"
+#include "vtpch.hpp"
 
 #include "Core.hpp"
 
@@ -32,12 +29,12 @@ namespace Vortex {
 #define VT_CORE_TRACE(...)    ::Vortex::Log::GetCoreLogger()->trace(__VA_ARGS__)
 
 // Client Log macros
-#define VT_CRITICAL(...)      ::Vortex::Log::GetClientLogger()->critical(__VA_ARGS__)
-#define VT_ERROR(...)         ::Vortex::Log::GetClientLogger()->error(__VA_ARGS__)
-#define VT_WARN(...)          ::Vortex::Log::GetClientLogger()->warn(__VA_ARGS__)
-#define VT_INFO(...)          ::Vortex::Log::GetClientLogger()->info(__VA_ARGS__)
-#define VT_DEBUG(...)         ::Vortex::Log::GetClientLogger()->debug(__VA_ARGS__)
-#define VT_TRACE(...)         ::Vortex::Log::GetClientLogger()->trace(__VA_ARGS__)
+#define VT_CL_CRITICAL(...)      ::Vortex::Log::GetClientLogger()->critical(__VA_ARGS__)
+#define VT_CL_ERROR(...)         ::Vortex::Log::GetClientLogger()->error(__VA_ARGS__)
+#define VT_CL_WARN(...)          ::Vortex::Log::GetClientLogger()->warn(__VA_ARGS__)
+#define VT_CL_INFO(...)          ::Vortex::Log::GetClientLogger()->info(__VA_ARGS__)
+#define VT_CL_DEBUG(...)         ::Vortex::Log::GetClientLogger()->debug(__VA_ARGS__)
+#define VT_CL_TRACE(...)         ::Vortex::Log::GetClientLogger()->trace(__VA_ARGS__)
 
 // Disabled logs If distribution build
 #ifdef VT_DIST
