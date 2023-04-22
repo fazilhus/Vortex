@@ -9,3 +9,7 @@
 #else
 	#error Vortex only supports Win
 #endif
+
+#define BIT(x) (1 << x)
+
+using uint = unsigned int;

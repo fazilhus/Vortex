@@ -1,4 +1,6 @@
 #include "Vortex/Application.hpp"
+#include "Vortex/Events/AppEvent.hpp"
+#include "Vortex/Log.hpp"
 
 namespace Vortex {
 
@@ -9,6 +11,8 @@ namespace Vortex {
 	}
 
 	void Application::Run() {
+		WindowResizeEvent e(1280, 720);
+		VT_TRACE(e);
 		while (true);
 	}
 
