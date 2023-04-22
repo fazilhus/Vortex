@@ -39,7 +39,7 @@ namespace Vortex {
 #define VT_TRACE(...)         ::Vortex::Log::GetClientLogger()->trace(__VA_ARGS__)
 
 // Disabled logs If distribution build
-#ifdef VT_DIST_BUILD
+#ifdef VT_DIST
 	#define VT_CORE_CRITICAL()
 	#define VT_CORE_ERROR()
 	#define VT_CORE_WARN()
