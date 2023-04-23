@@ -26,10 +26,14 @@
 // Vortex
 #include "Vortex/Core.hpp"
 #include "Vortex/Log.hpp"
+#include "Vortex/Layers./Layer.hpp"
 #include "Vortex/Window.hpp"
 
 // GLFW
 #include <GLFW/glfw3.h>
+
+// ImGui
+//#include <imgui.h>
 
 #ifdef VT_PLATFORM_WIN
 	#include <Windows.h>

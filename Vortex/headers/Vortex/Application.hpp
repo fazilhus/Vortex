@@ -15,6 +15,8 @@ namespace Vortex {
 		bool m_running = true;
 		LayerStack m_layerStack;
 
+		static Application* s_instance;
+
 	public:
 		Application();
 		virtual ~Application();
@@ -27,6 +29,9 @@ namespace Vortex {
 		void PopLayer(Layer* l);
 		void PushOverlay(Layer* o);
 		void PopOverlay(Layer* o);
+
+		inline Window& GetWindow() const { return *m_window; }
+		inline static Application& Get() { return *s_instance; }
 
 	private:
 		bool OnAppClose(WindowCloseEvent& e);

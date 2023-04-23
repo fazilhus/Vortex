@@ -13,9 +13,11 @@ includedir = {}
 includedir["spdlog"] = "Vortex/vendor/spdlog/include"
 includedir["glfw"] = "Vortex/vendor/glfw/include"
 includedir["glad"] = "Vortex/vendor/glad/include"
+includedir["imgui"] = "Vortex/vendor/imgui"
 
 include "Vortex/vendor/glfw"
 include "Vortex/vendor/glad"
+include "Vortex/vendor/imgui"
 
 project "Vortex"
     location "Vortex"
@@ -41,13 +43,15 @@ project "Vortex"
         "%{prj.name}/headers",
         "%{includedir.spdlog}",
         "%{includedir.glfw}",
-        "%{includedir.glad}"
+        "%{includedir.glad}",
+        "%{includedir.imgui}"
     }
 
     links {
         "GLFW",
         "opengl32.lib",
-        "GLAD"
+        "GLAD",
+        "ImGui"
     }
 
     filter "system:windows"
@@ -104,7 +108,8 @@ project "Sandbox"
         "Vortex/headers",
         "%{includedir.spdlog}",
         "%{includedir.glfw}",
-        "%{includedir.glad}"
+        "%{includedir.glad}",
+        "%{includedir.imgui}"
     }
 
     links {
