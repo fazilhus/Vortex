@@ -1,5 +1,7 @@
 #include "vtpch.hpp"
 
+#include <glad/glad.h>
+
 #include "Vortex/Application.hpp"
 
 namespace Vortex {

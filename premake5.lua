@@ -12,8 +12,10 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 includedir = {}
 includedir["spdlog"] = "Vortex/vendor/spdlog/include"
 includedir["glfw"] = "Vortex/vendor/glfw/include"
+includedir["glad"] = "Vortex/vendor/glad/include"
 
 include "Vortex/vendor/glfw"
+include "Vortex/vendor/glad"
 
 project "Vortex"
     location "Vortex"
@@ -38,22 +40,25 @@ project "Vortex"
     includedirs {
         "%{prj.name}/headers",
         "%{includedir.spdlog}",
-        "%{includedir.glfw}"
+        "%{includedir.glfw}",
+        "%{includedir.glad}"
     }
 
     links {
         "GLFW",
-        "opengl32.lib"
+        "opengl32.lib",
+        "GLAD"
     }
 
     filter "system:windows"
-        cppdialect "C++17"
+        cppdialect "C++20"
         staticruntime "On"
         systemversion "latest"
 
         defines {
             "VT_PLATFORM_WIN",
-            "VT_BUILD_DLL" 
+            "VT_BUILD_DLL",
+            "GLFW_INCLUDE_NONE"
         }
 
         postbuildcommands {
@@ -98,7 +103,8 @@ project "Sandbox"
         "%{prj.name}/headers",
         "Vortex/headers",
         "%{includedir.spdlog}",
-        "%{includedir.glfw}"
+        "%{includedir.glfw}",
+        "%{includedir.glad}"
     }
 
     links {
@@ -106,7 +112,7 @@ project "Sandbox"
     }
 
     filter "system:windows"
-        cppdialect "C++17"
+        cppdialect "C++20"
         staticruntime "On"
         systemversion "latest"
 
