@@ -35,7 +35,7 @@ namespace Vortex {
 
 
 	class VORTEX_API Event {
-	protected:
+	public:
 		bool m_handled = false;
 
 	private:

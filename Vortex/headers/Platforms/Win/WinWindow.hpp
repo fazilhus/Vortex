@@ -2,8 +2,6 @@
 
 #include "vtpch.hpp"
 
-#include "Vortex/Window.hpp"
-
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 

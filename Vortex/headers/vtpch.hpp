@@ -23,8 +23,10 @@
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/fmt/ostr.h"
 
-// VORTEX
+// Vortex
+#include "Vortex/Core.hpp"
 #include "Vortex/Log.hpp"
+#include "Vortex/Window.hpp"
 
 // GLFW
 #include <GLFW/glfw3.h>
