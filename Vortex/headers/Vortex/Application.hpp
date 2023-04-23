@@ -6,6 +6,8 @@
 #include "Platforms/Win/WinWindow.hpp"
 #endif
 
+#include "Vortex/Events/AppEvent.hpp"
+
 namespace Vortex {
 
 	class VORTEX_API Application {
@@ -18,6 +20,11 @@ namespace Vortex {
 		virtual ~Application();
 
 		void Run();
+
+		void OnEvent(Event& e);
+
+	private:
+		bool OnAppClose(WindowCloseEvent& e);
 	};
 
 	// To be defined in the CLIENT
