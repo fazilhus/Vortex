@@ -2,8 +2,6 @@
 
 #include "vtpch.hpp"
 
-#include "Core.hpp"
-
 namespace Vortex {
 
 	class VORTEX_API Log {

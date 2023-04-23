@@ -65,16 +65,19 @@ project "Vortex"
             "VT_DEBUG",
             "VT_ENABLE_ASSERTS"
         }
+        buildoptions "/MDd"
         symbols "On"
         optimize "Off"
 
     filter "configurations:Release"
         defines "VT_RELEASE"
+        buildoptions "/MD"
         symbols "On"
         optimize "On"
 
     filter "configurations:Dist"
         defines "VT_DIST"
+        buildoptions "/MD"
         symbols "Off"
         optimize "On"
 
@@ -113,15 +116,18 @@ project "Sandbox"
     
     filter "configurations:Debug"
         defines "VT_DEBUG"
+        buildoptions "/MDd"
         symbols "On"
         optimize "Off"
 
     filter "configurations:Release"
         defines "VT_RELEASE"
+        buildoptions "/MD"
         symbols "On"
         optimize "On"
 
     filter "configurations:Dist"
         defines "VT_DIST"
+        buildoptions "/MD"
         symbols "Off"
         optimize "On"

@@ -2,7 +2,6 @@
 
 #include "vtpch.hpp"
 
-#include "Vortex/Core.hpp"
 #include "Vortex/Events/Event.hpp"
 
 namespace Vortex {
