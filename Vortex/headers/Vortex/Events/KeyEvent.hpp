@@ -56,4 +56,20 @@ namespace Vortex {
 
 		EVENT_CLASS_TYPE(KeyReleased)
 	};
+
+	class VORTEX_API KeyTypedEvent : public KeyEvent {
+	public:
+		KeyTypedEvent(int keycode) 
+			: KeyEvent(keycode) {}
+
+#ifdef VT_DEBUG
+		std::string ToStr() const override {
+			std::stringstream ss;
+			ss << "KeyTypedEvent: " << m_keycode << " typed" << std::endl;
+			return ss.str();
+		}
+#endif
+
+		EVENT_CLASS_TYPE(KeyTyped);
+	};
 }

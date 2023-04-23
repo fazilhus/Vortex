@@ -14,7 +14,7 @@ namespace Vortex {
 
 		m_window = WinWindow::Create();
 		m_running = true;
-		m_window->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
+		m_window->SetEventCallback(VT_BIND_EVENT_FN(Application::OnEvent));
 	}
 
 	Application::~Application() {
@@ -36,7 +36,7 @@ namespace Vortex {
 
 	void Application::OnEvent(Event& e) {
 		EventDispatcher dispatcher(e);
-		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::OnAppClose));
+		dispatcher.Dispatch<WindowCloseEvent>(VT_BIND_EVENT_FN(Application::OnAppClose));
 
 		for (auto it = m_layerStack.end(); it != m_layerStack.begin();) {
 			(*--it)->OnEvent(e);
