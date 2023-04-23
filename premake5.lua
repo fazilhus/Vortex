@@ -9,10 +9,20 @@ workspace "Vortex"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+includedir = {}
+includedir["spdlog"] = "Vortex/vendor/spdlog/include"
+includedir["glfw"] = "Vortex/vendor/glfw/include"
+
+include "Vortex/vendor/glfw"
+
 project "Vortex"
     location "Vortex"
     kind "SharedLib"
     language "C++"
+
+    ignoredefaultlibraries {
+		"libcmtd"
+    }
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
     objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -27,11 +37,17 @@ project "Vortex"
 
     includedirs {
         "%{prj.name}/headers",
-        "%{prj.name}/vendor/spdlog/include"
+        "%{includedir.spdlog}",
+        "%{includedir.glfw}"
+    }
+
+    links {
+        "GLFW",
+        "opengl32.lib"
     }
 
     filter "system:windows"
-        cppdialect "C++20"
+        cppdialect "C++17"
         staticruntime "On"
         systemversion "latest"
 
@@ -45,15 +61,21 @@ project "Vortex"
         }
     
     filter "configurations:Debug"
-        defines "VT_DEBUG"
+        defines {
+            "VT_DEBUG",
+            "VT_ENABLE_ASSERTS"
+        }
         symbols "On"
+        optimize "Off"
 
     filter "configurations:Release"
         defines "VT_RELEASE"
+        symbols "On"
         optimize "On"
 
     filter "configurations:Dist"
         defines "VT_DIST"
+        symbols "Off"
         optimize "On"
 
 project "Sandbox"
@@ -71,8 +93,9 @@ project "Sandbox"
 
     includedirs {
         "%{prj.name}/headers",
-        "Vortex/vendor/spdlog/include",
-        "Vortex/headers"
+        "Vortex/headers",
+        "%{includedir.spdlog}",
+        "%{includedir.glfw}"
     }
 
     links {
@@ -80,7 +103,7 @@ project "Sandbox"
     }
 
     filter "system:windows"
-        cppdialect "C++20"
+        cppdialect "C++17"
         staticruntime "On"
         systemversion "latest"
 
@@ -91,11 +114,14 @@ project "Sandbox"
     filter "configurations:Debug"
         defines "VT_DEBUG"
         symbols "On"
+        optimize "Off"
 
     filter "configurations:Release"
         defines "VT_RELEASE"
+        symbols "On"
         optimize "On"
 
     filter "configurations:Dist"
         defines "VT_DIST"
-        symbols "On"
+        symbols "Off"
+        optimize "On"

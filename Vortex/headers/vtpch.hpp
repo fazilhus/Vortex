@@ -23,6 +23,12 @@
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/fmt/ostr.h"
 
+// VORTEX
+#include "Vortex/Log.hpp"
+
+// GLFW
+#include <GLFW/glfw3.h>
+
 #ifdef VT_PLATFORM_WIN
 	#include <Windows.h>
 #endif

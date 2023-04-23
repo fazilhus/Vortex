@@ -76,8 +76,10 @@ namespace Vortex {
 		}		
 	};
 
+#ifdef VT_DEBUG
 	inline std::ostream& operator<<(std::ostream& os, const Event& e) {
 		return os << e.ToStr();
 	}
+#endif
 }
 

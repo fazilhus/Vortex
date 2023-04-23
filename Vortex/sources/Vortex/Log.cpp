@@ -1,7 +1,5 @@
 #include "vtpch.hpp"
 
-#include "Vortex/Log.hpp"
-
 namespace Vortex {
 
 	std::shared_ptr<spdlog::logger> Log::s_coreLogger;
