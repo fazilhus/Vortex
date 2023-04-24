@@ -7,6 +7,7 @@
 #include "Vortex/Events/AppEvent.hpp"
 #include "Vortex/Layers/ImGuiLayer.hpp"
 #include "Vortex/Layers/LayerStack.hpp"
+#include "Vortex/Renderer/Shader.hpp"
 
 namespace Vortex {
 
@@ -18,6 +19,7 @@ namespace Vortex {
 		LayerStack m_layerStack;
 
 		uint m_vao, m_vbo, m_ibo;
+		Shader* m_shader;
 
 		static Application* s_instance;
 
