@@ -29,6 +29,7 @@
 #include "Vortex/Layers./Layer.hpp"
 #include "Vortex/Window.hpp"
 #include "Vortex/Input.hpp"
+#include "Vortex/Codes.hpp"
 
 // GLFW
 #include <GLFW/glfw3.h>
