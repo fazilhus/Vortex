@@ -28,11 +28,17 @@ group ""
 
     project "Vortex"
         location "Vortex"
-        kind "SharedLib"
+        kind "StaticLib"
         language "C++"
+        cppdialect "C++20"
+        staticruntime "on"
 
         ignoredefaultlibraries {
-		    "libcmtd"
+            "libcmtd"
+        }
+
+        defines {
+            "_CRT_SECURE_NO_WARNINGS"
         }
 
         targetdir ("bin/" .. outputdir .. "/%{prj.name}")
@@ -65,9 +71,7 @@ group ""
         }
 
         filter "system:windows"
-            cppdialect "C++20"
             systemversion "latest"
-            staticruntime "off"
 
             defines {
                 "VT_PLATFORM_WIN",
@@ -75,9 +79,6 @@ group ""
                 "GLFW_INCLUDE_NONE"
             }
 
-            postbuildcommands {
-                ("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/Sandbox/\"")
-            }
     
         filter "configurations:Debug"
             defines {
@@ -86,25 +87,23 @@ group ""
             }
             runtime "Debug"
             symbols "on"
-            optimize "off"
 
         filter "configurations:Release"
             defines "VT_RELEASE"
             runtime "Release"
-            symbols "on"
             optimize "on"
 
         filter "configurations:Dist"
             defines "VT_DIST"
             runtime "Release"
-            symbols "off"
             optimize "on"
 
     project "Sandbox"
         location "Sandbox"
         kind "ConsoleApp"
         language "C++"
-        staticruntime "off"
+        cppdialect "C++20"
+        staticruntime "on"
 
         targetdir ("bin/" .. outputdir .. "/%{prj.name}")
         objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -128,8 +127,6 @@ group ""
         }
 
         filter "system:windows"
-            cppdialect "C++20"
-            staticruntime "off"
             systemversion "latest"
 
             defines {
@@ -140,16 +137,13 @@ group ""
             defines "VT_DEBUG"
             runtime "Debug"
             symbols "on"
-            optimize "off"
 
         filter "configurations:Release"
             defines "VT_RELEASE"
             runtime "Release"
-            symbols "on"
             optimize "on"
 
         filter "configurations:Dist"
             defines "VT_DIST"
             runtime "Release"
-            symbols "off"
             optimize "on"

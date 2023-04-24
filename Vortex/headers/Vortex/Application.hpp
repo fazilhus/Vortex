@@ -10,7 +10,7 @@
 
 namespace Vortex {
 
-	class VORTEX_API Application {
+	class Application {
 	private:
 		WinWindow* m_window;
 		bool m_running = true;

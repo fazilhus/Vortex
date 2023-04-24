@@ -21,7 +21,7 @@ namespace Vortex {
 	};
 
 	// Interface representing a desktop system based Window
-	class VORTEX_API Window
+	class Window
 	{
 	public:
 		using EventCallbackFn = std::function<void(Event&)>;

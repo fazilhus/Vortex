@@ -6,7 +6,7 @@
 
 namespace Vortex {
 
-	class VORTEX_API Layer {
+	class Layer {
 	public:
 		Layer(const std::string& name);
 		virtual ~Layer() = default;

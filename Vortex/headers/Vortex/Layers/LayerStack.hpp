@@ -6,7 +6,7 @@
 
 namespace Vortex {
 
-	class VORTEX_API LayerStack {
+	class LayerStack {
 	private:
 		std::vector<Layer*> m_layers;
 		uint m_layerInsertInd;
