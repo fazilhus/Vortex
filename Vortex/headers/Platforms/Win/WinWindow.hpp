@@ -32,6 +32,8 @@ namespace Vortex {
 		void SetVSync(bool enabled) override;
 		bool IsVSync() const override;
 
+		inline virtual void* GetNativeWindow() const override { return m_window; }
+
 		static WinWindow* Create(const WindowProps& props = WindowProps());
 
 	private:

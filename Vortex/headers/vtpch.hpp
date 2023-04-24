@@ -28,12 +28,13 @@
 #include "Vortex/Log.hpp"
 #include "Vortex/Layers./Layer.hpp"
 #include "Vortex/Window.hpp"
+#include "Vortex/Input.hpp"
 
 // GLFW
 #include <GLFW/glfw3.h>
 
 // ImGui
-//#include <imgui.h>
+#include <imgui.h>
 
 #ifdef VT_PLATFORM_WIN
 	#include <Windows.h>
