@@ -30,6 +30,7 @@
 #include "Vortex/Layers/LayerStack.hpp"
 #include "Vortex/Window.hpp"
 #include "Vortex/Input.hpp"
+#include "Vortex/Renderer/GraphicsContext.hpp"
 #include "Vortex/Codes.hpp"
 
 // GLFW

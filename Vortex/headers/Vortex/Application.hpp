@@ -17,6 +17,8 @@ namespace Vortex {
 		ImGuiLayer* m_imguiLayer;
 		LayerStack m_layerStack;
 
+		uint m_vao, m_vbo, m_ibo;
+
 		static Application* s_instance;
 
 	public:
