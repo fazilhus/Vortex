@@ -8,3 +8,6 @@
 [submodule "Vortex/vendor/imgui"]
 	path = Vortex/vendor/imgui
 	url = https://github.com/fazilhus/imgui
+[submodule "Vortex/vendor/glm"]
+	path = Vortex/vendor/glm
+	url = https://github.com/fazilhus/glm

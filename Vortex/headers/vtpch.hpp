@@ -37,6 +37,10 @@
 // ImGui
 #include <imgui.h>
 
+// GLM
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #ifdef VT_PLATFORM_WIN
 	#include <Windows.h>
 #endif
