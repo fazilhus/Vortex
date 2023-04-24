@@ -1,9 +1,13 @@
+	
+[submodule "Vortex/vendor/glfw"]
+	path = Vortex/vendor/glfw
+	url = https://github.com/fazilhus/glfw
 [submodule "Vortex/vendor/spdlog"]
 	path = Vortex/vendor/spdlog
-	url = https://github.com/gabime/spdlog
-[submodule "glfw"]
-	path = glfw
-	url = https://github.com/fazilhus/glfw
-[submodule "Vortex/vendors"]
-	path = Vortex/vendors
+	url = https://github.com/fazilhus/spdlog
+[submodule "Vortex/vendor/imgui"]
+	path = Vortex/vendor/imgui
 	url = https://github.com/fazilhus/imgui
+[submodule "Vortex/vendor/glm"]
+	path = Vortex/vendor/glm
+	url = https://github.com/fazilhus/glm

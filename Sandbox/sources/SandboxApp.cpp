@@ -18,10 +18,22 @@ public:
 
 	void OnUpdate() override {
 		VT_CL_TRACE("{0} layer update", GetName());
+
+		if (Vortex::Input::IsKeyPressed(VT_KEY_TAB)) {
+			VT_CL_TRACE("Tab is pressed (poll)");
+		}
 	}
 
 	void OnEvent(Vortex::Event& e) override {
 		VT_CL_TRACE("Event {0}", e);
+
+		if (e.GetEventType() == Vortex::EventType::KeyPressed) {
+			Vortex::KeyPressedEvent& e1 = (Vortex::KeyPressedEvent&)e;
+			if (e1.GetKeyCode() == VT_KEY_TAB) {
+				VT_CL_TRACE("Tab is pressed (event)");
+			}
+			VT_CL_TRACE("{0}", (char)e1.GetKeyCode());
+		}
 	}
 };
 
