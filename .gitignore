@@ -356,3 +356,4 @@ bin-int
 *.vcxproj.filters
 *.vcsproj.user
 Vortex/vendor/imgui/examples
+/Sandbox/imgui.ini
