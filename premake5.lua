@@ -17,9 +17,12 @@ includedir["glfw"] = "Vortex/vendor/glfw/include"
 includedir["glad"] = "Vortex/vendor/glad/include"
 includedir["imgui"] = "Vortex/vendor/imgui"
 
-include "Vortex/vendor/glfw"
-include "Vortex/vendor/glad"
-include "Vortex/vendor/imgui"
+group "Dependencies"
+    include "Vortex/vendor/glfw"
+    include "Vortex/vendor/glad"
+    include "Vortex/vendor/imgui"
+
+group ""
 
     project "Vortex"
         location "Vortex"
