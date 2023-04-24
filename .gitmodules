@@ -4,3 +4,6 @@
 [submodule "glfw"]
 	path = glfw
 	url = https://github.com/fazilhus/glfw
+[submodule "Vortex/vendors"]
+	path = Vortex/vendors
+	url = https://github.com/fazilhus/imgui
