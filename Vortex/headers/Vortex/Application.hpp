@@ -5,6 +5,7 @@
 #endif
 
 #include "Vortex/Events/AppEvent.hpp"
+#include "Vortex/Layers/ImGuiLayer.hpp"
 #include "Vortex/Layers/LayerStack.hpp"
 
 namespace Vortex {
@@ -13,6 +14,7 @@ namespace Vortex {
 	private:
 		WinWindow* m_window;
 		bool m_running = true;
+		ImGuiLayer* m_imguiLayer;
 		LayerStack m_layerStack;
 
 		static Application* s_instance;

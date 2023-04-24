@@ -27,6 +27,7 @@
 #include "Vortex/Core.hpp"
 #include "Vortex/Log.hpp"
 #include "Vortex/Layers./Layer.hpp"
+#include "Vortex/Layers/LayerStack.hpp"
 #include "Vortex/Window.hpp"
 #include "Vortex/Input.hpp"
 #include "Vortex/Codes.hpp"
