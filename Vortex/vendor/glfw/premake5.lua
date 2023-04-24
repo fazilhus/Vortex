@@ -70,6 +70,7 @@ project "GLFW"
 
 	filter "system:windows"
 		systemversion "latest"
+		staticruntime "off"
 
 		files {
 			"src/win32_init.c",
@@ -91,18 +92,15 @@ project "GLFW"
 
 	filter "configurations:Debug"
 		runtime "Debug"
-		buildoptions "/MDd"
 		symbols "on"
 		optimize "off"
 
 	filter "configurations:Release"
 		runtime "Release"
-		buildoptions "/MD"
 		symbols "on"
 		optimize "on"
 
 	filter "configurations:Dist"
 		runtime "Release"
-		buildoptions "/MD"
 		symbols "off"
 		optimize "on"
