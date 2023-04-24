@@ -355,3 +355,4 @@ bin-int
 *.vcxproj
 *.vcxproj.filters
 *.vcsproj.user
+Vortex/vendor/imgui/examples
