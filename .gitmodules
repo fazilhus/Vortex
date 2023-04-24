@@ -5,5 +5,5 @@
 	path = Vortex/vendor/glfw
 	url = https://github.com/fazilhus/glfw
 [submodule "Vortex/vendor/imgui"]
-	path = Vortex/vendors/imgui
+	path = Vortex/vendor/imgui
 	url = https://github.com/fazilhus/imgui
