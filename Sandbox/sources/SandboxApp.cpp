@@ -1,6 +1,5 @@
 #include <Vortex.hpp>
 
-#include "Vortex/Layers/ImGuiLayer.hpp"
 
 class SimpleLayer : public Vortex::Layer {
 public:
@@ -8,23 +7,24 @@ public:
 		: Layer("Simple") {};
 	~SimpleLayer() {};
 
-	void OnAttach() override {
+	virtual void OnAttach() override {
 		VT_CL_TRACE("Layer {0} attached", GetName());
 	}
 
-	void OnDetach() override {
+	virtual void OnDetach() override {
 		VT_CL_TRACE("Layer {0} detached", GetName());
 	}
 
-	void OnUpdate() override {
-		VT_CL_TRACE("{0} layer update", GetName());
-
+	virtual void OnUpdate() override {
 		if (Vortex::Input::IsKeyPressed(VT_KEY_TAB)) {
 			VT_CL_TRACE("Tab is pressed (poll)");
 		}
 	}
 
-	void OnEvent(Vortex::Event& e) override {
+	virtual void OnImGuiRender() override {
+	}
+
+	virtual void OnEvent(Vortex::Event& e) override {
 		VT_CL_TRACE("Event {0}", e);
 
 		if (e.GetEventType() == Vortex::EventType::KeyPressed) {
@@ -41,7 +41,6 @@ class Sandbox : public Vortex::Application {
 public:
 	Sandbox() {
 		PushLayer(new SimpleLayer());
-		PushOverlay(new Vortex::ImGuiLayer());
 	}
 	~Sandbox() {}
 };

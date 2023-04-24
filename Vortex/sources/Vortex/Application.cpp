@@ -15,6 +15,9 @@ namespace Vortex {
 		m_window = WinWindow::Create();
 		m_running = true;
 		m_window->SetEventCallback(VT_BIND_EVENT_FN(Application::OnEvent));
+
+		m_imguiLayer = new ImGuiLayer();
+		PushOverlay(m_imguiLayer);
 	}
 
 	Application::~Application() {
@@ -29,6 +32,11 @@ namespace Vortex {
 			for (Layer* layer : m_layerStack) {
 				layer->OnUpdate();
 			}
+
+			m_imguiLayer->Begin();
+			for (Layer* layer : m_layerStack)
+				layer->OnImGuiRender();
+			m_imguiLayer->End();
 
 			m_window->OnUpdate();
 		}
@@ -48,22 +56,18 @@ namespace Vortex {
 
 	void Application::PushLayer(Layer* l) {
 		m_layerStack.PushLayer(l);
-		l->OnAttach();
 	}
 
 	void Application::PopLayer(Layer* l) {
 		m_layerStack.PopLayer(l);
-		l->OnDetach();
 	}
 
 	void Application::PushOverlay(Layer* o) {
 		m_layerStack.PushOverlay(o);
-		o->OnAttach();
 	}
 
 	void Application::PopOverlay(Layer* o) {
 		m_layerStack.PopOverlay(o);
-		o->OnDetach();
 	}
 
 	bool Application::OnAppClose(WindowCloseEvent& e) {

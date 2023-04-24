@@ -12,6 +12,7 @@ workspace "Vortex"
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 includedir = {}
+includedir["all"] = "Vortex/vendor"
 includedir["spdlog"] = "Vortex/vendor/spdlog/include"
 includedir["glfw"] = "Vortex/vendor/glfw/include"
 includedir["glad"] = "Vortex/vendor/glad/include"
@@ -21,7 +22,7 @@ includedir["glm"] = "Vortex/vendor/glm"
 group "Dependencies"
     include "Vortex/vendor/glfw"
     include "Vortex/vendor/glad"
-    include "Vortex/vendor/imgui"
+    include "Vortex/vendor/ImGui"
 
 group ""
 
@@ -114,7 +115,6 @@ group ""
         }
 
         includedirs {
-            "%{prj.name}/headers",
             "Vortex/headers",
             "%{includedir.spdlog}",
             "%{includedir.glfw}",
