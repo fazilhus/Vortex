@@ -1,4 +1,5 @@
 #pragma once
+#include "vtpch.hpp"
 
 #ifdef VT_PLATFORM_WIN
 #include "Platforms/Win/WinWindow.hpp"
@@ -7,21 +8,25 @@
 #include "Vortex/Events/AppEvent.hpp"
 #include "Vortex/Layers/ImGuiLayer.hpp"
 #include "Vortex/Layers/LayerStack.hpp"
+#include "Vortex/Renderer/Shader.hpp"
 
 namespace Vortex {
 
-	class VORTEX_API Application {
+	class Application {
 	private:
-		WinWindow* m_window;
+		std::unique_ptr<Window> m_window;
 		bool m_running = true;
 		ImGuiLayer* m_imguiLayer;
 		LayerStack m_layerStack;
+
+		std::shared_ptr<VertexArray> m_vao;
+		std::shared_ptr<Shader> m_shader;
 
 		static Application* s_instance;
 
 	public:
 		Application();
-		virtual ~Application();
+		virtual ~Application() = default;
 
 		void Run();
 

@@ -27,17 +27,17 @@ namespace Vortex {
 	void LayerStack::PopLayer(Layer* l) {
 		auto it = std::find(m_layers.begin() + m_layerInsertInd, end(), l);
 		if (it != end()) {
+			l->OnDetach();
 			m_layers.erase(it);
 			m_layerInsertInd--;
-			l->OnDetach();
 		}
 	}
 
 	void LayerStack::PopOverlay(Layer* o) {
 		auto it = std::find(m_layers.begin() + m_layerInsertInd, end(), o);
 		if (it != end()) {
-			m_layers.erase(it);
 			o->OnDetach();
+			m_layers.erase(it);
 		}
 	}
 

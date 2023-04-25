@@ -7,6 +7,7 @@ namespace Vortex {
 	class WinWindow : public Window {
 	private:
 		GLFWwindow* m_window;
+		GraphicsContext* m_context;
 
 		struct WindowData
 		{

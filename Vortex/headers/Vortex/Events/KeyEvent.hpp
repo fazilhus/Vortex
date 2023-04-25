@@ -7,7 +7,7 @@
 namespace Vortex {
 
 	// Abstract event for any key events
-	class VORTEX_API KeyEvent : public Event {
+	class KeyEvent : public Event {
 	protected:
 		KeyEvent(int keycode)
 			: m_keycode(keycode) {}
@@ -20,7 +20,7 @@ namespace Vortex {
 		EVENT_CLASS_CAT(EventCatKeyboard | EventCatInput)
 	};
 
-	class VORTEX_API KeyPressedEvent : public KeyEvent {
+	class KeyPressedEvent : public KeyEvent {
 	private:
 		int m_repeatCount;
 
@@ -41,7 +41,7 @@ namespace Vortex {
 		EVENT_CLASS_TYPE(KeyPressed)
 	};
 
-	class VORTEX_API KeyReleasedEvent : public KeyEvent {
+	class KeyReleasedEvent : public KeyEvent {
 	public:
 		KeyReleasedEvent(int keycode) 
 			: KeyEvent(keycode) {}
@@ -57,7 +57,7 @@ namespace Vortex {
 		EVENT_CLASS_TYPE(KeyReleased)
 	};
 
-	class VORTEX_API KeyTypedEvent : public KeyEvent {
+	class KeyTypedEvent : public KeyEvent {
 	public:
 		KeyTypedEvent(int keycode) 
 			: KeyEvent(keycode) {}

@@ -4,7 +4,7 @@
 
 namespace Vortex {
 
-	class VORTEX_API Input {
+	class Input {
 	private:
 		static Input* s_instance;
 

@@ -34,7 +34,7 @@ namespace Vortex {
                                virtual const char* GetName() const override { return #type; }
 
 
-	class VORTEX_API Event {
+	class Event {
 	public:
 		bool m_handled = false;
 

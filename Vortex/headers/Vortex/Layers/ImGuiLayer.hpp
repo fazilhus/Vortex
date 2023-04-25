@@ -8,7 +8,7 @@
 
 namespace Vortex {
 
-	class VORTEX_API ImGuiLayer : public Layer {
+	class ImGuiLayer : public Layer {
 	private:
 		float m_time;
 

@@ -6,7 +6,7 @@
 
 namespace Vortex {
 
-	class VORTEX_API WindowResizeEvent : public Event {
+	class WindowResizeEvent : public Event {
 	private:
 		uint m_width;
 		uint m_height;
@@ -30,7 +30,7 @@ namespace Vortex {
 		EVENT_CLASS_CAT(EventCatApp)
 	};
 
-	class VORTEX_API WindowCloseEvent : public Event {
+	class WindowCloseEvent : public Event {
 	public:
 		WindowCloseEvent() {}
 
@@ -38,7 +38,7 @@ namespace Vortex {
 		EVENT_CLASS_CAT(EventCatApp)
 	};
 
-	class VORTEX_API WindowFocusEvent : public Event {
+	class WindowFocusEvent : public Event {
 	public:
 		WindowFocusEvent() {}
 
@@ -46,7 +46,7 @@ namespace Vortex {
 		EVENT_CLASS_CAT(EventCatApp)
 	};
 
-	class VORTEX_API WindowLostFocusEvent : public Event {
+	class WindowLostFocusEvent : public Event {
 	public:
 		WindowLostFocusEvent() {}
 
@@ -54,7 +54,7 @@ namespace Vortex {
 		EVENT_CLASS_CAT(EventCatApp)
 	};
 
-	class VORTEX_API WindowMovedEvent : public Event {
+	class WindowMovedEvent : public Event {
 	public:
 		WindowMovedEvent() {}
 
@@ -62,7 +62,7 @@ namespace Vortex {
 		EVENT_CLASS_CAT(EventCatApp)
 	};
 
-	class VORTEX_API AppTickEvent : public Event {
+	class AppTickEvent : public Event {
 	public:
 		AppTickEvent() {}
 
@@ -70,7 +70,7 @@ namespace Vortex {
 		EVENT_CLASS_CAT(EventCatApp)
 	};
 
-	class VORTEX_API AppUpdateEvent : public Event {
+	class AppUpdateEvent : public Event {
 	public:
 		AppUpdateEvent() {}
 
@@ -78,7 +78,7 @@ namespace Vortex {
 		EVENT_CLASS_CAT(EventCatApp)
 	};
 
-	class VORTEX_API AppRenderEvent : public Event {
+	class AppRenderEvent : public Event {
 	public:
 		AppRenderEvent() {}
 
