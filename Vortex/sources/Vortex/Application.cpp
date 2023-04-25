@@ -12,7 +12,7 @@ namespace Vortex {
 		VT_CORE_ASSERT(!s_instance, "Application already exists");
 		s_instance = this;
 
-		m_window = WinWindow::Create();
+		m_window.reset(WinWindow::Create());
 		m_running = true;
 		m_window->SetEventCallback(VT_BIND_EVENT_FN(Application::OnEvent));
 
@@ -21,10 +21,11 @@ namespace Vortex {
 
 		m_vao.reset(VertexArray::Create());
 
-		float vertices[3 * 7] = {
+		float vertices[4 * 7] = {
 			-1.0f, -1.0f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f,
 			 1.0f, -1.0f, 0.0f, 0.2f, 0.3f, 0.8f, 1.0f,
-			 0.0f,  1.0f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f
+			-1.0f,  1.0f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f,
+			 1.0f,  1.0f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f,
 		};
 
 		std::shared_ptr<VertexBuffer> vbo;
@@ -33,7 +34,7 @@ namespace Vortex {
 		vbo->SetLayout(layout);
 		m_vao->AddVertexBuffer(vbo);
 
-		uint indices[3] = { 0, 1, 2 };
+		uint indices[6] = { 0, 1, 2, 2, 3, 1 };
 		std::shared_ptr<IndexBuffer> ibo;
 		ibo.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint)));
 		m_vao->AddIndexBuffer(ibo);
@@ -65,10 +66,6 @@ namespace Vortex {
 		m_shader.reset(new Shader(vertexSrc.c_str(), fragmentSrc.c_str()));
 	}
 
-	Application::~Application() {
-		delete m_window;
-	}
-
 	void Application::Run() {
 		while (m_running) {
 			glClearColor(0.1f, 0.1f, 0.1f, 1);
@@ -78,12 +75,12 @@ namespace Vortex {
 			m_vao->Bind();
 			glDrawElements(GL_TRIANGLES, m_vao->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
-			for (Layer* layer : m_layerStack) {
+			for (const auto& layer : m_layerStack) {
 				layer->OnUpdate();
 			}
 
 			m_imguiLayer->Begin();
-			for (Layer* layer : m_layerStack)
+			for (const auto& layer : m_layerStack)
 				layer->OnImGuiRender();
 			m_imguiLayer->End();
 

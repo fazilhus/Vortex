@@ -14,7 +14,7 @@ namespace Vortex {
 
 	class Application {
 	private:
-		WinWindow* m_window;
+		std::unique_ptr<Window> m_window;
 		bool m_running = true;
 		ImGuiLayer* m_imguiLayer;
 		LayerStack m_layerStack;
@@ -26,7 +26,7 @@ namespace Vortex {
 
 	public:
 		Application();
-		virtual ~Application();
+		virtual ~Application() = default;
 
 		void Run();
 
