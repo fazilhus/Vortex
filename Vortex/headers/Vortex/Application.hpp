@@ -20,13 +20,6 @@ namespace Vortex {
 		ImGuiLayer* m_imguiLayer;
 		LayerStack m_layerStack;
 
-		std::shared_ptr<VertexArray> m_vao1;
-		std::shared_ptr<Shader> m_shader1;
-		std::shared_ptr<VertexArray> m_vao2;
-		std::shared_ptr<Shader> m_shader2;
-
-		OrthoCamera m_camera;
-
 		static Application* s_instance;
 
 		glm::vec3 pos{ 0.0f, 0.0f, 0.0f };
