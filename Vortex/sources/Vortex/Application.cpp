@@ -6,26 +6,6 @@
 
 namespace Vortex {
 
-	static uint ShaderDataTypeToOpenGLType(ShaderDataType type) {
-		switch (type) {
-			case ShaderDataType::Float:    return GL_FLOAT;
-			case ShaderDataType::Float2:   return GL_FLOAT;
-			case ShaderDataType::Float3:   return GL_FLOAT;
-			case ShaderDataType::Float4:   return GL_FLOAT;
-			case ShaderDataType::Mat3:     return GL_FLOAT;
-			case ShaderDataType::Mat4:     return GL_FLOAT;
-			case ShaderDataType::Int:      return GL_INT;
-			case ShaderDataType::Int2:     return GL_INT;
-			case ShaderDataType::Int3:     return GL_INT;
-			case ShaderDataType::Int4:     return GL_INT;
-			case ShaderDataType::Bool:     return GL_BOOL;
-			default: {
-				VT_CORE_ASSERT(false, "Unknown data type");
-				return 0;
-			}
-		}
-	}
-
 	Application* Application::s_instance = nullptr;
 
 	Application::Application() {
@@ -39,8 +19,7 @@ namespace Vortex {
 		m_imguiLayer = new ImGuiLayer();
 		PushOverlay(m_imguiLayer);
 
-		glGenVertexArrays(1, &m_vao);
-		glBindVertexArray(m_vao);
+		m_vao.reset(VertexArray::Create());
 
 		float vertices[3 * 7] = {
 			-1.0f, -1.0f, 0.0f, 0.8f, 0.2f, 0.8f, 1.0f,
@@ -48,30 +27,16 @@ namespace Vortex {
 			 0.0f,  1.0f, 0.0f, 0.8f, 0.8f, 0.2f, 1.0f
 		};
 
-		m_vbo.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
-
-		{
-			BufferLayout layout{ {"a_position", ShaderDataType::Float3}, {"a_color", ShaderDataType::Float4} };
-			m_vbo->SetLayout(layout);
-		}
-
-		uint index = 0;
-		const auto layout = m_vbo->GetLayout();
-		for (const auto element : layout)
-		{
-			VT_CORE_INFO("{0}, {1}, {2}, {3}", element.GetComponentCount(), ShaderDataTypeToOpenGLType(element.type), layout.GetStride(), element.offset);
-			glEnableVertexAttribArray(index);
-			glVertexAttribPointer(index,
-				element.GetComponentCount(),
-				ShaderDataTypeToOpenGLType(element.type),
-				element.normalized ? GL_TRUE : GL_FALSE,
-				layout.GetStride(),
-				(void*)element.offset);
-			index++;
-		}
+		std::shared_ptr<VertexBuffer> vbo;
+		vbo.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
+		BufferLayout layout{ {"a_position", ShaderDataType::Float3}, {"a_color", ShaderDataType::Float4} };
+		vbo->SetLayout(layout);
+		m_vao->AddVertexBuffer(vbo);
 
 		uint indices[3] = { 0, 1, 2 };
-		m_ibo.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint)));
+		std::shared_ptr<IndexBuffer> ibo;
+		ibo.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint)));
+		m_vao->AddIndexBuffer(ibo);
 
 		std::string vertexSrc = R"(
 			#version 460 core
@@ -110,8 +75,8 @@ namespace Vortex {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			m_shader->Bind();
-			glBindVertexArray(m_vao);
-			glDrawElements(GL_TRIANGLES, m_ibo->GetCount(), GL_UNSIGNED_INT, nullptr);
+			m_vao->Bind();
+			glDrawElements(GL_TRIANGLES, m_vao->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 
 			for (Layer* layer : m_layerStack) {
 				layer->OnUpdate();

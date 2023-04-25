@@ -33,4 +33,17 @@ namespace Vortex {
 		}
 	}
 
+	VertexArray* VertexArray::Create()
+	{
+		switch (Renderer::GetAPI()) {
+			case RendererAPI::NONE: {
+				VT_CORE_ASSERT(false, "RendererAPI::NONE");
+				return nullptr;
+			}
+			case RendererAPI::OPENGL: {
+				return new OpenGLVertexArray();
+			}
+		}
+	}
+
 }

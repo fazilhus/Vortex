@@ -19,9 +19,7 @@ namespace Vortex {
 		ImGuiLayer* m_imguiLayer;
 		LayerStack m_layerStack;
 
-		uint m_vao;
-		std::unique_ptr<VertexBuffer> m_vbo;
-		std::unique_ptr<IndexBuffer> m_ibo;
+		std::unique_ptr<VertexArray> m_vao;
 		std::unique_ptr<Shader> m_shader;
 
 		static Application* s_instance;

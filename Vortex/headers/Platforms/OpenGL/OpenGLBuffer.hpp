@@ -36,4 +36,24 @@ namespace Vortex {
 		inline virtual uint GetCount() const override { return m_count; }
 	};
 
+	class OpenGLVertexArray : public VertexArray {
+	private:
+		uint m_rendererID;
+		std::vector<std::shared_ptr<VertexBuffer>> m_vbs;
+		std::shared_ptr<IndexBuffer> m_ib;
+
+	public:
+		OpenGLVertexArray();
+		virtual ~OpenGLVertexArray();
+
+		virtual void Bind() const override;
+		virtual void Unbind() const override;
+
+		virtual void AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vb) override;
+		virtual void AddIndexBuffer(const std::shared_ptr<IndexBuffer>& ib) override;
+
+		inline virtual const std::vector<std::shared_ptr<VertexBuffer>>& GetVertexBuffers() const override { return m_vbs; }
+		inline virtual const std::shared_ptr<IndexBuffer>& GetIndexBuffer() const override { return m_ib; }
+	};
+
 }
