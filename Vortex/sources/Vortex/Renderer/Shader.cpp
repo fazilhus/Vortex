@@ -3,6 +3,8 @@
 
 #include <glad/glad.h>
 
+#include <glm/gtc/type_ptr.hpp>
+
 namespace Vortex {
 
 	Shader::Shader(const std::string& vertexSrc, const std::string& fragmentSrc) 
@@ -118,6 +120,13 @@ namespace Vortex {
 
 	void Shader::Unbind() const {
 		glUseProgram(0);
+	}
+
+	void Shader::UploadUniformMat4(const std::string& name, const glm::mat4& mat) {
+		if (m_uniformLoc.find(name) == m_uniformLoc.end()) {
+			m_uniformLoc[name] = glGetUniformLocation(m_rendererID, name.c_str());
+		}
+		glUniformMatrix4fv(m_uniformLoc[name], 1, GL_FALSE, glm::value_ptr(mat));
 	}
 
 }
