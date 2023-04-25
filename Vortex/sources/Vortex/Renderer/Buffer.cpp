@@ -10,11 +10,11 @@ namespace Vortex {
 	VertexBuffer* VertexBuffer::Create(float* vertices, uint size)
 	{
 		switch (Renderer::GetAPI()) {
-			case RendererAPI::NONE: {
-				VT_CORE_ASSERT(false, "RendererAPI::NONE");
+			case RendererAPI::API::NONE: {
+				VT_CORE_ASSERT(false, "RendererAPI::API::NONE");
 				return nullptr;
 			}
-			case RendererAPI::OPENGL: {
+			case RendererAPI::API::OPENGL: {
 				return new OpenGLVertexBuffer(vertices, size);
 			}
 		}
@@ -23,11 +23,11 @@ namespace Vortex {
 	IndexBuffer* IndexBuffer::Create(uint* indices, uint count)
 	{
 		switch (Renderer::GetAPI()) {
-			case RendererAPI::NONE: {
-				VT_CORE_ASSERT(false, "RendererAPI::NONE");
+			case RendererAPI::API::NONE: {
+				VT_CORE_ASSERT(false, "RendererAPI::API::NONE");
 				return nullptr;
 			}
-			case RendererAPI::OPENGL: {
+			case RendererAPI::API::OPENGL: {
 				return new OpenGLIndexBuffer(indices, count);
 			}
 		}
@@ -36,11 +36,11 @@ namespace Vortex {
 	VertexArray* VertexArray::Create()
 	{
 		switch (Renderer::GetAPI()) {
-			case RendererAPI::NONE: {
-				VT_CORE_ASSERT(false, "RendererAPI::NONE");
+		    case RendererAPI::API::NONE: {
+				VT_CORE_ASSERT(false, "RendererAPI::API::NONE");
 				return nullptr;
 			}
-			case RendererAPI::OPENGL: {
+		    case RendererAPI::API::OPENGL: {
 				return new OpenGLVertexArray();
 			}
 		}

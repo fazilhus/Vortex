@@ -33,6 +33,8 @@
 #include "Vortex/Renderer/GraphicsContext.hpp"
 #include "Vortex/Codes.hpp"
 #include "Vortex/Renderer/Buffer.hpp"
+#include "Vortex/Renderer/RendererAPI.hpp"
+#include "Vortex/Renderer/Render.hpp"
 
 // GLFW
 #include <GLFW/glfw3.h>

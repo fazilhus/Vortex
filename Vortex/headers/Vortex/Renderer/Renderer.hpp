@@ -1,18 +1,16 @@
 #pragma once
+#include "vtpch.hpp"
 
 namespace Vortex {
 
-	enum class RendererAPI {
-		NONE = 0,
-		OPENGL = 1
-	};
-
 	class Renderer {
-	private:
-		static RendererAPI s_rendererAPI;
-
 	public:
-		inline static RendererAPI GetAPI() { return s_rendererAPI; }
+		static void BeginScene();
+		static void EndScene();
+
+		static void Submit(const std::shared_ptr<VertexArray>& va);
+
+		inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
 	};
 
 }

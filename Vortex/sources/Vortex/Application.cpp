@@ -1,8 +1,7 @@
 #include "vtpch.hpp"
-
-#include <glad/glad.h>
-
 #include "Vortex/Application.hpp"
+
+#include "Vortex/Renderer/Renderer.hpp"
 
 namespace Vortex {
 
@@ -68,12 +67,13 @@ namespace Vortex {
 
 	void Application::Run() {
 		while (m_running) {
-			glClearColor(0.1f, 0.1f, 0.1f, 1);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			Render::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+			Render::Clear();
 
+			Renderer::BeginScene();
 			m_shader->Bind();
-			m_vao->Bind();
-			glDrawElements(GL_TRIANGLES, m_vao->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+			Renderer::Submit(m_vao);
+			Renderer::EndScene();
 
 			for (const auto& layer : m_layerStack) {
 				layer->OnUpdate();
