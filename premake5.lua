@@ -75,7 +75,6 @@ group ""
 
             defines {
                 "VT_PLATFORM_WIN",
-                "VT_BUILD_DLL",
                 "GLFW_INCLUDE_NONE"
             }
 

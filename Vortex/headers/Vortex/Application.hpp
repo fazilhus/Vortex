@@ -1,4 +1,5 @@
 #pragma once
+#include "vtpch.hpp"
 
 #ifdef VT_PLATFORM_WIN
 #include "Platforms/Win/WinWindow.hpp"
@@ -18,8 +19,10 @@ namespace Vortex {
 		ImGuiLayer* m_imguiLayer;
 		LayerStack m_layerStack;
 
-		uint m_vao, m_vbo, m_ibo;
-		Shader* m_shader;
+		uint m_vao;
+		std::unique_ptr<VertexBuffer> m_vbo;
+		std::unique_ptr<IndexBuffer> m_ibo;
+		std::unique_ptr<Shader> m_shader;
 
 		static Application* s_instance;
 
