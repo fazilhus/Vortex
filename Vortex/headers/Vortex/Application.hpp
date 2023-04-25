@@ -9,6 +9,7 @@
 #include "Vortex/Layers/ImGuiLayer.hpp"
 #include "Vortex/Layers/LayerStack.hpp"
 #include "Vortex/Renderer/Shader.hpp"
+#include "Vortex/Renderer/Cameras/OrthoCamera.hpp"
 
 namespace Vortex {
 
@@ -19,10 +20,17 @@ namespace Vortex {
 		ImGuiLayer* m_imguiLayer;
 		LayerStack m_layerStack;
 
-		std::shared_ptr<VertexArray> m_vao;
-		std::shared_ptr<Shader> m_shader;
+		std::shared_ptr<VertexArray> m_vao1;
+		std::shared_ptr<Shader> m_shader1;
+		std::shared_ptr<VertexArray> m_vao2;
+		std::shared_ptr<Shader> m_shader2;
+
+		OrthoCamera m_camera;
 
 		static Application* s_instance;
+
+		glm::vec3 pos{ 0.0f, 0.0f, 0.0f };
+		float rot{ 0.0f };
 
 	public:
 		Application();
