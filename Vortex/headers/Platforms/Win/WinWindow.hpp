@@ -24,7 +24,7 @@ namespace Vortex {
 		WinWindow(const WindowProps& properties);
 		virtual ~WinWindow();
 
-		void OnUpdate() override;
+		void OnUpdate(Timestep ts) override;
 
 		inline uint GetWidth() const override { return m_data.width; }
 		inline uint GetHeight() const override { return m_data.height; }

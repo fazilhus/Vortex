@@ -35,6 +35,7 @@
 #include "Vortex/Renderer/Buffer.hpp"
 #include "Vortex/Renderer/RendererAPI.hpp"
 #include "Vortex/Renderer/Render.hpp"
+#include "Vortex/Core/Timestep.hpp"
 
 // GLFW
 #include <GLFW/glfw3.h>

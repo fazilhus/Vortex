@@ -3,6 +3,7 @@
 #include "vtpch.hpp"
 
 #include "Vortex/Events/Event.hpp"
+#include "Vortex/Core/Timestep.hpp"
 
 namespace Vortex {
 
@@ -13,7 +14,7 @@ namespace Vortex {
 
 		virtual void OnAttach() {}
 		virtual void OnDetach() {}
-		virtual void OnUpdate() {}
+		virtual void OnUpdate(Timestep ts) {}
 		virtual void OnImGuiRender() {}
 		virtual void OnEvent(Event& e) {}
 

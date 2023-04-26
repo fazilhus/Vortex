@@ -8,8 +8,6 @@
 #include "Vortex/Events/AppEvent.hpp"
 #include "Vortex/Layers/ImGuiLayer.hpp"
 #include "Vortex/Layers/LayerStack.hpp"
-#include "Vortex/Renderer/Shader.hpp"
-#include "Vortex/Renderer/Cameras/OrthoCamera.hpp"
 
 namespace Vortex {
 
@@ -22,8 +20,7 @@ namespace Vortex {
 
 		static Application* s_instance;
 
-		glm::vec3 pos{ 0.0f, 0.0f, 0.0f };
-		float rot{ 0.0f };
+		float m_lastFrameTime;
 
 	public:
 		Application();

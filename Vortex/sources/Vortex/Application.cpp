@@ -1,11 +1,12 @@
 #include "vtpch.hpp"
 #include "Vortex/Application.hpp"
+#include "Vortex/Core/Timestep.hpp"
 
 namespace Vortex {
 
 	Application* Application::s_instance = nullptr;
 
-	Application::Application() {
+	Application::Application() : m_lastFrameTime(0.0f) {
 		VT_CORE_ASSERT(!s_instance, "Application already exists");
 		s_instance = this;
 
@@ -19,8 +20,12 @@ namespace Vortex {
 
 	void Application::Run() {
 		while (m_running) {
+			float time = (float)glfwGetTime();
+			Timestep timestep = time - m_lastFrameTime;
+			m_lastFrameTime = time;
+
 			for (const auto& layer : m_layerStack) {
-				layer->OnUpdate();
+				layer->OnUpdate(timestep);
 			}
 
 			m_imguiLayer->Begin();
@@ -28,7 +33,7 @@ namespace Vortex {
 				layer->OnImGuiRender();
 			m_imguiLayer->End();
 
-			m_window->OnUpdate();
+			m_window->OnUpdate(timestep);
 		}
 	}
 

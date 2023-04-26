@@ -140,7 +140,7 @@ namespace Vortex {
 		glfwDestroyWindow(m_window);
 	}
 
-	void WinWindow::OnUpdate() {
+	void WinWindow::OnUpdate(Timestep ts) {
 		glfwPollEvents();
 		m_context->SwapBuffers();
 	}
