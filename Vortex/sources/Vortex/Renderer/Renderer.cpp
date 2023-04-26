@@ -13,9 +13,11 @@ namespace Vortex {
 	void Renderer::EndScene() {
 	}
 
-	void Renderer::Submit(const std::shared_ptr<Shader>& shader, const std::shared_ptr<VertexArray>& va) {
+	void Renderer::Submit(const std::shared_ptr<Shader>& shader, 
+		const std::shared_ptr<VertexArray>& va, const glm::mat4& transform) {
 		shader->Bind();
 		shader->UploadUniformMat4("u_viewproj", s_sceneData->viewproj);
+		shader->UploadUniformMat4("u_transform", transform);
 
 		va->Bind();
 		Render::DrawIndexed(va);

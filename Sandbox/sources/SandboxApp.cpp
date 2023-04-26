@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include <glm/gtc/matrix_transform.hpp>
+
 
 class SimpleLayer : public Vortex::Layer {
 private:
@@ -12,10 +14,10 @@ private:
 
 	Vortex::OrthoCamera m_camera;
 
-	glm::vec3 pos{ 0.0f, 0.0f, 0.0f };
-	float posVel = 1.0f;
-	float rot{ 0.0f };
-	float rotVel = 180.0f;
+	glm::vec3 camPos{ 0.0f, 0.0f, 0.0f };
+	float camPosVel = 1.0f;
+	float camRot{ 0.0f };
+	float camRotVel = 180.0f;
 
 public:
 	SimpleLayer()
@@ -48,12 +50,13 @@ public:
 				layout(location = 0) in vec3 a_position;
 				layout(location = 1) in vec4 a_color;
 				uniform mat4 u_viewproj;
+				uniform mat4 u_transform;
 				out vec3 v_position;
 				out vec4 v_color;
 				void main() {
 					v_position = a_position;
 					v_color = a_color;
-					gl_Position = u_viewproj * vec4(a_position, 1.0);	
+					gl_Position = u_viewproj * u_transform * vec4(a_position, 1.0);	
 				}
 			)";
 
@@ -75,10 +78,10 @@ public:
 			m_vao2.reset(Vortex::VertexArray::Create());
 
 			float vertices[3 * 4] = {
-				-0.75f, -0.75f, 0.0f,
-				 0.75f, -0.75f, 0.0f,
-				 0.75f,  0.75f, 0.0f,
-				-0.75f,  0.75f, 0.0f
+				-0.5f, -0.5f, 0.0f,
+				 0.5f, -0.5f, 0.0f,
+				 0.5f,  0.5f, 0.0f,
+				-0.5f,  0.5f, 0.0f
 			};
 
 			std::shared_ptr<Vortex::VertexBuffer> vbo;
@@ -97,12 +100,13 @@ public:
 			layout(location = 0) in vec3 a_position;
 			layout(location = 1) in vec4 a_color;
 			uniform mat4 u_viewproj;
+			uniform mat4 u_transform;
 			out vec3 v_position;
 			out vec4 v_color;
 			void main() {
 				v_position = a_position;
 				v_color = a_color;
-				gl_Position = u_viewproj * vec4(a_position, 1.0);	
+				gl_Position = u_viewproj * u_transform * vec4(a_position, 1.0);	
 			}
 			)";
 
@@ -123,54 +127,63 @@ public:
 	}
 
 	virtual void OnUpdate(Vortex::Timestep ts) override {
-		float framePosVel = posVel * ts;
-		float frameRotVel = rotVel * ts;
+		float framePosVel = camPosVel * ts;
+		float frameRotVel = camRotVel * ts;
 		if (Vortex::Input::IsKeyPressed(VT_KEY_LEFT)) {
-			pos.x += framePosVel;
+			camPos.x += framePosVel;
 		}
 		else if (Vortex::Input::IsKeyPressed(VT_KEY_RIGHT)) {
-			pos.x -= framePosVel;
+			camPos.x -= framePosVel;
 		}
 		if (Vortex::Input::IsKeyPressed(VT_KEY_UP)) {
-			pos.y -= framePosVel;
+			camPos.y -= framePosVel;
 		}
 		else if (Vortex::Input::IsKeyPressed(VT_KEY_DOWN)) {
-			pos.y += framePosVel;
+			camPos.y += framePosVel;
 		}
 
 		if (Vortex::Input::IsKeyPressed(VT_KEY_Q)) {
-			rot -= frameRotVel;
+			camRot -= frameRotVel;
 		}
 		else if (Vortex::Input::IsKeyPressed(VT_KEY_E)) {
-			rot += frameRotVel;
+			camRot += frameRotVel;
 		}
 
 		if (Vortex::Input::IsKeyPressed(VT_KEY_R)) {
-			pos = glm::vec3();
-			rot = 0.0f;
+			camPos = glm::vec3();
+			camRot = 0.0f;
 		}
 
 		Vortex::Render::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		Vortex::Render::Clear();
 
-		m_camera.SetPos(pos);
-		m_camera.SetRot(rot);
+		m_camera.SetPos(camPos);
+		m_camera.SetRot(camRot);
 
 		Vortex::Renderer::BeginScene(m_camera);
 
-		Vortex::Renderer::Submit(m_shader2, m_vao2);
+		glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+
+		for (int y = -10; y < 10; ++y) {
+			for (int x = -10; x < 10; ++x) {
+				glm::vec3 pos(x * 0.12f, y * 0.12f, 0.0f);
+				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
+				Vortex::Renderer::Submit(m_shader2, m_vao2, transform);
+			}
+		}
+
 		Vortex::Renderer::Submit(m_shader1, m_vao1);
 
 		Vortex::Renderer::EndScene();
 	}
 
 	virtual void OnImGuiRender() override {
-		ImGui::DragFloat3("Pos", &pos.x, 0.005f, -1.0f, 1.0f);
+		ImGui::DragFloat3("Pos", &camPos.x, 0.005f, -1.0f, 1.0f);
 		ImGui::SameLine();
-		if (ImGui::Button("Reset pos")) { pos = glm::vec3(0.0f); }
-		ImGui::DragFloat("Rot", &rot, 0.1f, -90.0f, 90.0f);
+		if (ImGui::Button("Reset pos")) { camPos = glm::vec3(0.0f); }
+		ImGui::DragFloat("Rot", &camRot, 0.1f, -90.0f, 90.0f);
 		ImGui::SameLine();
-		if (ImGui::Button("Reset rot")) { rot = 0.0f; }
+		if (ImGui::Button("Reset rot")) { camRot = 0.0f; }
 	}
 
 	virtual void OnEvent(Vortex::Event& e) override {
