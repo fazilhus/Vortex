@@ -4,18 +4,19 @@
 namespace Vortex {
 
 	class Shader {
-	private:
+	/*private:
 		uint m_rendererID;
-		std::unordered_map<std::string, uint> m_uniformLoc;
+		std::unordered_map<std::string, uint> m_uniformLoc;*/
 
 	public:
-		Shader(const std::string& vertexSrc, const std::string& fragmentSrc);
-		virtual ~Shader();
+		virtual ~Shader() = default;
 
-		virtual void Bind() const;
-		virtual void Unbind() const;
+		virtual void Bind() const = 0;
+		virtual void Unbind() const = 0;
 
-		virtual void UploadUniformMat4(const std::string& name, const glm::mat4& mat);
+		static Shader* Create(const std::string& vertexSrc, const std::string& fragmentSrc);
+
+		//virtual void UploadUniformMat4(const std::string& name, const glm::mat4& mat);
 	};
 
 }

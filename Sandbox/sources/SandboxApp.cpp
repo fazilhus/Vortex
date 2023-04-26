@@ -1,8 +1,11 @@
 #include <Vortex.hpp>
 
+#include "Platforms/OpenGL/OpenGLShader.hpp"
+
 #include <memory>
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 
 class SimpleLayer : public Vortex::Layer {
@@ -18,6 +21,8 @@ private:
 	float camPosVel = 1.0f;
 	float camRot{ 0.0f };
 	float camRotVel = 180.0f;
+
+	glm::vec4 scColor = { 0.2f, 0.3f, 0.8f, 1.0f };
 
 public:
 	SimpleLayer()
@@ -71,7 +76,7 @@ public:
 				}
 			)";
 
-			m_shader1.reset(new Vortex::Shader(vertexSrc.c_str(), fragmentSrc.c_str()));
+			m_shader1.reset(Vortex::Shader::Create(vertexSrc.c_str(), fragmentSrc.c_str()));
 		}
 
 		{
@@ -114,12 +119,13 @@ public:
 			#version 460 core
 			in vec3 v_position;
 			layout(location = 0) out vec4 color;
+			uniform vec4 u_color;
 			void main() {
-				color = vec4(0.2, 0.3, 0.8, 1.0);
+				color = u_color;
 			}
 			)";
 
-			m_shader2.reset(new Vortex::Shader(vertexSrc.c_str(), fragmentSrc.c_str()));
+			m_shader2.reset(Vortex::Shader::Create(vertexSrc.c_str(), fragmentSrc.c_str()));
 		}
 	}
 
@@ -162,6 +168,9 @@ public:
 
 		Vortex::Renderer::BeginScene(m_camera);
 
+		m_shader2->Bind();
+		std::dynamic_pointer_cast<Vortex::OpenGLShader>(m_shader2)->UploadUniformFloat4("u_color", scColor);
+
 		glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
 		for (int y = -10; y < 10; ++y) {
@@ -184,6 +193,7 @@ public:
 		ImGui::DragFloat("Rot", &camRot, 0.1f, -90.0f, 90.0f);
 		ImGui::SameLine();
 		if (ImGui::Button("Reset rot")) { camRot = 0.0f; }
+		ImGui::ColorEdit3("Square Color", glm::value_ptr(scColor));
 	}
 
 	virtual void OnEvent(Vortex::Event& e) override {

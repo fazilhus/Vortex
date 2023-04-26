@@ -1,6 +1,8 @@
 #include "vtpch.hpp"
 #include "Vortex/Renderer/Renderer.hpp"
 
+#include "Platforms/OpenGL/OpenGLShader.hpp"
+
 
 namespace Vortex {
 
@@ -16,8 +18,8 @@ namespace Vortex {
 	void Renderer::Submit(const std::shared_ptr<Shader>& shader, 
 		const std::shared_ptr<VertexArray>& va, const glm::mat4& transform) {
 		shader->Bind();
-		shader->UploadUniformMat4("u_viewproj", s_sceneData->viewproj);
-		shader->UploadUniformMat4("u_transform", transform);
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_viewproj", s_sceneData->viewproj);
+		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_transform", transform);
 
 		va->Bind();
 		Render::DrawIndexed(va);
