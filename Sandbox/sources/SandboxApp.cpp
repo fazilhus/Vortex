@@ -13,9 +13,9 @@ private:
 	Vortex::OrthoCamera m_camera;
 
 	glm::vec3 pos{ 0.0f, 0.0f, 0.0f };
-	float posVel = 0.1f;
+	float posVel = 1.0f;
 	float rot{ 0.0f };
-	float rotVel = 1.0f;
+	float rotVel = 180.0f;
 
 public:
 	SimpleLayer()
@@ -123,24 +123,26 @@ public:
 	}
 
 	virtual void OnUpdate(Vortex::Timestep ts) override {
+		float framePosVel = posVel * ts;
+		float frameRotVel = rotVel * ts;
 		if (Vortex::Input::IsKeyPressed(VT_KEY_LEFT)) {
-			pos.x += posVel;
+			pos.x += framePosVel;
 		}
 		else if (Vortex::Input::IsKeyPressed(VT_KEY_RIGHT)) {
-			pos.x -= posVel;
+			pos.x -= framePosVel;
 		}
 		if (Vortex::Input::IsKeyPressed(VT_KEY_UP)) {
-			pos.y -= posVel;
+			pos.y -= framePosVel;
 		}
 		else if (Vortex::Input::IsKeyPressed(VT_KEY_DOWN)) {
-			pos.y += posVel;
+			pos.y += framePosVel;
 		}
 
 		if (Vortex::Input::IsKeyPressed(VT_KEY_Q)) {
-			rot -= rotVel;
+			rot -= frameRotVel;
 		}
 		else if (Vortex::Input::IsKeyPressed(VT_KEY_E)) {
-			rot += rotVel;
+			rot += frameRotVel;
 		}
 
 		if (Vortex::Input::IsKeyPressed(VT_KEY_R)) {

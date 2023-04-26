@@ -12,6 +12,7 @@ namespace Vortex {
 
 		m_window.reset(WinWindow::Create());
 		m_running = true;
+		m_window->SetVSync(true);
 		m_window->SetEventCallback(VT_BIND_EVENT_FN(Application::OnEvent));
 
 		m_imguiLayer = new ImGuiLayer();
@@ -20,7 +21,7 @@ namespace Vortex {
 
 	void Application::Run() {
 		while (m_running) {
-			float time = (float)glfwGetTime();
+			float time = (float)Platform::GetTimeSec();
 			Timestep timestep = time - m_lastFrameTime;
 			m_lastFrameTime = time;
 

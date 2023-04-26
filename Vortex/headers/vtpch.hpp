@@ -35,6 +35,8 @@
 #include "Vortex/Renderer/Buffer.hpp"
 #include "Vortex/Renderer/RendererAPI.hpp"
 #include "Vortex/Renderer/Render.hpp"
+#include "Vortex/Core/Platform.hpp"
+#include "Vortex/Core/PlatformAPI.hpp"
 #include "Vortex/Core/Timestep.hpp"
 
 // GLFW
