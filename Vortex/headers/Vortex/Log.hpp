@@ -6,14 +6,14 @@ namespace Vortex {
 
 	class Log {
 	private:
-		static std::shared_ptr<spdlog::logger> s_clientLogger;
-		static std::shared_ptr<spdlog::logger> s_coreLogger;
+		static Ref<spdlog::logger> s_clientLogger;
+		static Ref<spdlog::logger> s_coreLogger;
 
 	public:
 		static void Init();
 
-		inline static std::shared_ptr <spdlog::logger>& GetCoreLogger() { return s_coreLogger; }
-		inline static std::shared_ptr <spdlog::logger>& GetClientLogger() { return s_clientLogger; }
+		inline static Ref <spdlog::logger>& GetCoreLogger() { return s_coreLogger; }
+		inline static Ref <spdlog::logger>& GetClientLogger() { return s_clientLogger; }
 	};
 
 }

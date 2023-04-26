@@ -13,7 +13,7 @@ namespace Vortex {
 
 	class Application {
 	private:
-		std::unique_ptr<Window> m_window;
+		Scope<Window> m_window;
 		bool m_running = true;
 		ImGuiLayer* m_imguiLayer;
 		LayerStack m_layerStack;

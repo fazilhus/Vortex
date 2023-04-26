@@ -84,7 +84,7 @@ namespace Vortex {
 		glBindVertexArray(0);
 	}
 
-	void OpenGLVertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vb) {
+	void OpenGLVertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vb) {
 		VT_CORE_ASSERT(vb->GetLayout().GetElements().size(), "VertexBuffer has no layout");
 
 		glBindVertexArray(m_rendererID);
@@ -105,7 +105,7 @@ namespace Vortex {
 		m_vbs.push_back(vb);
 	}
 
-	void OpenGLVertexArray::AddIndexBuffer(const std::shared_ptr<IndexBuffer>& ib) {
+	void OpenGLVertexArray::AddIndexBuffer(const Ref<IndexBuffer>& ib) {
 		glBindVertexArray(m_rendererID);
 		ib->Bind();
 
