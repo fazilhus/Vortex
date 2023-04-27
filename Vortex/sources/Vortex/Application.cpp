@@ -15,7 +15,7 @@ namespace Vortex {
 		m_window->SetVSync(true);
 		m_window->SetEventCallback(VT_BIND_EVENT_FN(Application::OnEvent));
 
-		m_imguiLayer = new ImGuiLayer();
+		m_imguiLayer = std::make_shared<ImGuiLayer>();
 		PushOverlay(m_imguiLayer);
 	}
 
@@ -50,19 +50,19 @@ namespace Vortex {
 		}
 	}
 
-	void Application::PushLayer(Layer* l) {
+	void Application::PushLayer(Ref<Layer> l) {
 		m_layerStack.PushLayer(l);
 	}
 
-	void Application::PopLayer(Layer* l) {
+	void Application::PopLayer(Ref<Layer> l) {
 		m_layerStack.PopLayer(l);
 	}
 
-	void Application::PushOverlay(Layer* o) {
+	void Application::PushOverlay(Ref<Layer> o) {
 		m_layerStack.PushOverlay(o);
 	}
 
-	void Application::PopOverlay(Layer* o) {
+	void Application::PopOverlay(Ref<Layer> o) {
 		m_layerStack.PopOverlay(o);
 	}
 

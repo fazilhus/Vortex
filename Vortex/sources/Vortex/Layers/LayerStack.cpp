@@ -6,25 +6,22 @@ namespace Vortex {
 
 
 	LayerStack::LayerStack() 
-		: m_layers(std::vector<Layer*>()), m_layerInsertInd(0) {}
+		: m_layers(std::vector<Ref<Layer>>()), m_layerInsertInd(0) {}
 
 	LayerStack::~LayerStack() {
-		for (auto l : m_layers) {
-			delete l;
-		}
 	}
 
-	void LayerStack::PushLayer(Layer* l) {
+	void LayerStack::PushLayer(Ref<Layer> l) {
 		m_layers.emplace(m_layers.begin() + m_layerInsertInd, l);
 		l->OnAttach();
 	}
 
-	void LayerStack::PushOverlay(Layer* o) {
+	void LayerStack::PushOverlay(Ref<Layer> o) {
 		m_layers.emplace_back(o);
 		o->OnAttach();
 	}
 
-	void LayerStack::PopLayer(Layer* l) {
+	void LayerStack::PopLayer(Ref<Layer> l) {
 		auto it = std::find(m_layers.begin() + m_layerInsertInd, end(), l);
 		if (it != begin() + m_layerInsertInd) {
 			l->OnDetach();
@@ -33,7 +30,7 @@ namespace Vortex {
 		}
 	}
 
-	void LayerStack::PopOverlay(Layer* o) {
+	void LayerStack::PopOverlay(Ref<Layer> o) {
 		auto it = std::find(m_layers.begin() + m_layerInsertInd, end(), o);
 		if (it != end()) {
 			o->OnDetach();

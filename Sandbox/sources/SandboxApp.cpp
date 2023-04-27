@@ -203,7 +203,8 @@ public:
 class Sandbox : public Vortex::Application {
 public:
 	Sandbox() {
-		PushLayer(new SimpleLayer());
+		std::shared_ptr<Vortex::Layer> sl = std::make_shared<SimpleLayer>();
+		PushLayer(sl);
 	}
 	~Sandbox() {}
 };

@@ -8,20 +8,20 @@ namespace Vortex {
 
 	class LayerStack {
 	private:
-		std::vector<Layer*> m_layers;
+		std::vector<Ref<Layer>> m_layers;
 		uint m_layerInsertInd;
 
 	public:
 		LayerStack();
 		~LayerStack();
 
-		void PushLayer(Layer* l);
-		void PushOverlay(Layer* o);
-		void PopLayer(Layer* l);
-		void PopOverlay(Layer* o);
+		void PushLayer(Ref<Layer> l);
+		void PushOverlay(Ref<Layer> o);
+		void PopLayer(Ref<Layer> l);
+		void PopOverlay(Ref<Layer> o);
 
-		inline std::vector<Layer*>::iterator begin() { return m_layers.begin(); }
-		inline std::vector<Layer*>::iterator end() { return m_layers.end(); }
+		inline std::vector<Ref<Layer>>::iterator begin() { return m_layers.begin(); }
+		inline std::vector<Ref<Layer>>::iterator end() { return m_layers.end(); }
 	};
 
 }
