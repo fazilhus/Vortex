@@ -2,19 +2,15 @@
 
 // STL
 #include <iostream>
-
 #include <algorithm>
 #include <utility>
 #include <functional>
-
 #include <vector>
 #include <set>
 #include <unordered_set>
 #include <map>
 #include <unordered_map>
-
 #include <memory>
-
 #include <string>
 #include <sstream>
 
@@ -28,13 +24,17 @@
 #include "Vortex/Log.hpp"
 #include "Vortex/Layers./Layer.hpp"
 #include "Vortex/Layers/LayerStack.hpp"
+
 #include "Vortex/Window.hpp"
 #include "Vortex/Input.hpp"
 #include "Vortex/Renderer/GraphicsContext.hpp"
 #include "Vortex/Codes.hpp"
+
 #include "Vortex/Renderer/Buffer.hpp"
 #include "Vortex/Renderer/RendererAPI.hpp"
 #include "Vortex/Renderer/Render.hpp"
+#include "Vortex/Renderer/Texture.hpp"
+
 #include "Vortex/Core/Platform.hpp"
 #include "Vortex/Core/PlatformAPI.hpp"
 #include "Vortex/Core/Timestep.hpp"
@@ -53,6 +53,9 @@
 #include <glm/ext/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale
 #include <glm/ext/matrix_clip_space.hpp> // glm::perspective
 #include <glm/ext/scalar_constants.hpp> // glm::pi
+
+// STB
+#include <stb_image.h>
 
 #ifdef VT_PLATFORM_WIN
 	#include <Windows.h>

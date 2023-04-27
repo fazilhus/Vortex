@@ -22,6 +22,7 @@ includedir["glfw"] = "Vortex/vendor/glfw/include"
 includedir["glad"] = "Vortex/vendor/glad/include"
 includedir["imgui"] = "Vortex/vendor/imgui"
 includedir["glm"] = "Vortex/vendor/glm"
+includedir["stb"] = "Vortex/vendor/stb"
 
 group "Dependencies"
     include "Vortex/vendor/glfw"
@@ -55,7 +56,9 @@ group ""
             "%{prj.name}/headers/**.hpp",
             "%{prj.name}/sources/**.cpp",
             "%{prj.name}/vendor/glm/glm/**.hpp",
-            "%{prj.name}/vendor/glm/glm/**.inl"
+            "%{prj.name}/vendor/glm/glm/**.inl",
+            "%{prj.name}/vendor/stb/**.h",
+            "%{prj.name}/vendor/stb/**.cpp"
         }
 
         includedirs {
@@ -64,7 +67,8 @@ group ""
             "%{includedir.glfw}",
             "%{includedir.glad}",
             "%{includedir.imgui}",
-            "%{includedir.glm}"
+            "%{includedir.glm}",
+            "%{includedir.stb}"
         }
 
         links {
@@ -113,7 +117,9 @@ group ""
 
         files {
             "%{prj.name}/headers/**.hpp",
-            "%{prj.name}/sources/**.cpp"
+            "%{prj.name}/sources/**.cpp",
+            "Vortex/vendor/stb/**.h",
+            "Vortex/vendor/stb/**.cpp"
         }
 
         includedirs {
@@ -122,7 +128,9 @@ group ""
             "%{includedir.glfw}",
             "%{includedir.glad}",
             "%{includedir.imgui}",
-            "%{includedir.glm}"
+            "%{includedir.glm}",
+            "%{includedir.stb}"
+
         }
 
         links {

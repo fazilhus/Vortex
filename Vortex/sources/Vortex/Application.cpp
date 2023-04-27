@@ -10,7 +10,7 @@ namespace Vortex {
 		VT_CORE_ASSERT(!s_instance, "Application already exists");
 		s_instance = this;
 
-		m_window.reset(WinWindow::Create());
+		m_window.reset(WinWindow::Create({ "Vortex Engine", 1600, 900 }));
 		m_running = true;
 		m_window->SetVSync(true);
 		m_window->SetEventCallback(VT_BIND_EVENT_FN(Application::OnEvent));
