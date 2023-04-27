@@ -13,7 +13,7 @@ namespace Vortex {
 
 	public:
 		LayerStack();
-		~LayerStack();
+		~LayerStack() = default;
 
 		void PushLayer(Ref<Layer> l);
 		void PushOverlay(Ref<Layer> o);

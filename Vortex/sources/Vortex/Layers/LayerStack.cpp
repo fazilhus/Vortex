@@ -8,9 +8,6 @@ namespace Vortex {
 	LayerStack::LayerStack() 
 		: m_layers(std::vector<Ref<Layer>>()), m_layerInsertInd(0) {}
 
-	LayerStack::~LayerStack() {
-	}
-
 	void LayerStack::PushLayer(Ref<Layer> l) {
 		m_layers.emplace(m_layers.begin() + m_layerInsertInd, l);
 		l->OnAttach();
