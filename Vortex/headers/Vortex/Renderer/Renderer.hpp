@@ -16,6 +16,8 @@ namespace Vortex {
 		static SceneData* s_sceneData;
 
 	public:
+		static void Init();
+
 		static void BeginScene(OrthoCamera& cam);
 		static void EndScene();
 

@@ -1,6 +1,7 @@
 #include "vtpch.hpp"
 #include "Vortex/Application.hpp"
 #include "Vortex/Core/Timestep.hpp"
+#include "Vortex/Renderer/Renderer.hpp"
 
 namespace Vortex {
 
@@ -14,6 +15,8 @@ namespace Vortex {
 		m_running = true;
 		m_window->SetVSync(true);
 		m_window->SetEventCallback(VT_BIND_EVENT_FN(Application::OnEvent));
+
+		Renderer::Init();
 
 		m_imguiLayer = std::make_shared<ImGuiLayer>();
 		PushOverlay(m_imguiLayer);

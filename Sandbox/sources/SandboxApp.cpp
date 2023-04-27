@@ -81,7 +81,7 @@ public:
 				}
 			)";
 
-			m_shader1.reset(Vortex::Shader::Create(vertexSrc.c_str(), fragmentSrc.c_str()));
+			m_shader1 = Vortex::Shader::Create(vertexSrc.c_str(), fragmentSrc.c_str());
 		}
 
 		{
@@ -134,7 +134,7 @@ public:
 				}
 			)";
 
-			m_shader2.reset(Vortex::Shader::Create(vertexSrc.c_str(), fragmentSrc.c_str()));
+			m_shader2 = Vortex::Shader::Create(vertexSrc.c_str(), fragmentSrc.c_str());
 
 		}
 
@@ -163,9 +163,9 @@ public:
 				}
 			)";
 
-			m_texShader.reset(Vortex::Shader::Create(vertexSrc.c_str(), fragmentSrc.c_str()));
+			m_texShader = Vortex::Shader::Create(vertexSrc.c_str(), fragmentSrc.c_str());
 
-			m_tex = Vortex::Texture2D::Create("res/textures/img3.png");
+			m_tex = Vortex::Texture2D::Create("res/textures/img2.png");
 
 			std::dynamic_pointer_cast<Vortex::OpenGLShader>(m_texShader)->Bind();
 			std::dynamic_pointer_cast<Vortex::OpenGLShader>(m_texShader)->UploadUniformInt("u_texture", 0);

@@ -8,6 +8,10 @@ namespace Vortex {
 
 	Renderer::SceneData* Renderer::s_sceneData = new Renderer::SceneData();
 
+	void Renderer::Init() {
+		Render::Init();
+	}
+
 	void Renderer::BeginScene(OrthoCamera& cam) {
 		s_sceneData->viewproj = cam.GetViewProjMat();
 	}
