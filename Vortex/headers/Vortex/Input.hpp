@@ -5,6 +5,13 @@
 namespace Vortex {
 
 	class Input {
+	protected:
+		Input() = default;
+
+	public:
+		Input(const Input& other) = delete;
+		Input& operator=(const Input& other) = delete;
+
 	private:
 		static Input* s_instance;
 

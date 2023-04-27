@@ -30,8 +30,8 @@ namespace Vortex {
 	OpenGLIndexBuffer::OpenGLIndexBuffer(uint* indices, uint count) 
 		: m_count(count) {
 		glCreateBuffers(1, &m_rendererID);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_rendererID);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint), indices, GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, m_rendererID);
+		glBufferData(GL_ARRAY_BUFFER, count * sizeof(uint), indices, GL_STATIC_DRAW);
 	}
 
 	OpenGLIndexBuffer::~OpenGLIndexBuffer() {
@@ -68,7 +68,8 @@ namespace Vortex {
 		}
 	}
 
-	OpenGLVertexArray::OpenGLVertexArray() {
+	OpenGLVertexArray::OpenGLVertexArray() 
+		: m_vertexBufferInd(0) {
 		glCreateVertexArrays(1, &m_rendererID);
 	}
 
@@ -90,17 +91,16 @@ namespace Vortex {
 		glBindVertexArray(m_rendererID);
 		vb->Bind();
 
-		uint ind = 0;
 		const auto& layout = vb->GetLayout();
 		for (const auto item : layout) {
-			glEnableVertexAttribArray(ind);
-			glVertexAttribPointer(ind, 
+			glEnableVertexAttribArray(m_vertexBufferInd);
+			glVertexAttribPointer(m_vertexBufferInd, 
 				item.GetComponentCount(),
 				ShaderDataTypeToOpenGLType(item.type),
 				item.normalized ? GL_TRUE : GL_FALSE,
 				layout.GetStride(),
-				(const void*)item.offset);
-			ind++;
+				(const void*)(intptr_t)item.offset);
+			m_vertexBufferInd++;
 		}
 		m_vbs.push_back(vb);
 	}

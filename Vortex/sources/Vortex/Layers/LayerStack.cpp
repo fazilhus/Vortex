@@ -26,7 +26,7 @@ namespace Vortex {
 
 	void LayerStack::PopLayer(Layer* l) {
 		auto it = std::find(m_layers.begin() + m_layerInsertInd, end(), l);
-		if (it != end()) {
+		if (it != begin() + m_layerInsertInd) {
 			l->OnDetach();
 			m_layers.erase(it);
 			m_layerInsertInd--;
