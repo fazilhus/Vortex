@@ -1,6 +1,8 @@
 #pragma once
 #include "vtpch.hpp"
 
+typedef uint GLenum;
+
 namespace Vortex {
 
 	class OpenGLShader : public Shader {
@@ -9,6 +11,7 @@ namespace Vortex {
 		std::unordered_map<std::string, uint> m_uniformLoc;
 
 	public:
+		OpenGLShader(const std::string& filepath);
 		OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc);
 		virtual ~OpenGLShader();
 
@@ -24,6 +27,11 @@ namespace Vortex {
 
 		void UploadUniformMat3(const std::string& name, const glm::mat3& matrix);
 		void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
+
+	private:
+		std::string ReadShaderFile(const std::string& filepath);
+		void PreProcess(const std::string& src, std::unordered_map<GLenum, std::string>&);
+		void CompileShader(const std::unordered_map<GLenum, std::string>& shaderSrcs);
 	};
 
-}
+};

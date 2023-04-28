@@ -33,59 +33,6 @@ public:
 
 	virtual void OnAttach() override {
 		{
-			m_vao1.reset(Vortex::VertexArray::Create());
-
-			float vertices[4 * 5] = {
-				-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-				 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
-				 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
-				-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
-			};
-
-			std::shared_ptr<Vortex::VertexBuffer> vbo;
-			vbo.reset(Vortex::VertexBuffer::Create(vertices, sizeof(vertices)));
-			Vortex::BufferLayout layout{ 
-				{"a_position", Vortex::ShaderDataType::Float3}, 
-				{"a_texPos", Vortex::ShaderDataType::Float2}
-			};
-			vbo->SetLayout(layout);
-			m_vao1->AddVertexBuffer(vbo);
-
-			uint indices[6] = { 0, 1, 2, 2, 3, 0 };
-			std::shared_ptr<Vortex::IndexBuffer> ibo;
-			ibo.reset(Vortex::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint)));
-			m_vao1->AddIndexBuffer(ibo);
-
-			std::string vertexSrc = R"(
-				#version 460 core
-				layout(location = 0) in vec3 a_position;
-				layout(location = 1) in vec4 a_color;
-				uniform mat4 u_viewproj;
-				uniform mat4 u_transform;
-				out vec3 v_position;
-				out vec4 v_color;
-				void main() {
-					v_position = a_position;
-					v_color = a_color;
-					gl_Position = u_viewproj * u_transform * vec4(a_position, 1.0);	
-				}
-			)";
-
-			std::string fragmentSrc = R"(
-				#version 460 core
-				in vec3 v_position;
-				in vec4 v_color;
-				layout(location = 0) out vec4 color;
-				void main() {
-					color = vec4(v_position * 0.5 + 0.5, 1.0);
-					color = v_color;
-				}
-			)";
-
-			m_shader1 = Vortex::Shader::Create(vertexSrc.c_str(), fragmentSrc.c_str());
-		}
-
-		{
 			m_vao2.reset(Vortex::VertexArray::Create());
 
 			float vertices[4 * 7] = {
@@ -109,62 +56,35 @@ public:
 			ibo.reset(Vortex::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint)));
 			m_vao2->AddIndexBuffer(ibo);
 
-			std::string vertexSrc = R"(
-				#version 460 core
-				layout(location = 0) in vec3 a_position;
-				layout(location = 1) in vec4 a_color;
-				uniform mat4 u_viewproj;
-				uniform mat4 u_transform;
-				out vec3 v_position;
-				out vec4 v_color;
-				void main() {
-					v_position = a_position;
-					v_color = a_color;
-					gl_Position = u_viewproj * u_transform * vec4(a_position, 1.0);	
-				}
-			)";
-
-			std::string fragmentSrc = R"(
-				#version 460 core
-				in vec3 v_position;
-				in vec4 v_color;
-				layout(location = 0) out vec4 color;
-				void main() {
-					color = vec4(v_position * 0.5 + 0.5, 1.0);
-					color = v_color;
-				}
-			)";
-
-			m_shader2 = Vortex::Shader::Create(vertexSrc.c_str(), fragmentSrc.c_str());
+			m_shader2 = Vortex::Shader::Create("res/shaders/boxShader.glsl");
 
 		}
 
 		{
+			m_vao1.reset(Vortex::VertexArray::Create());
 
-			std::string vertexSrc = R"(
-				#version 460 core
-				layout(location = 0) in vec3 a_position;
-				layout(location = 1) in vec2 a_texPos;
-				uniform mat4 u_viewproj;
-				uniform mat4 u_transform;
-				out vec2 v_texPos;
-				void main() {
-					v_texPos = a_texPos;
-					gl_Position = u_viewproj * u_transform * vec4(a_position, 1.0);	
-				}
-			)";
+			float vertices[4 * 5] = {
+				-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+				 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+				 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+				-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
+			};
 
-			std::string fragmentSrc = R"(
-				#version 460 core
-				in vec2 v_texPos;
-				layout(location = 0) out vec4 color;
-				uniform sampler2D u_texture;
-				void main() {
-					color = texture(u_texture, v_texPos);
-				}
-			)";
+			std::shared_ptr<Vortex::VertexBuffer> vbo;
+			vbo.reset(Vortex::VertexBuffer::Create(vertices, sizeof(vertices)));
+			Vortex::BufferLayout layout{
+				{"a_position", Vortex::ShaderDataType::Float3},
+				{"a_texPos", Vortex::ShaderDataType::Float2}
+			};
+			vbo->SetLayout(layout);
+			m_vao1->AddVertexBuffer(vbo);
 
-			m_texShader = Vortex::Shader::Create(vertexSrc.c_str(), fragmentSrc.c_str());
+			uint indices[6] = { 0, 1, 2, 2, 3, 0 };
+			std::shared_ptr<Vortex::IndexBuffer> ibo;
+			ibo.reset(Vortex::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint)));
+			m_vao1->AddIndexBuffer(ibo);
+
+			m_texShader = Vortex::Shader::Create("res/shaders/textureShader.glsl");
 
 			m_tex = Vortex::Texture2D::Create("res/textures/img3.png");
 
