@@ -1,6 +1,7 @@
 #include "vtpch.hpp"
 #include "Vortex/Application.hpp"
 #include "Vortex/Core/Timestep.hpp"
+#include "Vortex/Renderer/Renderer.hpp"
 
 namespace Vortex {
 
@@ -10,12 +11,14 @@ namespace Vortex {
 		VT_CORE_ASSERT(!s_instance, "Application already exists");
 		s_instance = this;
 
-		m_window.reset(WinWindow::Create());
+		m_window.reset(WinWindow::Create({ "Vortex Engine", 1600, 900 }));
 		m_running = true;
 		m_window->SetVSync(true);
 		m_window->SetEventCallback(VT_BIND_EVENT_FN(Application::OnEvent));
 
-		m_imguiLayer = new ImGuiLayer();
+		Renderer::Init({true});
+
+		m_imguiLayer = std::make_shared<ImGuiLayer>();
 		PushOverlay(m_imguiLayer);
 	}
 
@@ -50,19 +53,19 @@ namespace Vortex {
 		}
 	}
 
-	void Application::PushLayer(Layer* l) {
+	void Application::PushLayer(Ref<Layer> l) {
 		m_layerStack.PushLayer(l);
 	}
 
-	void Application::PopLayer(Layer* l) {
+	void Application::PopLayer(Ref<Layer> l) {
 		m_layerStack.PopLayer(l);
 	}
 
-	void Application::PushOverlay(Layer* o) {
+	void Application::PushOverlay(Ref<Layer> o) {
 		m_layerStack.PushOverlay(o);
 	}
 
-	void Application::PopOverlay(Layer* o) {
+	void Application::PopOverlay(Ref<Layer> o) {
 		m_layerStack.PopOverlay(o);
 	}
 

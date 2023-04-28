@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #ifdef VT_PLATFORM_WIN
 	#ifdef VT_ENABLE_ASSERTS
 		#define VT_CORE_ASSERT(x, ...) { if(!(x)) { VT_CORE_ERROR("Assertion failed {0}", __VA_ARGS__); __debugbreak(); } }
@@ -18,3 +20,13 @@
 #define VT_BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)
 
 using uint = unsigned int;
+
+namespace Vortex {
+
+	template <typename T>
+	using Scope = std::unique_ptr<T>;
+
+	template <typename T>
+	using Ref = std::shared_ptr<T>;
+
+}

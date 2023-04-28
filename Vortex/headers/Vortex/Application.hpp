@@ -13,9 +13,9 @@ namespace Vortex {
 
 	class Application {
 	private:
-		std::unique_ptr<Window> m_window;
+		Scope<Window> m_window;
 		bool m_running = true;
-		ImGuiLayer* m_imguiLayer;
+		Ref<ImGuiLayer> m_imguiLayer;
 		LayerStack m_layerStack;
 
 		static Application* s_instance;
@@ -30,10 +30,10 @@ namespace Vortex {
 
 		void OnEvent(Event& e);
 
-		void PushLayer(Layer* l);
-		void PopLayer(Layer* l);
-		void PushOverlay(Layer* o);
-		void PopOverlay(Layer* o);
+		void PushLayer(Ref<Layer> l);
+		void PopLayer(Ref<Layer> l);
+		void PushOverlay(Ref<Layer> o);
+		void PopOverlay(Ref<Layer> o);
 
 		inline Window& GetWindow() const { return *m_window; }
 		inline static Application& Get() { return *s_instance; }

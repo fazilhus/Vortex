@@ -1,5 +1,6 @@
 #pragma once
-#include "vtpch.hpp"
+#include "Vortex/Renderer/Renderer.hpp"
+#include "Vortex/Renderer/RendererAPI.hpp"
 
 namespace Vortex {
 
@@ -8,6 +9,10 @@ namespace Vortex {
 		static RendererAPI* s_rendererAPI;
 
 	public:
+		inline static void Init(const RendererConfig& cfg) {
+			s_rendererAPI->Init(cfg);
+		}
+
 		inline static void SetClearColor(const glm::vec4& color) {
 			s_rendererAPI->SetClearColor(color);
 		}
@@ -16,7 +21,7 @@ namespace Vortex {
 			s_rendererAPI->Clear();
 		}
 
-		inline static void DrawIndexed(const std::shared_ptr<VertexArray>& va) {
+		inline static void DrawIndexed(const Ref<VertexArray>& va) {
 			s_rendererAPI->DrawIndexed(va);
 		}
 	};
