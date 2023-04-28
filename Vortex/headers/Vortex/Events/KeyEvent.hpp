@@ -2,8 +2,6 @@
 
 #include "vtpch.hpp"
 
-#include "Event.hpp"
-
 namespace Vortex {
 
 	// Abstract event for any key events

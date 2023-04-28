@@ -1,8 +1,5 @@
 #pragma once
-
 #include "vtpch.hpp"
-
-#include "Vortex/Layers/Layer.hpp"
 
 namespace Vortex {
 

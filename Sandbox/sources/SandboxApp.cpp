@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -165,7 +166,7 @@ public:
 
 			m_texShader = Vortex::Shader::Create(vertexSrc.c_str(), fragmentSrc.c_str());
 
-			m_tex = Vortex::Texture2D::Create("res/textures/img2.png");
+			m_tex = Vortex::Texture2D::Create("res/textures/img3.png");
 
 			std::dynamic_pointer_cast<Vortex::OpenGLShader>(m_texShader)->Bind();
 			std::dynamic_pointer_cast<Vortex::OpenGLShader>(m_texShader)->UploadUniformInt("u_texture", 0);

@@ -1,8 +1,5 @@
 #pragma once
-
 #include "vtpch.hpp"
-
-#include "Event.hpp"
 
 namespace Vortex {
 

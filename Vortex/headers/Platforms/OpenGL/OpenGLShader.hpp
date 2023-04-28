@@ -1,5 +1,5 @@
 #pragma once
-#include "Vortex/Renderer/Shader.hpp"
+#include "vtpch.hpp"
 
 namespace Vortex {
 

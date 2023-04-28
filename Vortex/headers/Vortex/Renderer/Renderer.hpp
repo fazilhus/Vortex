@@ -1,12 +1,14 @@
 #pragma once
-#include "vtpch.hpp"
-
-#include "Vortex/Renderer/Shader.hpp"
+#include "Vortex/Renderer/RendererAPI.hpp"
 #include "Vortex/Renderer/Cameras/OrthoCamera.hpp"
 
 #include <glm/glm.hpp>
 
 namespace Vortex {
+
+	struct RendererConfig {
+		bool enableBlending;
+	};
 
 	class Renderer {
 	private:
@@ -16,13 +18,12 @@ namespace Vortex {
 		static SceneData* s_sceneData;
 
 	public:
-		static void Init();
+		static void Init(const RendererConfig& cfg);
 
 		static void BeginScene(OrthoCamera& cam);
 		static void EndScene();
 
-		static void Submit(const std::shared_ptr<Shader>& shader, 
-			const std::shared_ptr<VertexArray>& va, const glm::mat4& transform = glm::mat4(1.0f));
+		static void Submit(const Ref<Shader>& shader, const Ref<VertexArray>& va, const glm::mat4& transform = glm::mat4(1.0f));
 
 		inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
 	};

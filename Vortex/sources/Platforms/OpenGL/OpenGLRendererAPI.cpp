@@ -4,9 +4,14 @@
 #include <glad/glad.h>
 
 namespace Vortex {
-	void OpenGLRendererAPI::Init() {
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	void OpenGLRendererAPI::Init(const RendererConfig& cfg) {
+		if (cfg.enableBlending) {
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		}
+		else {
+			glDisable(GL_BLEND);
+		}
 	}
 	void OpenGLRendererAPI::SetClearColor(const glm::vec4& color) {
 		glClearColor(color.r, color.g, color.b, color.a);

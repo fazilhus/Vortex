@@ -17,18 +17,23 @@ namespace Vortex {
 		m_height = height;
 
 		GLenum internalFormat = 0, dataFormat = 0;
-		if (channels == 4)
-		{
-			internalFormat = GL_RGBA8;
-			dataFormat = GL_RGBA;
-		}
-		else if (channels == 3)
-		{
+		switch (channels) {
+		case 3: {
 			internalFormat = GL_RGB8;
 			dataFormat = GL_RGB;
+			VT_CORE_TRACE("Texture format is rgb");
+			break;
+		}
+		case 4: {
+			internalFormat = GL_RGBA8;
+			dataFormat = GL_RGBA;
+			VT_CORE_TRACE("Texture format is rgba");
+			break;
+		}
+		default:
+			VT_CORE_ASSERT(internalFormat & dataFormat, "Format is not supported");
 		}
 
-		VT_CORE_ASSERT(internalFormat & dataFormat, "Format is not supported");
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_rendererID);
 		glTextureStorage2D(m_rendererID, 1, internalFormat, m_width, m_height);

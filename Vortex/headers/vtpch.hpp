@@ -22,17 +22,20 @@
 // Vortex
 #include "Vortex/Core.hpp"
 #include "Vortex/Log.hpp"
-#include "Vortex/Layers./Layer.hpp"
+#include "Vortex/Layers/Layer.hpp"
 #include "Vortex/Layers/LayerStack.hpp"
 
 #include "Vortex/Window.hpp"
 #include "Vortex/Input.hpp"
-#include "Vortex/Renderer/GraphicsContext.hpp"
 #include "Vortex/Codes.hpp"
+#include "Vortex/Events/Event.hpp"
 
+#include "Vortex/Renderer/GraphicsContext.hpp"
+#include "Vortex/Renderer/Shader.hpp"
 #include "Vortex/Renderer/Buffer.hpp"
-#include "Vortex/Renderer/RendererAPI.hpp"
 #include "Vortex/Renderer/Render.hpp"
+#include "Vortex/Renderer/Renderer.hpp"
+#include "Vortex/Renderer/RendererAPI.hpp"
 #include "Vortex/Renderer/Texture.hpp"
 
 #include "Vortex/Core/Platform.hpp"
