@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <utility>
 #include <functional>
+#include <array>
 #include <vector>
 #include <set>
 #include <unordered_set>

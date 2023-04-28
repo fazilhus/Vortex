@@ -11,12 +11,11 @@
 
 class SimpleLayer : public Vortex::Layer {
 private:
-	Vortex::Ref<Vortex::VertexArray> m_vao1;
-	Vortex::Ref<Vortex::Shader> m_shader1;
-	Vortex::Ref<Vortex::VertexArray> m_vao2;
-	Vortex::Ref<Vortex::Shader> m_shader2;
+	Vortex::ShaderLib m_shaderLib;
 
-	Vortex::Ref<Vortex::Shader> m_texShader;
+	Vortex::Ref<Vortex::VertexArray> m_vao1;
+	Vortex::Ref<Vortex::VertexArray> m_vao2;
+
 	Vortex::Ref<Vortex::Texture2D> m_tex;
 
 	Vortex::OrthoCamera m_camera;
@@ -56,7 +55,7 @@ public:
 			ibo.reset(Vortex::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint)));
 			m_vao2->AddIndexBuffer(ibo);
 
-			m_shader2 = Vortex::Shader::Create("res/shaders/boxShader.glsl");
+			auto shader = m_shaderLib.Load("res/shaders/boxShader.glsl");
 
 		}
 
@@ -84,12 +83,12 @@ public:
 			ibo.reset(Vortex::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint)));
 			m_vao1->AddIndexBuffer(ibo);
 
-			m_texShader = Vortex::Shader::Create("res/shaders/textureShader.glsl");
+			auto texShader = m_shaderLib.Load("res/shaders/textureShader.glsl");
 
 			m_tex = Vortex::Texture2D::Create("res/textures/img3.png");
 
-			std::dynamic_pointer_cast<Vortex::OpenGLShader>(m_texShader)->Bind();
-			std::dynamic_pointer_cast<Vortex::OpenGLShader>(m_texShader)->UploadUniformInt("u_texture", 0);
+			std::dynamic_pointer_cast<Vortex::OpenGLShader>(texShader)->Bind();
+			std::dynamic_pointer_cast<Vortex::OpenGLShader>(texShader)->UploadUniformInt("u_texture", 0);
 		}
 	}
 
@@ -134,16 +133,19 @@ public:
 
 		glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.15f));
 
+		auto shader = m_shaderLib.Get("boxShader");
+		auto textureShader = m_shaderLib.Get("textureShader");
+
 		for (int y = -4; y < 5; ++y) {
 			for (int x = -4; x < 5; ++x) {
 				glm::vec3 pos(x * 0.16f, y * 0.16f, 0.0f);
 				glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
-				Vortex::Renderer::Submit(m_shader2, m_vao2, transform);
+				Vortex::Renderer::Submit(shader, m_vao2, transform);
 			}
 		}
 
 		m_tex->Bind(0);
-		Vortex::Renderer::Submit(m_texShader, m_vao1);
+		Vortex::Renderer::Submit(textureShader, m_vao1);
 
 		Vortex::Renderer::EndScene();
 	}

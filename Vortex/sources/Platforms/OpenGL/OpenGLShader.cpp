@@ -28,10 +28,16 @@ namespace Vortex {
 		PreProcess(src, shaderSrcs);
 		VT_CORE_TRACE("going to compile shaders");
 		CompileShader(shaderSrcs);
+
+		auto lastSlash = filepath.find_last_of("/\\");
+		lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
+		auto lastDot = filepath.rfind('.');
+		auto count = lastDot == std::string::npos ? filepath.size() - lastSlash : lastDot - lastSlash;
+		m_name = filepath.substr(lastSlash, count);
 	}
 
-	OpenGLShader::OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc)
-		: m_rendererID(0) {
+	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
+		: m_rendererID(0), m_name(name) {
 		VT_CORE_TRACE("Shader constructor from string");
 		std::unordered_map<GLenum, std::string> shaderSrcs;
 		shaderSrcs[GL_VERTEX_SHADER] = vertexSrc;
@@ -102,7 +108,7 @@ namespace Vortex {
 
 	std::string OpenGLShader::ReadShaderFile(const std::string& filepath) {
 		std::string res{};
-		std::ifstream in(filepath, std::ios::in, std::ios::binary);
+		std::ifstream in(filepath, std::ios::in | std::ios::binary);
 		if (!in) {
 			VT_CORE_ERROR("Could not open file: '{0}'", filepath);
 			return res;
@@ -140,8 +146,11 @@ namespace Vortex {
 
 	void OpenGLShader::CompileShader(const std::unordered_map<GLenum, std::string>& shaderSrcs) {
 		GLuint program = glCreateProgram();
-		std::vector<GLenum> shaderIDs;
-		shaderIDs.reserve(shaderSrcs.size());
+
+		VT_CORE_ASSERT(shaderSrcs.size() <= 2, "Only two types of shaders are supported for now");
+
+		std::array<GLenum, 2> shaderIDs;
+		int shaderIdIndex = 0;
 
 		VT_CORE_TRACE("started compiling shaders");
 		for (const auto& item : shaderSrcs) {
@@ -171,7 +180,7 @@ namespace Vortex {
 			}
 
 			glAttachShader(program, shader);
-			shaderIDs.push_back(shader);
+			shaderIDs[shaderIdIndex++] = shader;
 		}
 
 		m_rendererID = program;
