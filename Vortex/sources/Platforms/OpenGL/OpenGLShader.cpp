@@ -140,7 +140,8 @@ namespace Vortex {
 
 	void OpenGLShader::CompileShader(const std::unordered_map<GLenum, std::string>& shaderSrcs) {
 		GLuint program = glCreateProgram();
-		std::vector<GLenum> shaderIDs(shaderSrcs.size());
+		std::vector<GLenum> shaderIDs;
+		shaderIDs.reserve(shaderSrcs.size());
 
 		VT_CORE_TRACE("started compiling shaders");
 		for (const auto& item : shaderSrcs) {
