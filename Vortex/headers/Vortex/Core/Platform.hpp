@@ -1,5 +1,4 @@
 #pragma once
-#include "vtpch.hpp"
 #include "Vortex/Core/PlatformAPI.hpp"
 
 namespace Vortex {

@@ -1,5 +1,6 @@
 #pragma once
 #include "vtpch.hpp"
+#include <glm/glm.hpp>
 
 namespace Vortex {
 

@@ -39,6 +39,7 @@ namespace Vortex {
 	class OpenGLVertexArray : public VertexArray {
 	private:
 		uint m_rendererID;
+		uint m_vertexBufferInd;
 		std::vector<std::shared_ptr<VertexBuffer>> m_vbs;
 		std::shared_ptr<IndexBuffer> m_ib;
 

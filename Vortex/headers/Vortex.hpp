@@ -12,6 +12,7 @@
 //----Renderer-------------------------
 #include "Vortex/Renderer/Buffer.hpp"
 #include "Vortex/Renderer/Shader.hpp"
+#include "Vortex/Renderer/Texture.hpp"
 #include "Vortex/Renderer/Render.hpp"
 #include "Vortex/Renderer/Renderer.hpp"
 //-------------------------------------

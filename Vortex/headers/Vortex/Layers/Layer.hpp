@@ -1,9 +1,7 @@
 #pragma once
-
 #include "vtpch.hpp"
-
-#include "Vortex/Events/Event.hpp"
 #include "Vortex/Core/Timestep.hpp"
+#include "Vortex/Events/Event.hpp"
 
 namespace Vortex {
 
