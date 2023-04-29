@@ -43,7 +43,8 @@ namespace Vortex {
 
 	void Application::OnEvent(Event& e) {
 		EventDispatcher dispatcher(e);
-		dispatcher.Dispatch<WindowCloseEvent>(VT_BIND_EVENT_FN(Application::OnAppClose));
+		dispatcher.Dispatch<WindowCloseEvent>(VT_BIND_EVENT_FN(Application::OnWindowClose));
+		dispatcher.Dispatch<WindowResizeEvent>(VT_BIND_EVENT_FN(Application::OnWindowResize));
 
 		for (auto it = m_layerStack.end(); it != m_layerStack.begin();) {
 			(*--it)->OnEvent(e);
@@ -69,9 +70,22 @@ namespace Vortex {
 		m_layerStack.PopOverlay(o);
 	}
 
-	bool Application::OnAppClose(WindowCloseEvent& e) {
+	bool Application::OnWindowClose(WindowCloseEvent& e) {
+		VT_CORE_TRACE("Window close event");
 		m_running = false;
 		return true;
 	}
 
+	bool Application::OnWindowResize(WindowResizeEvent& e) {
+		VT_CORE_TRACE("Window resize event to {0} by {1}", e.GetWidth(), e.GetHeight());
+		if (e.GetWidth() == 0 || e.GetHeight() == 0)
+		{
+			m_isMinimized = true;
+			return false;
+		}
+
+		m_isMinimized = false;
+		Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
+		return false;
+	}
 }

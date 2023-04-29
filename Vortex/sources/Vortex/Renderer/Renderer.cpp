@@ -12,6 +12,10 @@ namespace Vortex {
 		Render::Init(cfg);
 	}
 
+	void Renderer::OnWindowResize(uint width, uint height) {
+		Render::SetViewport(0, 0, width, height);
+	}
+
 	void Renderer::BeginScene(OrthoCamera& cam) {
 		s_sceneData->viewproj = cam.GetViewProjMat();
 	}

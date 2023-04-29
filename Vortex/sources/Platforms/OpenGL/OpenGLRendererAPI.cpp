@@ -13,6 +13,11 @@ namespace Vortex {
 			glDisable(GL_BLEND);
 		}
 	}
+
+	void OpenGLRendererAPI::SetViewport(uint x, uint y, uint width, uint height) {
+		glViewport(x, y, width, height);
+	}
+
 	void OpenGLRendererAPI::SetClearColor(const glm::vec4& color) {
 		glClearColor(color.r, color.g, color.b, color.a);
 	}

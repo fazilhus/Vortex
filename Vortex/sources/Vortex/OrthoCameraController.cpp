@@ -16,10 +16,10 @@ namespace Vortex {
 			m_cameraPos.x -= m_cameraPosSpeed * ts;
 		}
 		if (Vortex::Input::IsKeyPressed(VT_KEY_UP)) {
-			m_cameraPos.y -= m_cameraPosSpeed * ts;
+			m_cameraPos.y += m_cameraPosSpeed * ts;
 		}
 		else if (Vortex::Input::IsKeyPressed(VT_KEY_DOWN)) {
-			m_cameraPos.y += m_cameraPosSpeed * ts;
+			m_cameraPos.y -= m_cameraPosSpeed * ts;
 		}
 
 		m_camera.SetPos(m_cameraPos);

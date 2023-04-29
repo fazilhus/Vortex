@@ -28,6 +28,8 @@ namespace Vortex {
 
 		OrthoCamera& GetCamera() { return m_camera; }
 		const OrthoCamera& GetCamera() const { return m_camera; }
+		float GetZoomLevel() const { return m_zoomLevel; }
+		void SetZoomLevel(float zoomLevel) { m_zoomLevel = zoomLevel; }
 
 	private:
 		bool OnMouseScrolled(MouseScrolledEvent& e);
