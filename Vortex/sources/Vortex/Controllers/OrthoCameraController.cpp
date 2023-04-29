@@ -10,16 +10,20 @@ namespace Vortex {
 
 	void OrthoCameraController::OnUpdate(Timestep ts) {
 		if (Vortex::Input::IsKeyPressed(VT_KEY_LEFT)) {
-			m_cameraPos.x += m_cameraPosSpeed * ts;
+			m_cameraPos.x -= cos(glm::radians(m_cameraRot)) * m_cameraPosSpeed * ts;
+			m_cameraPos.y -= sin(glm::radians(m_cameraRot)) * m_cameraPosSpeed * ts;
 		}
 		else if (Vortex::Input::IsKeyPressed(VT_KEY_RIGHT)) {
-			m_cameraPos.x -= m_cameraPosSpeed * ts;
+			m_cameraPos.x += cos(glm::radians(m_cameraRot)) * m_cameraPosSpeed * ts;
+			m_cameraPos.y += sin(glm::radians(m_cameraRot)) * m_cameraPosSpeed * ts;
 		}
 		if (Vortex::Input::IsKeyPressed(VT_KEY_UP)) {
-			m_cameraPos.y += m_cameraPosSpeed * ts;
+			m_cameraPos.x += -sin(glm::radians(m_cameraRot)) * m_cameraPosSpeed * ts;
+			m_cameraPos.y += cos(glm::radians(m_cameraRot)) * m_cameraPosSpeed * ts;
 		}
 		else if (Vortex::Input::IsKeyPressed(VT_KEY_DOWN)) {
-			m_cameraPos.y -= m_cameraPosSpeed * ts;
+			m_cameraPos.x -= -sin(glm::radians(m_cameraRot)) * m_cameraPosSpeed * ts;
+			m_cameraPos.y -= cos(glm::radians(m_cameraRot)) * m_cameraPosSpeed * ts;
 		}
 
 		m_camera.SetPos(m_cameraPos);
@@ -30,6 +34,13 @@ namespace Vortex {
 			}
 			else if (Vortex::Input::IsKeyPressed(VT_KEY_E)) {
 				m_cameraRot += m_cameraRotSpeed * ts;
+			}
+
+			if (m_cameraRot > 180.0f) {
+				m_cameraRot -= 360.0f;
+			}
+			else if (m_cameraRot < - 180.0f) {
+				m_cameraRot += 360.0f;
 			}
 
 			m_camera.SetRot(m_cameraRot);
