@@ -23,6 +23,8 @@ namespace Vortex {
 
 		const spdlog::sinks_init_list coreSinkList{coreConsoleSink, coreFileSink};
 		s_coreLogger = std::make_shared<spdlog::logger>("CORE", coreSinkList.begin(), coreSinkList.end());
+		s_coreLogger->set_level(spdlog::level::trace);
+		s_coreLogger->set_pattern(pattern);
 
 		const auto appConsoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
 		appConsoleSink->set_level(spdlog::level::trace);
@@ -34,5 +36,7 @@ namespace Vortex {
 
 		const spdlog::sinks_init_list appSinkList{ appConsoleSink, appFileSink };
 		s_clientLogger = std::make_shared<spdlog::logger>("APP", appSinkList.begin(), appSinkList.end());
+		s_clientLogger->set_level(spdlog::level::trace);
+		s_clientLogger->set_pattern(pattern);
 	 }
 }

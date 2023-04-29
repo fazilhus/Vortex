@@ -6,8 +6,8 @@ namespace Vortex {
 
 	class Log {
 	private:
-		static Ref<spdlog::logger> s_clientLogger;
 		static Ref<spdlog::logger> s_coreLogger;
+		static Ref<spdlog::logger> s_clientLogger;
 
 	public:
 		static void Init();
