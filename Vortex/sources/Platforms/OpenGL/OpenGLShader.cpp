@@ -205,6 +205,7 @@ namespace Vortex {
 
 		for (auto& id : shaderIDs) {
 			glDetachShader(program, id);
+			glDeleteShader(id);
 		}
 	}
 
