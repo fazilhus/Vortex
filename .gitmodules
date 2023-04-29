@@ -2,12 +2,16 @@
 [submodule "Vortex/vendor/glfw"]
 	path = Vortex/vendor/glfw
 	url = https://github.com/fazilhus/glfw
+	branch = master
 [submodule "Vortex/vendor/spdlog"]
 	path = Vortex/vendor/spdlog
 	url = https://github.com/fazilhus/spdlog
+	branch = v1.x
 [submodule "Vortex/vendor/imgui"]
 	path = Vortex/vendor/imgui
 	url = https://github.com/fazilhus/imgui
+	branch = docking
 [submodule "Vortex/vendor/glm"]
 	path = Vortex/vendor/glm
 	url = https://github.com/fazilhus/glm
+	branch = master
