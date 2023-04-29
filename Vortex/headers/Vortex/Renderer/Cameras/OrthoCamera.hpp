@@ -16,6 +16,8 @@ namespace Vortex {
 	public:
 		OrthoCamera(float left, float right, float bottom, float top);
 
+		void SetProjection(float left, float right, float bottom, float top);
+
 		inline const glm::vec3& GetPos() const { return m_pos; }
 		void SetPos(const glm::vec3& pos) { 
 			m_pos = pos;

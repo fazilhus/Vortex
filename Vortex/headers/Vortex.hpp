@@ -19,7 +19,7 @@
 
 
 //----Camera---------------------------
-#include "Vortex/Renderer/Cameras/OrthoCamera.hpp"
+#include "Vortex/OrthoCameraController.hpp"
 //-------------------------------------
 
 
