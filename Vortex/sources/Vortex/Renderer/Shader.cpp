@@ -10,7 +10,7 @@ namespace Vortex {
 				VT_CORE_ASSERT(false, "[Shader] RendererAPI::API::NONE ");
 				return nullptr;
 			case RendererAPI::API::OPENGL:
-				return std::make_shared<OpenGLShader>(filepath);
+				return CreateRef<OpenGLShader>(filepath);
 			default:
 				VT_CORE_ASSERT(false, "[Shader] Unknown renderer api");
 				return nullptr;
@@ -23,7 +23,7 @@ namespace Vortex {
 				VT_CORE_ASSERT(false, "[Shader] RendererAPI::API::NONE ");
 				return nullptr;
 			case RendererAPI::API::OPENGL:
-				return std::make_shared<OpenGLShader>(name, vertexSrc, fragmentSrc);
+				return CreateRef<OpenGLShader>(name, vertexSrc, fragmentSrc);
 			default:
 				VT_CORE_ASSERT(false, "[Shader] Unknown renderer api");
 				return nullptr;

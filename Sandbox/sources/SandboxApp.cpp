@@ -140,7 +140,7 @@ public:
 class Sandbox : public Vortex::Application {
 public:
 	Sandbox() {
-		Vortex::Ref<Vortex::Layer> sl = std::make_shared<SimpleLayer>();
+		Vortex::Ref<Vortex::Layer> sl = Vortex::CreateRef<SimpleLayer>();
 		PushLayer(sl);
 	}
 	~Sandbox() {}

@@ -11,7 +11,7 @@ namespace Vortex {
 				return nullptr; 
 			}
 			case RendererAPI::API::OPENGL:  
-				return std::make_shared<OpenGLTexture2D>(path);
+				return CreateRef<OpenGLTexture2D>(path);
 			default: {
 				VT_CORE_ASSERT(false, "Unknown renderer type");
 				return nullptr;
