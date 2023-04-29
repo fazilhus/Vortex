@@ -31,6 +31,7 @@ namespace Vortex {
 		if (major <= 4 && (major != 4 || minor < 5))
 		{
 			VT_CORE_CRITICAL("Vortex requires at least OpenGL version 4.5");
+			VT_CORE_ASSERT(false, "Vortex requires OpenGL version 4.5 or newer");
 		}
 	}
 
