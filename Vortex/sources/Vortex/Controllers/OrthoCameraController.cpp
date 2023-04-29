@@ -1,5 +1,5 @@
 #include "vtpch.hpp"
-#include "Vortex/OrthoCameraController.hpp"
+#include "Vortex/Controllers/OrthoCameraController.hpp"
 
 namespace Vortex {
 

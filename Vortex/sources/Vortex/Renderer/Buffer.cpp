@@ -1,7 +1,4 @@
 #include "vtpch.hpp"
-#include "Vortex/Renderer/Buffer.hpp"
-
-#include "Vortex/Renderer/Renderer.hpp"
 
 #include "Platforms/OpenGL/OpenGLBuffer.hpp"
 

@@ -1,5 +1,5 @@
 #include "vtpch.hpp"
-#include "Vortex/Application.hpp"
+#include "Vortex/Core/Application.hpp"
 #include "Vortex/Core/Timestep.hpp"
 #include "Vortex/Renderer/Renderer.hpp"
 

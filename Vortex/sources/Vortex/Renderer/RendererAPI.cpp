@@ -1,5 +1,4 @@
 #include "vtpch.hpp"
-#include "Vortex/Renderer/RendererAPI.hpp"
 
 namespace Vortex {
 

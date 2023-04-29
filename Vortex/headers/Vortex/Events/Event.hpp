@@ -2,8 +2,6 @@
 
 #include "vtpch.hpp"
 
-#include "Vortex/Core.hpp"
-
 namespace Vortex {
 
 	// Events are currently blocking, which means that the event will be handled as soon as it was called

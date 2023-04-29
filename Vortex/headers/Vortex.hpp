@@ -1,10 +1,10 @@
 #pragma once
 
 //----Core-----------------------------
-#include "Vortex/Application.hpp"
-#include "Vortex/Log.hpp"
+#include "Vortex/Core/Application.hpp"
+#include "Vortex/Core/Log.hpp"
 #include "Vortex/Layers/Layer.hpp"
-#include "Vortex/Codes.hpp"
+#include "Vortex/Core/Codes.hpp"
 #include "Vortex/Core/Timestep.hpp"
 //-------------------------------------
 
@@ -19,10 +19,10 @@
 
 
 //----Camera---------------------------
-#include "Vortex/OrthoCameraController.hpp"
+#include "Vortex/Controllers/OrthoCameraController.hpp"
 //-------------------------------------
 
 
 //----Entry Point----------------------
-#include "Vortex/EntryPoint.hpp"
+#include "Vortex/Core/EntryPoint.hpp"
 //-------------------------------------

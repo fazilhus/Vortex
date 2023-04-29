@@ -38,5 +38,7 @@ namespace Vortex {
 		s_clientLogger = std::make_shared<spdlog::logger>("APP", appSinkList.begin(), appSinkList.end());
 		s_clientLogger->set_level(spdlog::level::trace);
 		s_clientLogger->set_pattern(pattern);
+
+		VT_CORE_TRACE("Initialized 4 sinks: core console, core file, client console, client file");
 	 }
 }

@@ -1,6 +1,4 @@
 #include "vtpch.hpp"
-#include "Vortex/Renderer/Texture.hpp"
-#include "Vortex/Renderer/Render.hpp"
 
 #include "Platforms/OpenGL/OpenGLTexture.hpp"
 

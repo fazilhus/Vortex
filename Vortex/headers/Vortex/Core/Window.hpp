@@ -6,6 +6,8 @@
 
 namespace Vortex {
 
+	class Timestep;
+
 	struct WindowProps
 	{
 		std::string title;

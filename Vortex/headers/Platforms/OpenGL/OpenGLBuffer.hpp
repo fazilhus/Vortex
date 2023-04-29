@@ -1,8 +1,6 @@
 #pragma once
 #include "vtpch.hpp"
 
-#include <glad/glad.h>
-
 namespace Vortex {
 
 	class OpenGLVertexBuffer : public VertexBuffer {
