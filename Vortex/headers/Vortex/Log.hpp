@@ -12,8 +12,8 @@ namespace Vortex {
 	public:
 		static void Init();
 
-		inline static Ref <spdlog::logger>& GetCoreLogger() { return s_coreLogger; }
-		inline static Ref <spdlog::logger>& GetClientLogger() { return s_clientLogger; }
+		inline static Ref<spdlog::logger>& GetCoreLogger() { return s_coreLogger; }
+		inline static Ref<spdlog::logger>& GetClientLogger() { return s_clientLogger; }
 	};
 
 }
