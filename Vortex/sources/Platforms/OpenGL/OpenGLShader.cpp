@@ -137,6 +137,7 @@ namespace Vortex {
 			VT_CORE_ASSERT(ShaderTypeFromString(type), "Invalid shader type");
 
 			std::size_t nextLinePos = src.find_first_not_of("\r\n", eol);
+			VT_CORE_ASSERT(nextLinePos != std::string::npos, "Syntax error");
 			pos = src.find(token, nextLinePos);
 			shaderSrcs[ShaderTypeFromString(type)] = src.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? src.size() - 1 : nextLinePos));
 		}
