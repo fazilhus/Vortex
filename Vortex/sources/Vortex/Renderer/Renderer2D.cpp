@@ -5,8 +5,8 @@ namespace Vortex {
 
 	struct Renderer2DStorage {
 		Ref<VertexArray> vao;
-		Ref<Shader> flatcolorShader;
-		Ref<Shader> textureShader;
+		Ref<Shader> shader;
+		Ref<Texture2D> texture;
 	};
 
 	static Scope<Renderer2DStorage> s_data;
@@ -35,10 +35,13 @@ namespace Vortex {
 
 		s_data->vao->AddIndexBuffer(ibo);
 
-		s_data->flatcolorShader = Shader::Create("res/shaders/flatcolorShader.glsl");
-		s_data->textureShader = Shader::Create("res/shaders/textureShader.glsl");
-		s_data->textureShader->Bind();
-		s_data->textureShader->SetInt("u_texture", 0);
+		s_data->texture = Texture2D::Create(1, 1);
+		uint texData = 0xffffffff;
+		s_data->texture->SetData(&texData, sizeof(uint));
+
+		s_data->shader = Shader::Create("res/shaders/shader.glsl");
+		s_data->shader->Bind();
+		s_data->shader->SetInt("u_texture", 0);
 	}
 
 	void Renderer2D::Shutdown() {
@@ -46,11 +49,8 @@ namespace Vortex {
 	}
 
 	void Renderer2D::BeginScene(const OrthoCamera& camera) {
-		s_data->flatcolorShader->Bind();
-		s_data->flatcolorShader->SetMat4("u_viewproj", camera.GetViewProjMat());
-
-		s_data->textureShader->Bind();
-		s_data->textureShader->SetMat4("u_viewproj", camera.GetViewProjMat());
+		s_data->shader->Bind();
+		s_data->shader->SetMat4("u_viewproj", camera.GetViewProjMat());
 	}
 
 	void Renderer2D::EndScene() {
@@ -61,15 +61,15 @@ namespace Vortex {
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color) {
-		s_data->flatcolorShader->Bind();
-		s_data->flatcolorShader->SetFloat4("u_color", color);
+		s_data->shader->SetFloat4("u_color", color);
+		s_data->texture->Bind();
 
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
-		s_data->flatcolorShader->SetMat4("u_transform", transform);
+		s_data->shader->SetMat4("u_transform", transform);
 
 		s_data->vao->Bind();
 		Render::DrawIndexed(s_data->vao);
-		VT_CORE_TRACE("Draw call: DrawQuad ({0} {1}, {2} {3})", pos.x, pos.x + size.x, pos.y, pos.y + size.y);
+		VT_CORE_TRACE("Draw call: DrawQuad ({0} {1}, {2} {3}) color", pos.x, pos.x + size.x, pos.y, pos.y + size.y);
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& pos, const glm::vec2& size, const Ref<Vortex::Texture2D>& texture) {
@@ -77,13 +77,14 @@ namespace Vortex {
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec3& pos, const glm::vec2& size, const Ref<Vortex::Texture2D>& texture) {
-		s_data->textureShader->Bind();
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
-		s_data->textureShader->SetMat4("u_transform", transform);
-
+		s_data->shader->SetFloat4("u_color", glm::vec4(1.0f));
 		texture->Bind();
+
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+		s_data->shader->SetMat4("u_transform", transform);
 
 		s_data->vao->Bind();
 		Render::DrawIndexed(s_data->vao);
+		VT_CORE_TRACE("Draw call: DrawQuad ({0} {1}, {2} {3}) texture", pos.x, pos.x + size.x, pos.y, pos.y + size.y);
 	}
 }
