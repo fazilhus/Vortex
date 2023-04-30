@@ -15,6 +15,9 @@ namespace Vortex {
 				return CreateRef<OpenGLVertexBuffer>(vertices, size);
 			}
 		}
+		VT_CORE_ERROR("Unsupported api");
+		VT_CORE_ASSERT(false, "Unsupported api");
+		return nullptr;
 	}
 
 	Ref<IndexBuffer> IndexBuffer::Create(uint* indices, uint count)
@@ -28,6 +31,9 @@ namespace Vortex {
 				return CreateRef<OpenGLIndexBuffer>(indices, count);
 			}
 		}
+		VT_CORE_ERROR("Unsupported api");
+		VT_CORE_ASSERT(false, "Unsupported api");
+		return nullptr;
 	}
 
 	Ref<VertexArray> VertexArray::Create()
@@ -41,6 +47,9 @@ namespace Vortex {
 				return CreateRef<OpenGLVertexArray>();
 			}
 		}
+		VT_CORE_ERROR("Unsupported api");
+		VT_CORE_ASSERT(false, "Unsupported api");
+		return nullptr;
 	}
 
 }
