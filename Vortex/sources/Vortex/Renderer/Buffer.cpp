@@ -4,7 +4,7 @@
 
 namespace Vortex {
 
-	VertexBuffer* VertexBuffer::Create(float* vertices, uint size)
+	Ref<VertexBuffer> VertexBuffer::Create(float* vertices, uint size)
 	{
 		switch (Renderer::GetAPI()) {
 			case RendererAPI::API::NONE: {
@@ -12,12 +12,12 @@ namespace Vortex {
 				return nullptr;
 			}
 			case RendererAPI::API::OPENGL: {
-				return new OpenGLVertexBuffer(vertices, size);
+				return CreateRef<OpenGLVertexBuffer>(vertices, size);
 			}
 		}
 	}
 
-	IndexBuffer* IndexBuffer::Create(uint* indices, uint count)
+	Ref<IndexBuffer> IndexBuffer::Create(uint* indices, uint count)
 	{
 		switch (Renderer::GetAPI()) {
 			case RendererAPI::API::NONE: {
@@ -25,12 +25,12 @@ namespace Vortex {
 				return nullptr;
 			}
 			case RendererAPI::API::OPENGL: {
-				return new OpenGLIndexBuffer(indices, count);
+				return CreateRef<OpenGLIndexBuffer>(indices, count);
 			}
 		}
 	}
 
-	VertexArray* VertexArray::Create()
+	Ref<VertexArray> VertexArray::Create()
 	{
 		switch (Renderer::GetAPI()) {
 		    case RendererAPI::API::NONE: {
@@ -38,7 +38,7 @@ namespace Vortex {
 				return nullptr;
 			}
 		    case RendererAPI::API::OPENGL: {
-				return new OpenGLVertexArray();
+				return CreateRef<OpenGLVertexArray>();
 			}
 		}
 	}

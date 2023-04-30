@@ -22,11 +22,9 @@ namespace Vortex {
 
 	OpenGLShader::OpenGLShader(const std::string& filepath)
 		: m_rendererID(0) {
-		VT_CORE_TRACE("Shader constructor from file");
 		std::string src = ReadShaderFile(filepath);
 		std::unordered_map<GLenum, std::string> shaderSrcs;
 		PreProcess(src, shaderSrcs);
-		VT_CORE_TRACE("going to compile shaders");
 		CompileShader(shaderSrcs);
 
 		auto lastSlash = filepath.find_last_of("/\\");
@@ -38,7 +36,6 @@ namespace Vortex {
 
 	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
 		: m_rendererID(0), m_name(name) {
-		VT_CORE_TRACE("Shader constructor from string");
 		std::unordered_map<GLenum, std::string> shaderSrcs;
 		shaderSrcs[GL_VERTEX_SHADER] = vertexSrc;
 		shaderSrcs[GL_FRAGMENT_SHADER] = fragmentSrc;
@@ -119,7 +116,7 @@ namespace Vortex {
 		in.seekg(0, std::ios::beg);
 		in.read(&res[0], res.size());
 		in.close();
-		VT_CORE_TRACE("shader was read from file");
+		VT_CORE_INFO("shader was read from file");
 		return res;
 	}
 
@@ -142,7 +139,7 @@ namespace Vortex {
 			shaderSrcs[ShaderTypeFromString(type)] = src.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? src.size() - 1 : nextLinePos));
 		}
 
-		VT_CORE_TRACE("{0} shaders was preprocessed", shaderSrcs.size());
+		VT_CORE_INFO("{0} shaders was preprocessed", shaderSrcs.size());
 	}
 
 	void OpenGLShader::CompileShader(const std::unordered_map<GLenum, std::string>& shaderSrcs) {
@@ -153,7 +150,6 @@ namespace Vortex {
 		std::array<GLenum, 2> shaderIDs;
 		int shaderIdIndex = 0;
 
-		VT_CORE_TRACE("started compiling shaders");
 		for (const auto& item : shaderSrcs) {
 			GLenum type = item.first;
 			const std::string src = item.second;
@@ -208,6 +204,8 @@ namespace Vortex {
 			glDetachShader(program, id);
 			glDeleteShader(id);
 		}
+
+		VT_CORE_INFO("Shader compiling successful");
 	}
 
 }

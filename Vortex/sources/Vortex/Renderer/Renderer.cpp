@@ -9,6 +9,7 @@ namespace Vortex {
 
 	void Renderer::Init(const RendererConfig& cfg) {
 		Render::Init(cfg);
+		Renderer2D::Init();
 	}
 
 	void Renderer::OnWindowResize(uint width, uint height) {

@@ -15,14 +15,10 @@
 #include "Vortex/Renderer/Texture.hpp"
 #include "Vortex/Renderer/Render.hpp"
 #include "Vortex/Renderer/Renderer.hpp"
+#include "Vortex/Renderer/Renderer2D.hpp"
 //-------------------------------------
 
 
 //----Camera---------------------------
 #include "Vortex/Controllers/OrthoCameraController.hpp"
-//-------------------------------------
-
-
-//----Entry Point----------------------
-#include "Vortex/Core/EntryPoint.hpp"
 //-------------------------------------

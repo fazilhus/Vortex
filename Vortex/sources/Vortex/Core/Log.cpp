@@ -39,6 +39,6 @@ namespace Vortex {
 		s_clientLogger->set_level(spdlog::level::trace);
 		s_clientLogger->set_pattern(pattern);
 
-		VT_CORE_TRACE("Initialized 4 sinks: core console, core file, client console, client file");
+		VT_CORE_INFO("Initialized 4 sinks: core console, core file, client console, client file");
 	 }
 }

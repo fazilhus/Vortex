@@ -36,6 +36,7 @@
 #include "Vortex/Renderer/Buffer.hpp"
 #include "Vortex/Renderer/Render.hpp"
 #include "Vortex/Renderer/Renderer.hpp"
+#include "Vortex/Renderer/Renderer2D.hpp"
 #include "Vortex/Renderer/RendererAPI.hpp"
 #include "Vortex/Renderer/Texture.hpp"
 

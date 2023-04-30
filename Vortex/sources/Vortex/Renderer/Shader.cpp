@@ -32,7 +32,6 @@ namespace Vortex {
 
 	void ShaderLib::Add(const std::string& name, const Ref<Shader>& shader) {
 		VT_CORE_ASSERT(!Exists(name), "[Shader] Shader with name {0} already exists", name);
-		VT_CORE_TRACE("[Shader] Shader {0} was loaded", name);
 		m_shaders[name] = shader;
 	}
 

@@ -122,6 +122,7 @@ group ""
         }
 
         includedirs {
+            "Sandbox/headers",
             "Vortex/headers",
             "%{includedir.spdlog}",
             "%{includedir.glfw}",

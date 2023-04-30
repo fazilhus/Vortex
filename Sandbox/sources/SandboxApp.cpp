@@ -1,4 +1,5 @@
 #include <Vortex.hpp>
+#include "Vortex/Core/EntryPoint.hpp"
 
 #include "Platforms/OpenGL/OpenGLShader.hpp"
 
@@ -7,6 +8,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "Sandbox2D.hpp"
 
 
 class SimpleLayer : public Vortex::Layer {
@@ -32,7 +35,7 @@ public:
 
 	virtual void OnAttach() override {
 		{
-			m_vao2.reset(Vortex::VertexArray::Create());
+			m_vao2 = Vortex::VertexArray::Create();
 
 			float vertices[4 * 7] = {
 				-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
@@ -42,7 +45,7 @@ public:
 			};
 
 			std::shared_ptr<Vortex::VertexBuffer> vbo;
-			vbo.reset(Vortex::VertexBuffer::Create(vertices, sizeof(vertices)));
+			vbo = Vortex::VertexBuffer::Create(vertices, sizeof(vertices));
 			Vortex::BufferLayout layout{
 				{"a_position", Vortex::ShaderDataType::Float3},
 				{"a_color", Vortex::ShaderDataType::Float4}
@@ -52,7 +55,7 @@ public:
 
 			uint indices[6] = { 0, 1, 2, 2, 3, 0 };
 			std::shared_ptr<Vortex::IndexBuffer> ibo;
-			ibo.reset(Vortex::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint)));
+			ibo = Vortex::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint));
 			m_vao2->AddIndexBuffer(ibo);
 
 			auto shader = m_shaderLib.Load("res/shaders/boxShader.glsl");
@@ -60,7 +63,7 @@ public:
 		}
 
 		{
-			m_vao1.reset(Vortex::VertexArray::Create());
+			m_vao1 = Vortex::VertexArray::Create();
 
 			float vertices[4 * 5] = {
 				-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
@@ -70,7 +73,7 @@ public:
 			};
 
 			std::shared_ptr<Vortex::VertexBuffer> vbo;
-			vbo.reset(Vortex::VertexBuffer::Create(vertices, sizeof(vertices)));
+			vbo = Vortex::VertexBuffer::Create(vertices, sizeof(vertices));
 			Vortex::BufferLayout layout{
 				{"a_position", Vortex::ShaderDataType::Float3},
 				{"a_texPos", Vortex::ShaderDataType::Float2}
@@ -80,7 +83,7 @@ public:
 
 			uint indices[6] = { 0, 1, 2, 2, 3, 0 };
 			std::shared_ptr<Vortex::IndexBuffer> ibo;
-			ibo.reset(Vortex::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint)));
+			ibo = Vortex::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint));
 			m_vao1->AddIndexBuffer(ibo);
 
 			auto texShader = m_shaderLib.Load("res/shaders/textureShader.glsl");
@@ -140,8 +143,10 @@ public:
 class Sandbox : public Vortex::Application {
 public:
 	Sandbox() {
-		Vortex::Ref<Vortex::Layer> sl = Vortex::CreateRef<SimpleLayer>();
-		PushLayer(sl);
+		//Vortex::Ref<Vortex::Layer> sl = Vortex::CreateRef<SimpleLayer>();
+		//PushLayer(sl);
+		Vortex::Ref<Vortex::Layer> sl2d = Vortex::CreateRef<Sandbox2D>();
+		PushLayer(sl2d);
 	}
 	~Sandbox() {}
 };

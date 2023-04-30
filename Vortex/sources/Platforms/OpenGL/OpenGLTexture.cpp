@@ -21,13 +21,13 @@ namespace Vortex {
 		case 3: {
 			internalFormat = GL_RGB8;
 			dataFormat = GL_RGB;
-			VT_CORE_TRACE("Texture format is rgb");
+			VT_CORE_INFO("Texture format is rgb");
 			break;
 		}
 		case 4: {
 			internalFormat = GL_RGBA8;
 			dataFormat = GL_RGBA;
-			VT_CORE_TRACE("Texture format is rgba");
+			VT_CORE_INFO("Texture format is rgba");
 			break;
 		}
 		default:
