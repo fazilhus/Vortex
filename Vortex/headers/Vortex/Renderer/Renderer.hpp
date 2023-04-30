@@ -8,6 +8,7 @@ namespace Vortex {
 
 	struct RendererConfig {
 		bool enableBlending;
+		bool enableDepthTest;
 	};
 
 	class Renderer {

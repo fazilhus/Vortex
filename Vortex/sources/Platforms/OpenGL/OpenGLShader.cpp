@@ -54,6 +54,41 @@ namespace Vortex {
 		glUseProgram(0);
 	}
 
+	void OpenGLShader::SetInt(const std::string& name, int v) {
+		VT_CORE_TRACE("Shader SetInt: name = {0}, v = {1}", name, v);
+		UploadUniformInt(name, v);
+	}
+
+	void OpenGLShader::SetFloat(const std::string& name, float v) {
+		VT_CORE_TRACE("Shader SetFloat: name = {0}, v = {1}", name, v);
+		UploadUniformFloat(name, v);
+	}
+
+	void OpenGLShader::SetFloat2(const std::string& name, const glm::vec2& v) {
+		VT_CORE_TRACE("Shader SetFloat2: name = {0}, v = ({1}, {2})", name, v.x, v.y);
+		UploadUniformFloat2(name, v);
+	}
+
+	void OpenGLShader::SetFloat3(const std::string& name, const glm::vec3& v) {
+		VT_CORE_TRACE("Shader SetFloat3: name = {0}, v = ({1}, {2}, {3})", name, v.x, v.y, v.z);
+		UploadUniformFloat3(name, v);
+	}
+
+	void OpenGLShader::SetFloat4(const std::string& name, const glm::vec4& v) {
+		VT_CORE_TRACE("Shader SetFloat4: name = {0}, v = ({1}, {2}, {3}, {4})", name, v.x, v.y, v.z, v.w);
+		UploadUniformFloat4(name, v);
+	}
+
+	void OpenGLShader::SetMat3(const std::string& name, const glm::mat3& v) {
+		VT_CORE_TRACE("Shader SetMat3: name = {0}", name);
+		UploadUniformMat3(name, v);
+	}
+
+	void OpenGLShader::SetMat4(const std::string& name, const glm::mat4& v) {
+		VT_CORE_TRACE("Shader SetMat4: name = {0}", name);
+		UploadUniformMat4(name, v);
+	}
+
 	void OpenGLShader::UploadUniformInt(const std::string& name, int value) {
 		if (m_uniformLoc.find(name) == m_uniformLoc.end()) {
 			m_uniformLoc[name] = glGetUniformLocation(m_rendererID, name.c_str());

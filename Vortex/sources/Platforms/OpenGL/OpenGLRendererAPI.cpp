@@ -12,6 +12,13 @@ namespace Vortex {
 		else {
 			glDisable(GL_BLEND);
 		}
+
+		if (cfg.enableDepthTest) {
+			glEnable(GL_DEPTH_TEST);
+		}
+		else {
+			glDisable(GL_DEPTH_TEST);
+		}
 	}
 
 	void OpenGLRendererAPI::SetViewport(uint x, uint y, uint width, uint height) {

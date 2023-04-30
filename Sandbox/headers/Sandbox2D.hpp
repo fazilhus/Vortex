@@ -8,7 +8,7 @@ private:
 
 	Vortex::Ref<Vortex::VertexArray> m_vao;
 	Vortex::Ref<Vortex::Shader> m_shader;
-	glm::vec4 m_color{0.2f, 0.3f, 0.8f, 1.0f};
+	Vortex::Ref<Vortex::Texture2D> m_texture;
 
 public:
 	Sandbox2D();
