@@ -38,8 +38,8 @@ namespace Vortex {
 	private:
 		uint m_rendererID;
 		uint m_vertexBufferInd;
-		std::vector<std::shared_ptr<VertexBuffer>> m_vbs;
-		std::shared_ptr<IndexBuffer> m_ib;
+		std::vector<Ref<VertexBuffer>> m_vbs;
+		Ref<IndexBuffer> m_ib;
 
 	public:
 		OpenGLVertexArray();
@@ -48,11 +48,11 @@ namespace Vortex {
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 
-		virtual void AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vb) override;
-		virtual void AddIndexBuffer(const std::shared_ptr<IndexBuffer>& ib) override;
+		virtual void AddVertexBuffer(const Ref<VertexBuffer>& vb) override;
+		virtual void AddIndexBuffer(const Ref<IndexBuffer>& ib) override;
 
-		inline virtual const std::vector<std::shared_ptr<VertexBuffer>>& GetVertexBuffers() const override { return m_vbs; }
-		inline virtual const std::shared_ptr<IndexBuffer>& GetIndexBuffer() const override { return m_ib; }
+		inline virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const override { return m_vbs; }
+		inline virtual const Ref<IndexBuffer>& GetIndexBuffer() const override { return m_ib; }
 	};
 
 }

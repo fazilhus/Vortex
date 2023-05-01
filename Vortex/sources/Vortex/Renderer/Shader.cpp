@@ -7,26 +7,32 @@ namespace Vortex {
 	Ref<Shader> Shader::Create(const std::string& filepath) {
 		switch (Renderer::GetAPI()) {
 			case RendererAPI::API::NONE:
+				VT_CORE_ERROR("RendererAPI::API::NONE");
 				VT_CORE_ASSERT(false, "[Shader] RendererAPI::API::NONE ");
 				return nullptr;
 			case RendererAPI::API::OPENGL:
 				return CreateRef<OpenGLShader>(filepath);
-			default:
+			default: {
+				VT_CORE_ERROR("Unknown renderer api");
 				VT_CORE_ASSERT(false, "[Shader] Unknown renderer api");
 				return nullptr;
+			}
 		}
 	}
 
 	Ref<Shader> Shader::Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc) {
 		switch (Renderer::GetAPI()) {
 			case RendererAPI::API::NONE:
+				VT_CORE_ERROR("RendererAPI::API::NONE");
 				VT_CORE_ASSERT(false, "[Shader] RendererAPI::API::NONE ");
 				return nullptr;
 			case RendererAPI::API::OPENGL:
 				return CreateRef<OpenGLShader>(name, vertexSrc, fragmentSrc);
-			default:
+			default: {
+				VT_CORE_ERROR("Unknown renderer api");
 				VT_CORE_ASSERT(false, "[Shader] Unknown renderer api");
 				return nullptr;
+			}
 		}
 	}
 

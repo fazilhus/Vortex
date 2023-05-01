@@ -1,6 +1,7 @@
 #pragma once
 
 //----Core-----------------------------
+#include "Vortex/Core/Core.hpp"
 #include "Vortex/Core/Application.hpp"
 #include "Vortex/Core/Log.hpp"
 #include "Vortex/Layers/Layer.hpp"

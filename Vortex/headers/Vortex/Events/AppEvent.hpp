@@ -29,7 +29,7 @@ namespace Vortex {
 
 	class WindowCloseEvent : public Event {
 	public:
-		WindowCloseEvent() {}
+		WindowCloseEvent() = default;
 
 		EVENT_CLASS_TYPE(WindowClose)
 		EVENT_CLASS_CAT(EventCatApp)
@@ -37,7 +37,7 @@ namespace Vortex {
 
 	class WindowFocusEvent : public Event {
 	public:
-		WindowFocusEvent() {}
+		WindowFocusEvent() = default;
 
 		EVENT_CLASS_TYPE(WindowFocus)
 		EVENT_CLASS_CAT(EventCatApp)
@@ -45,7 +45,7 @@ namespace Vortex {
 
 	class WindowLostFocusEvent : public Event {
 	public:
-		WindowLostFocusEvent() {}
+		WindowLostFocusEvent() = default;
 
 		EVENT_CLASS_TYPE(WindowLostFocus)
 		EVENT_CLASS_CAT(EventCatApp)
@@ -53,7 +53,7 @@ namespace Vortex {
 
 	class WindowMovedEvent : public Event {
 	public:
-		WindowMovedEvent() {}
+		WindowMovedEvent() = default;
 
 		EVENT_CLASS_TYPE(WindowMoved)
 		EVENT_CLASS_CAT(EventCatApp)
@@ -61,7 +61,7 @@ namespace Vortex {
 
 	class AppTickEvent : public Event {
 	public:
-		AppTickEvent() {}
+		AppTickEvent() = default;
 
 		EVENT_CLASS_TYPE(AppTick)
 		EVENT_CLASS_CAT(EventCatApp)
@@ -69,7 +69,7 @@ namespace Vortex {
 
 	class AppUpdateEvent : public Event {
 	public:
-		AppUpdateEvent() {}
+		AppUpdateEvent() = default;
 
 		EVENT_CLASS_TYPE(AppUpdate)
 		EVENT_CLASS_CAT(EventCatApp)
@@ -77,7 +77,7 @@ namespace Vortex {
 
 	class AppRenderEvent : public Event {
 	public:
-		AppRenderEvent() {}
+		AppRenderEvent() = default;
 
 		EVENT_CLASS_TYPE(AppRender)
 		EVENT_CLASS_CAT(EventCatApp)

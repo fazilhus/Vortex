@@ -30,6 +30,8 @@ namespace Vortex {
 
 		virtual ~Window() = default;
 
+		static Scope<Window> Create(const WindowProps& props = WindowProps());
+
 		virtual void OnUpdate(Timestep ts) = 0;
 
 		virtual unsigned int GetWidth() const = 0;

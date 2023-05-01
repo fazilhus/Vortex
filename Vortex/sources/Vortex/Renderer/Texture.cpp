@@ -7,6 +7,7 @@ namespace Vortex {
 	Ref<Texture2D> Texture2D::Create(const std::string& path) {
 		switch (RendererAPI::GetAPI()) {
 			case RendererAPI::API::NONE: {
+				VT_CORE_ERROR("RendererAPI::API::NONE");
 				VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
 				return nullptr; 
 			}
@@ -21,6 +22,7 @@ namespace Vortex {
 	Ref<Texture2D> Texture2D::Create(uint width, uint height) {
 		switch (RendererAPI::GetAPI()) {
 		case RendererAPI::API::NONE: {
+			VT_CORE_ERROR("RendererAPI::API::NONE");
 			VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
 			return nullptr;
 		}

@@ -10,6 +10,12 @@ namespace Vortex {
 	void Renderer::Init(const RendererConfig& cfg) {
 		Render::Init(cfg);
 		Renderer2D::Init();
+		VT_CORE_INFO("Renderer is initialized");
+	}
+
+	void Renderer::Shutdown() {
+		Renderer2D::Shutdown();
+		VT_CORE_INFO("Renderer is terminated");
 	}
 
 	void Renderer::OnWindowResize(uint width, uint height) {

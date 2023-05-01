@@ -42,10 +42,12 @@ namespace Vortex {
 		s_data->shader = Shader::Create("res/shaders/shader.glsl");
 		s_data->shader->Bind();
 		s_data->shader->SetInt("u_texture", 0);
+		VT_CORE_INFO("Renderer2D is initialized");
 	}
 
 	void Renderer2D::Shutdown() {
 		s_data.release();
+		VT_CORE_INFO("Renderer2D is terminated");
 	}
 
 	void Renderer2D::BeginScene(const OrthoCamera& camera) {

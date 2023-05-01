@@ -6,7 +6,7 @@ namespace Vortex {
 
 	class Render {
 	private:
-		static RendererAPI* s_rendererAPI;
+		static Scope<RendererAPI> s_rendererAPI;
 
 	public:
 		inline static void Init(const RendererConfig& cfg) {

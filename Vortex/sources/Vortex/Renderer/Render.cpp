@@ -4,6 +4,6 @@
 
 namespace Vortex {
 
-	RendererAPI* Render::s_rendererAPI = new OpenGLRendererAPI();
+	Scope<RendererAPI> Render::s_rendererAPI = RendererAPI::Create();
 
 }

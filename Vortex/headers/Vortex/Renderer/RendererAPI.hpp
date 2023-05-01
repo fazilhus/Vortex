@@ -24,6 +24,8 @@ namespace Vortex {
 		virtual void DrawIndexed(const Ref<VertexArray>& va) = 0;
 
 		inline static API GetAPI() { return s_api; }
+
+		static Scope<RendererAPI> Create();
 	};
 
 }

@@ -7,7 +7,7 @@ namespace Vortex {
 	class WinWindow : public Window {
 	private:
 		GLFWwindow* m_window;
-		GraphicsContext* m_context;
+		Scope<GraphicsContext> m_context;
 
 		struct WindowData
 		{
@@ -34,8 +34,6 @@ namespace Vortex {
 		bool IsVSync() const override;
 
 		inline virtual void* GetNativeWindow() const override { return m_window; }
-
-		static WinWindow* Create(const WindowProps& props = WindowProps());
 
 	private:
 		virtual void Init(const WindowProps& props);

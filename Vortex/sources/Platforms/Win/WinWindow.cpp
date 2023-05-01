@@ -17,8 +17,8 @@ namespace Vortex {
 		VT_CORE_ERROR("GLFW Error: {0} {1}", code, desc);
 	}
 
-	WinWindow* WinWindow::Create(const WindowProps& props) {
-		return new WinWindow(props);
+	Scope<Window> Window::Create(const WindowProps& props) {
+		return CreateScope<WinWindow>(props);
 	}
 
 	WinWindow::WinWindow(const WindowProps& props) {
@@ -51,7 +51,7 @@ namespace Vortex {
 		m_window = glfwCreateWindow((int)m_data.width, (int)m_data.height, m_data.title.c_str(), nullptr, nullptr);
 		s_GLFWwindowCount++;
 
-		m_context = new OpenGLContext(m_window);
+		m_context = OpenGLContext::Create(m_window);
 		m_context->Init();
 
 		glfwSetWindowUserPointer(m_window, &m_data);
