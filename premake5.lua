@@ -89,7 +89,8 @@ group ""
         filter "configurations:Debug"
             defines {
                 "VT_DEBUG",
-                "VT_ENABLE_ASSERTS"
+                "VT_ENABLE_ASSERTS",
+                "VT_PROFILE"
             }
             runtime "Debug"
             symbols "on"
@@ -141,7 +142,10 @@ group ""
             systemversion "latest"
     
         filter "configurations:Debug"
-            defines "VT_DEBUG"
+            defines {
+                "VT_DEBUG",
+                "VT_PROFILE"
+            }
             runtime "Debug"
             symbols "on"
 

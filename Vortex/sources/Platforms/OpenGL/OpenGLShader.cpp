@@ -146,16 +146,11 @@ namespace Vortex {
 			return res;
 		}
 
-		size_t size = in.tellg();
-		if (size != -1) {
-			res.resize(size);
-			in.seekg(0, std::ios::beg);
-			in.read(&res[0], size);
-			in.close();
-		}
-		else {
-			VT_CORE_ERROR("Could not read from file '{0}'", filepath);
-		}
+		in.seekg(0, std::ios::end);
+		res.resize(in.tellg());
+		in.seekg(0, std::ios::beg);
+		in.read(&res[0], res.size());
+		in.close();
 		VT_CORE_INFO("shader was read from file");
 		return res;
 	}
