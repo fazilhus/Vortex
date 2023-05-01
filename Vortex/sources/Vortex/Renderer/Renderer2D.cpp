@@ -12,6 +12,7 @@ namespace Vortex {
 	static Scope<Renderer2DStorage> s_data;
 
 	void Renderer2D::Init() {
+		VT_PROFILE_FUNCTION();
 		s_data = CreateScope<Renderer2DStorage>();
 		s_data->vao = VertexArray::Create();
 
@@ -46,23 +47,28 @@ namespace Vortex {
 	}
 
 	void Renderer2D::Shutdown() {
+		VT_PROFILE_FUNCTION();
 		s_data.release();
 		VT_CORE_INFO("Renderer2D is terminated");
 	}
 
 	void Renderer2D::BeginScene(const OrthoCamera& camera) {
+		VT_PROFILE_FUNCTION();
 		s_data->shader->Bind();
 		s_data->shader->SetMat4("u_viewproj", camera.GetViewProjMat());
 	}
 
 	void Renderer2D::EndScene() {
+		VT_PROFILE_FUNCTION();
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& pos, const glm::vec2& size, const glm::vec4& color) {
+		VT_PROFILE_FUNCTION();
 		DrawQuad({pos.x, pos.y, 0.0f}, size, color);
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color) {
+		VT_PROFILE_FUNCTION();
 		s_data->shader->SetFloat4("u_color", color);
 		s_data->texture->Bind();
 
@@ -75,10 +81,12 @@ namespace Vortex {
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& pos, const glm::vec2& size, const Ref<Vortex::Texture2D>& texture) {
+		VT_PROFILE_FUNCTION();
 		DrawQuad({ pos.x, pos.y, 0.0f }, size, texture);
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec3& pos, const glm::vec2& size, const Ref<Vortex::Texture2D>& texture) {
+		VT_PROFILE_FUNCTION();
 		s_data->shader->SetFloat4("u_color", glm::vec4(1.0f));
 		texture->Bind();
 

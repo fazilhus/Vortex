@@ -4,6 +4,7 @@
 namespace Vortex {
 
 	float WinPlatformAPI::GetTimeSec() {
+		VT_PROFILE_FUNCTION();
 		LARGE_INTEGER t, fr;
 		QueryPerformanceCounter(&t);
 		QueryPerformanceFrequency(&fr);
@@ -11,6 +12,7 @@ namespace Vortex {
 	}
 
 	float WinPlatformAPI::GetTimeMil() {
+		VT_PROFILE_FUNCTION();
 		LARGE_INTEGER t, fr;
 		QueryPerformanceCounter(&t);
 		QueryPerformanceFrequency(&fr);

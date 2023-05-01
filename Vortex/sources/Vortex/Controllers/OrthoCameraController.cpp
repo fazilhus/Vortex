@@ -6,9 +6,12 @@ namespace Vortex {
 	OrthoCameraController::OrthoCameraController(float aspectRatio, bool rotation)
 	: m_aspectRatio(aspectRatio),
 	m_camera(-m_aspectRatio * m_zoomLevel, m_aspectRatio * m_zoomLevel, -m_zoomLevel, m_zoomLevel),
-	m_rot(rotation) {}
+	m_rot(rotation) {
+		VT_PROFILE_FUNCTION();
+	}
 
 	void OrthoCameraController::OnUpdate(Timestep ts) {
+		VT_PROFILE_FUNCTION();
 		if (Vortex::Input::IsKeyPressed(VT_KEY_LEFT)) {
 			m_cameraPos.x -= cos(glm::radians(m_cameraRot)) * m_cameraPosSpeed * ts;
 			m_cameraPos.y -= sin(glm::radians(m_cameraRot)) * m_cameraPosSpeed * ts;
@@ -50,12 +53,14 @@ namespace Vortex {
 	}
 
 	void OrthoCameraController::OnEvent(Event& e) {
+		VT_PROFILE_FUNCTION();
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<MouseScrolledEvent>(VT_BIND_EVENT_FN(OrthoCameraController::OnMouseScrolled));
 		dispatcher.Dispatch<WindowResizeEvent>(VT_BIND_EVENT_FN(OrthoCameraController::OnWindowResized));
 	}
 
 	bool OrthoCameraController::OnMouseScrolled(MouseScrolledEvent& e) {
+		VT_PROFILE_FUNCTION();
 		m_zoomLevel -= e.GetOffsetY() * 0.25f;
 		m_zoomLevel = std::max(m_zoomLevel, 0.25f);
 		m_camera.SetProjection(-m_aspectRatio * m_zoomLevel, m_aspectRatio * m_zoomLevel, -m_zoomLevel, m_zoomLevel);
@@ -64,6 +69,7 @@ namespace Vortex {
 	}
 
 	bool OrthoCameraController::OnWindowResized(WindowResizeEvent& e) {
+		VT_PROFILE_FUNCTION();
 		m_aspectRatio = (float)e.GetWidth() / (float)e.GetHeight();
 		m_camera.SetProjection(-m_aspectRatio * m_zoomLevel, m_aspectRatio * m_zoomLevel, -m_zoomLevel, m_zoomLevel);
 		VT_CORE_TRACE("Window resize event");

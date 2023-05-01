@@ -8,6 +8,7 @@ namespace Vortex {
     Input* Input::s_instance = new WinInput();
 
     bool WinInput::IsKeyPressedImpl(int keycode) {
+        VT_PROFILE_FUNCTION();
         auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
         if (!window) return false;
 
@@ -16,6 +17,7 @@ namespace Vortex {
     }
 
     bool WinInput::IsMouseButtonPressedImpl(int button) {
+        VT_PROFILE_FUNCTION();
         auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
         if (!window) return false;
 
@@ -24,6 +26,7 @@ namespace Vortex {
     }
 
     std::pair<float, float> WinInput::GetMousePosImpl() {
+        VT_PROFILE_FUNCTION();
         auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
         if (!window) return {0.0f, 0.0f};
 
@@ -34,11 +37,13 @@ namespace Vortex {
     }
 
     float WinInput::GetMouseXImpl() {
+        VT_PROFILE_FUNCTION();
         auto [x, y] = GetMousePosImpl();
         return x;
     }
 
     float WinInput::GetMouseYImpl() {
+        VT_PROFILE_FUNCTION();
         auto [x, y] = GetMousePosImpl();
         return y;
     }

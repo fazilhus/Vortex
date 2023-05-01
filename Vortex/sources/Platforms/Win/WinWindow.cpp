@@ -18,18 +18,22 @@ namespace Vortex {
 	}
 
 	Scope<Window> Window::Create(const WindowProps& props) {
+		VT_PROFILE_FUNCTION();
 		return CreateScope<WinWindow>(props);
 	}
 
 	WinWindow::WinWindow(const WindowProps& props) {
+		VT_PROFILE_FUNCTION();
 		Init(props);
 	}
 
 	WinWindow::~WinWindow() {
+		VT_PROFILE_FUNCTION();
 		Shutdown();
 	}
 
 	void WinWindow::Init(const WindowProps& props) {
+		VT_PROFILE_FUNCTION();
 		m_data.title = props.title;
 		m_data.width = props.width;
 		m_data.height = props.height;
@@ -37,19 +41,25 @@ namespace Vortex {
 		VT_CORE_INFO("Creating a window {0} ({1}, {2})", m_data.title, m_data.width, m_data.height);
 
 		if (s_GLFWwindowCount == 0) {
-			VT_CORE_INFO("Initializing GLFW");
-			int success = glfwInit();
-			VT_CORE_ASSERT(success, "Could not init GLFW");
+			{
+				VT_PROFILE_SCOPE("WinWindow::Init - GLFW init");
+				VT_CORE_INFO("Initializing GLFW");
+				int success = glfwInit();
+				VT_CORE_ASSERT(success, "Could not init GLFW");
 
-			glfwSetErrorCallback(GLFWErrorCallback);
+				glfwSetErrorCallback(GLFWErrorCallback);
+			}
 		}
 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		m_window = glfwCreateWindow((int)m_data.width, (int)m_data.height, m_data.title.c_str(), nullptr, nullptr);
-		s_GLFWwindowCount++;
+		{
+			VT_PROFILE_SCOPE("WinWindow::Init - GLFW create window");
+			m_window = glfwCreateWindow((int)m_data.width, (int)m_data.height, m_data.title.c_str(), nullptr, nullptr);
+			s_GLFWwindowCount++;
+		}
 
 		m_context = OpenGLContext::Create(m_window);
 		m_context->Init();
@@ -143,6 +153,7 @@ namespace Vortex {
 	}
 
 	void WinWindow::Shutdown() {
+		VT_PROFILE_FUNCTION();
 		glfwDestroyWindow(m_window);
 
 		if (--s_GLFWwindowCount == 0) {
@@ -152,11 +163,13 @@ namespace Vortex {
 	}
 
 	void WinWindow::OnUpdate(Timestep ts) {
+		VT_PROFILE_FUNCTION();
 		glfwPollEvents();
 		m_context->SwapBuffers();
 	}
 
 	void WinWindow::SetVSync(bool enabled) {
+		VT_PROFILE_FUNCTION();
 		if (enabled)
 			glfwSwapInterval(1);
 		else
@@ -167,6 +180,7 @@ namespace Vortex {
 
 	
 	bool WinWindow::IsVSync() const {
+		VT_PROFILE_FUNCTION();
 		return m_data.vsync;
 	}
 

@@ -5,12 +5,14 @@ Sandbox2D::Sandbox2D()
 : Layer("Sandbox2D"), m_cameraController(16.0f / 9.0f, true) {}
 
 void Sandbox2D::OnAttach() {
+	VT_PROFILE_FUNCTION();
 	Layer::OnAttach();
 
 	m_texture = Vortex::Texture2D::Create("res/textures/img3.png");
 }
 
 void Sandbox2D::OnDetach() {
+	VT_PROFILE_FUNCTION();
 	Layer::OnDetach();
 }
 
@@ -46,5 +48,6 @@ void Sandbox2D::OnImGuiRender() {
 }
 
 void Sandbox2D::OnEvent(Vortex::Event& e) {
+	VT_PROFILE_FUNCTION();
 	m_cameraController.OnEvent(e);
 }

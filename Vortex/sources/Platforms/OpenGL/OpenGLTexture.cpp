@@ -7,10 +7,15 @@ namespace Vortex {
 
 	OpenGLTexture2D::OpenGLTexture2D(const std::string& path) 
 		: m_path(path) {
+		VT_PROFILE_FUNCTION();
 		int width, height, channels;
 		stbi_set_flip_vertically_on_load(1);
 
-		stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+		stbi_uc* data = nullptr;
+		{
+			VT_PROFILE_SCOPE("OpenGLTexture2D::OpenGLTexture2D - stbi_load");
+			data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+		}
 		VT_CORE_ASSERT(data, "Failed to load image");
 
 		m_width = width;
@@ -53,6 +58,7 @@ namespace Vortex {
 
 	OpenGLTexture2D::OpenGLTexture2D(uint width, uint height)
 	: m_width(width), m_height(height) {
+		VT_PROFILE_FUNCTION();
 		m_internalFormat = GL_RGBA8;
 		m_format = GL_RGBA;
 
@@ -67,16 +73,19 @@ namespace Vortex {
 	}
 
 	OpenGLTexture2D::~OpenGLTexture2D() {
+		VT_PROFILE_FUNCTION();
 		glDeleteTextures(1, &m_rendererID);
 	}
 
 	void OpenGLTexture2D::SetData(void* data, uint size) {
+		VT_PROFILE_FUNCTION();
 		uint bpp = m_format == GL_RGBA ? 4 : 3;
 		VT_CORE_ASSERT(size == m_width * m_height * bpp, "Not enought data to cover entire texture");
 		glTextureSubImage2D(m_rendererID, 0, 0, 0, m_width, m_height, m_format, GL_UNSIGNED_BYTE, data);
 	}
 
 	void OpenGLTexture2D::Bind(uint slot) const {
+		VT_PROFILE_FUNCTION();
 		glBindTextureUnit(slot, m_rendererID);
 	}
 
