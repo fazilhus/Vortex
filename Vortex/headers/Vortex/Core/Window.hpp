@@ -6,6 +6,8 @@
 
 namespace Vortex {
 
+	class Timestep;
+
 	struct WindowProps
 	{
 		std::string title;
@@ -27,6 +29,8 @@ namespace Vortex {
 		using EventCallbackFn = std::function<void(Event&)>;
 
 		virtual ~Window() = default;
+
+		static Scope<Window> Create(const WindowProps& props = WindowProps());
 
 		virtual void OnUpdate(Timestep ts) = 0;
 

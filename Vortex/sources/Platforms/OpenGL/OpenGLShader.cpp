@@ -22,11 +22,9 @@ namespace Vortex {
 
 	OpenGLShader::OpenGLShader(const std::string& filepath)
 		: m_rendererID(0) {
-		VT_CORE_TRACE("Shader constructor from file");
 		std::string src = ReadShaderFile(filepath);
 		std::unordered_map<GLenum, std::string> shaderSrcs;
 		PreProcess(src, shaderSrcs);
-		VT_CORE_TRACE("going to compile shaders");
 		CompileShader(shaderSrcs);
 
 		auto lastSlash = filepath.find_last_of("/\\");
@@ -38,7 +36,6 @@ namespace Vortex {
 
 	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
 		: m_rendererID(0), m_name(name) {
-		VT_CORE_TRACE("Shader constructor from string");
 		std::unordered_map<GLenum, std::string> shaderSrcs;
 		shaderSrcs[GL_VERTEX_SHADER] = vertexSrc;
 		shaderSrcs[GL_FRAGMENT_SHADER] = fragmentSrc;
@@ -55,6 +52,41 @@ namespace Vortex {
 
 	void OpenGLShader::Unbind() const {
 		glUseProgram(0);
+	}
+
+	void OpenGLShader::SetInt(const std::string& name, int v) {
+		VT_CORE_TRACE("Shader SetInt: name = {0}, v = {1}", name, v);
+		UploadUniformInt(name, v);
+	}
+
+	void OpenGLShader::SetFloat(const std::string& name, float v) {
+		VT_CORE_TRACE("Shader SetFloat: name = {0}, v = {1}", name, v);
+		UploadUniformFloat(name, v);
+	}
+
+	void OpenGLShader::SetFloat2(const std::string& name, const glm::vec2& v) {
+		VT_CORE_TRACE("Shader SetFloat2: name = {0}, v = ({1}, {2})", name, v.x, v.y);
+		UploadUniformFloat2(name, v);
+	}
+
+	void OpenGLShader::SetFloat3(const std::string& name, const glm::vec3& v) {
+		VT_CORE_TRACE("Shader SetFloat3: name = {0}, v = ({1}, {2}, {3})", name, v.x, v.y, v.z);
+		UploadUniformFloat3(name, v);
+	}
+
+	void OpenGLShader::SetFloat4(const std::string& name, const glm::vec4& v) {
+		VT_CORE_TRACE("Shader SetFloat4: name = {0}, v = ({1}, {2}, {3}, {4})", name, v.x, v.y, v.z, v.w);
+		UploadUniformFloat4(name, v);
+	}
+
+	void OpenGLShader::SetMat3(const std::string& name, const glm::mat3& v) {
+		VT_CORE_TRACE("Shader SetMat3: name = {0}", name);
+		UploadUniformMat3(name, v);
+	}
+
+	void OpenGLShader::SetMat4(const std::string& name, const glm::mat4& v) {
+		VT_CORE_TRACE("Shader SetMat4: name = {0}", name);
+		UploadUniformMat4(name, v);
 	}
 
 	void OpenGLShader::UploadUniformInt(const std::string& name, int value) {
@@ -114,12 +146,17 @@ namespace Vortex {
 			return res;
 		}
 
-		in.seekg(0, std::ios::end);
-		res.resize(in.tellg());
-		in.seekg(0, std::ios::beg);
-		in.read(&res[0], res.size());
-		in.close();
-		VT_CORE_TRACE("shader was read from file");
+		size_t size = in.tellg();
+		if (size != -1) {
+			res.resize(size);
+			in.seekg(0, std::ios::beg);
+			in.read(&res[0], size);
+			in.close();
+		}
+		else {
+			VT_CORE_ERROR("Could not read from file '{0}'", filepath);
+		}
+		VT_CORE_INFO("shader was read from file");
 		return res;
 	}
 
@@ -137,11 +174,12 @@ namespace Vortex {
 			VT_CORE_ASSERT(ShaderTypeFromString(type), "Invalid shader type");
 
 			std::size_t nextLinePos = src.find_first_not_of("\r\n", eol);
+			VT_CORE_ASSERT(nextLinePos != std::string::npos, "Syntax error");
 			pos = src.find(token, nextLinePos);
 			shaderSrcs[ShaderTypeFromString(type)] = src.substr(nextLinePos, pos - (nextLinePos == std::string::npos ? src.size() - 1 : nextLinePos));
 		}
 
-		VT_CORE_TRACE("{0} shaders was preprocessed", shaderSrcs.size());
+		VT_CORE_INFO("{0} shaders was preprocessed", shaderSrcs.size());
 	}
 
 	void OpenGLShader::CompileShader(const std::unordered_map<GLenum, std::string>& shaderSrcs) {
@@ -152,7 +190,6 @@ namespace Vortex {
 		std::array<GLenum, 2> shaderIDs;
 		int shaderIdIndex = 0;
 
-		VT_CORE_TRACE("started compiling shaders");
 		for (const auto& item : shaderSrcs) {
 			GLenum type = item.first;
 			const std::string src = item.second;
@@ -205,7 +242,10 @@ namespace Vortex {
 
 		for (auto& id : shaderIDs) {
 			glDetachShader(program, id);
+			glDeleteShader(id);
 		}
+
+		VT_CORE_INFO("Shader compiling successful");
 	}
 
 }

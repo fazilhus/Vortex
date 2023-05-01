@@ -1,13 +1,10 @@
 #include "vtpch.hpp"
-#include "Vortex/Renderer/Buffer.hpp"
-
-#include "Vortex/Renderer/Renderer.hpp"
 
 #include "Platforms/OpenGL/OpenGLBuffer.hpp"
 
 namespace Vortex {
 
-	VertexBuffer* VertexBuffer::Create(float* vertices, uint size)
+	Ref<VertexBuffer> VertexBuffer::Create(float* vertices, uint size)
 	{
 		switch (Renderer::GetAPI()) {
 			case RendererAPI::API::NONE: {
@@ -15,12 +12,15 @@ namespace Vortex {
 				return nullptr;
 			}
 			case RendererAPI::API::OPENGL: {
-				return new OpenGLVertexBuffer(vertices, size);
+				return CreateRef<OpenGLVertexBuffer>(vertices, size);
 			}
 		}
+		VT_CORE_ERROR("Unsupported api");
+		VT_CORE_ASSERT(false, "Unsupported api");
+		return nullptr;
 	}
 
-	IndexBuffer* IndexBuffer::Create(uint* indices, uint count)
+	Ref<IndexBuffer> IndexBuffer::Create(uint* indices, uint count)
 	{
 		switch (Renderer::GetAPI()) {
 			case RendererAPI::API::NONE: {
@@ -28,12 +28,15 @@ namespace Vortex {
 				return nullptr;
 			}
 			case RendererAPI::API::OPENGL: {
-				return new OpenGLIndexBuffer(indices, count);
+				return CreateRef<OpenGLIndexBuffer>(indices, count);
 			}
 		}
+		VT_CORE_ERROR("Unsupported api");
+		VT_CORE_ASSERT(false, "Unsupported api");
+		return nullptr;
 	}
 
-	VertexArray* VertexArray::Create()
+	Ref<VertexArray> VertexArray::Create()
 	{
 		switch (Renderer::GetAPI()) {
 		    case RendererAPI::API::NONE: {
@@ -41,9 +44,12 @@ namespace Vortex {
 				return nullptr;
 			}
 		    case RendererAPI::API::OPENGL: {
-				return new OpenGLVertexArray();
+				return CreateRef<OpenGLVertexArray>();
 			}
 		}
+		VT_CORE_ERROR("Unsupported api");
+		VT_CORE_ASSERT(false, "Unsupported api");
+		return nullptr;
 	}
 
 }

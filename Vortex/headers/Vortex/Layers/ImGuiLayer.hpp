@@ -2,10 +2,6 @@
 
 #include "vtpch.hpp"
 
-#include "Vortex/Events/AppEvent.hpp"
-#include "Vortex/Events/KeyEvent.hpp"
-#include "Vortex/Events/MouseEvent.hpp"
-
 namespace Vortex {
 
 	class ImGuiLayer : public Layer {
@@ -14,7 +10,7 @@ namespace Vortex {
 
 	public:
 		ImGuiLayer();
-		~ImGuiLayer() = default;
+		virtual ~ImGuiLayer() = default;
 
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;

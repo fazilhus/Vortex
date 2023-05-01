@@ -1,5 +1,4 @@
 #include "vtpch.hpp"
-#include "Vortex/Renderer/Renderer.hpp"
 
 #include "Platforms/OpenGL/OpenGLShader.hpp"
 
@@ -10,6 +9,17 @@ namespace Vortex {
 
 	void Renderer::Init(const RendererConfig& cfg) {
 		Render::Init(cfg);
+		Renderer2D::Init();
+		VT_CORE_INFO("Renderer is initialized");
+	}
+
+	void Renderer::Shutdown() {
+		Renderer2D::Shutdown();
+		VT_CORE_INFO("Renderer is terminated");
+	}
+
+	void Renderer::OnWindowResize(uint width, uint height) {
+		Render::SetViewport(0, 0, width, height);
 	}
 
 	void Renderer::BeginScene(OrthoCamera& cam) {

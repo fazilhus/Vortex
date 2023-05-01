@@ -1,4 +1,5 @@
 #include <Vortex.hpp>
+#include "Vortex/Core/EntryPoint.hpp"
 
 #include "Platforms/OpenGL/OpenGLShader.hpp"
 
@@ -7,6 +8,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "Sandbox2D.hpp"
 
 
 class SimpleLayer : public Vortex::Layer {
@@ -18,7 +21,7 @@ private:
 
 	Vortex::Ref<Vortex::Texture2D> m_tex;
 
-	Vortex::OrthoCamera m_camera;
+	Vortex::OrthoCameraController m_cameraController;
 
 	glm::vec3 camPos{ 0.0f, 0.0f, 0.0f };
 	float camPosVel = 1.0f;
@@ -27,12 +30,12 @@ private:
 
 public:
 	SimpleLayer()
-		: Layer("Simple"), m_camera(-1.6f, 1.6f, -0.9f, 0.9f) {};
-	~SimpleLayer() {};
+		: Layer("Simple"), m_cameraController(1600.0f / 900.0f, true) {}
+	~SimpleLayer() = default;
 
 	virtual void OnAttach() override {
 		{
-			m_vao2.reset(Vortex::VertexArray::Create());
+			m_vao2 = Vortex::VertexArray::Create();
 
 			float vertices[4 * 7] = {
 				-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
@@ -42,7 +45,7 @@ public:
 			};
 
 			std::shared_ptr<Vortex::VertexBuffer> vbo;
-			vbo.reset(Vortex::VertexBuffer::Create(vertices, sizeof(vertices)));
+			vbo = Vortex::VertexBuffer::Create(vertices, sizeof(vertices));
 			Vortex::BufferLayout layout{
 				{"a_position", Vortex::ShaderDataType::Float3},
 				{"a_color", Vortex::ShaderDataType::Float4}
@@ -52,15 +55,15 @@ public:
 
 			uint indices[6] = { 0, 1, 2, 2, 3, 0 };
 			std::shared_ptr<Vortex::IndexBuffer> ibo;
-			ibo.reset(Vortex::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint)));
+			ibo = Vortex::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint));
 			m_vao2->AddIndexBuffer(ibo);
 
 			auto shader = m_shaderLib.Load("res/shaders/boxShader.glsl");
-
+			VT_CL_TRACE("box shader created");
 		}
 
 		{
-			m_vao1.reset(Vortex::VertexArray::Create());
+			m_vao1 = Vortex::VertexArray::Create();
 
 			float vertices[4 * 5] = {
 				-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
@@ -70,7 +73,7 @@ public:
 			};
 
 			std::shared_ptr<Vortex::VertexBuffer> vbo;
-			vbo.reset(Vortex::VertexBuffer::Create(vertices, sizeof(vertices)));
+			vbo = Vortex::VertexBuffer::Create(vertices, sizeof(vertices));
 			Vortex::BufferLayout layout{
 				{"a_position", Vortex::ShaderDataType::Float3},
 				{"a_texPos", Vortex::ShaderDataType::Float2}
@@ -80,10 +83,11 @@ public:
 
 			uint indices[6] = { 0, 1, 2, 2, 3, 0 };
 			std::shared_ptr<Vortex::IndexBuffer> ibo;
-			ibo.reset(Vortex::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint)));
+			ibo = Vortex::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint));
 			m_vao1->AddIndexBuffer(ibo);
 
 			auto texShader = m_shaderLib.Load("res/shaders/textureShader.glsl");
+			VT_CL_TRACE("texture shader created");
 
 			m_tex = Vortex::Texture2D::Create("res/textures/img3.png");
 
@@ -96,40 +100,12 @@ public:
 	}
 
 	virtual void OnUpdate(Vortex::Timestep ts) override {
-		float framePosVel = camPosVel * ts;
-		float frameRotVel = camRotVel * ts;
-		if (Vortex::Input::IsKeyPressed(VT_KEY_LEFT)) {
-			camPos.x += framePosVel;
-		}
-		else if (Vortex::Input::IsKeyPressed(VT_KEY_RIGHT)) {
-			camPos.x -= framePosVel;
-		}
-		if (Vortex::Input::IsKeyPressed(VT_KEY_UP)) {
-			camPos.y -= framePosVel;
-		}
-		else if (Vortex::Input::IsKeyPressed(VT_KEY_DOWN)) {
-			camPos.y += framePosVel;
-		}
-
-		if (Vortex::Input::IsKeyPressed(VT_KEY_Q)) {
-			camRot -= frameRotVel;
-		}
-		else if (Vortex::Input::IsKeyPressed(VT_KEY_E)) {
-			camRot += frameRotVel;
-		}
-
-		if (Vortex::Input::IsKeyPressed(VT_KEY_R)) {
-			camPos = glm::vec3();
-			camRot = 0.0f;
-		}
+		m_cameraController.OnUpdate(ts);
 
 		Vortex::Render::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		Vortex::Render::Clear();
 
-		m_camera.SetPos(camPos);
-		m_camera.SetRot(camRot);
-
-		Vortex::Renderer::BeginScene(m_camera);
+		Vortex::Renderer::BeginScene(m_cameraController.GetCamera());
 
 		glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.15f));
 
@@ -160,14 +136,17 @@ public:
 	}
 
 	virtual void OnEvent(Vortex::Event& e) override {
+		m_cameraController.OnEvent(e);
 	}
 };
 
 class Sandbox : public Vortex::Application {
 public:
 	Sandbox() {
-		Vortex::Ref<Vortex::Layer> sl = std::make_shared<SimpleLayer>();
-		PushLayer(sl);
+		//Vortex::Ref<Vortex::Layer> sl = Vortex::CreateRef<SimpleLayer>();
+		//PushLayer(sl);
+		Vortex::Ref<Vortex::Layer> sl2d = Vortex::CreateRef<Sandbox2D>();
+		PushLayer(sl2d);
 	}
 	~Sandbox() {}
 };

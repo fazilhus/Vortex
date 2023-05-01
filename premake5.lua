@@ -82,7 +82,6 @@ group ""
             systemversion "latest"
 
             defines {
-                "VT_PLATFORM_WIN",
                 "GLFW_INCLUDE_NONE"
             }
 
@@ -123,6 +122,7 @@ group ""
         }
 
         includedirs {
+            "Sandbox/headers",
             "Vortex/headers",
             "%{includedir.spdlog}",
             "%{includedir.glfw}",
@@ -139,10 +139,6 @@ group ""
 
         filter "system:windows"
             systemversion "latest"
-
-            defines {
-                "VT_PLATFORM_WIN"
-            }
     
         filter "configurations:Debug"
             defines "VT_DEBUG"

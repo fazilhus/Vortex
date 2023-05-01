@@ -6,11 +6,15 @@ namespace Vortex {
 
 	class Render {
 	private:
-		static RendererAPI* s_rendererAPI;
+		static Scope<RendererAPI> s_rendererAPI;
 
 	public:
 		inline static void Init(const RendererConfig& cfg) {
 			s_rendererAPI->Init(cfg);
+		}
+
+		inline static void SetViewport(uint x, uint y, uint width, uint height) {
+			s_rendererAPI->SetViewport(x, y, width, height);
 		}
 
 		inline static void SetClearColor(const glm::vec4& color) {

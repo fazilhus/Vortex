@@ -24,6 +24,15 @@ namespace Vortex {
 		VT_CORE_INFO("  Renderer: {0}", s);
 		s = std::string(reinterpret_cast<const char*>(glGetString(GL_VERSION)));
 		VT_CORE_INFO("  Version: {0}", s);
+
+		int major, minor;
+		glGetIntegerv(GL_MAJOR_VERSION, &major);
+		glGetIntegerv(GL_MINOR_VERSION, &minor);
+		if (major <= 4 && (major != 4 || minor < 5))
+		{
+			VT_CORE_CRITICAL("Vortex requires at least OpenGL version 4.5");
+			VT_CORE_ASSERT(false, "Vortex requires OpenGL version 4.5 or newer");
+		}
 	}
 
 	void OpenGLContext::SwapBuffers() {

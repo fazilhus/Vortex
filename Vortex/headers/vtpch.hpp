@@ -2,6 +2,7 @@
 
 // STL
 #include <iostream>
+#include <fstream>
 #include <algorithm>
 #include <utility>
 #include <functional>
@@ -17,18 +18,17 @@
 
 // SPDLOG
 #include "spdlog/spdlog.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
-#include "spdlog/fmt/ostr.h"
 
 // Vortex
-#include "Vortex/Core.hpp"
-#include "Vortex/Log.hpp"
+#include "Vortex/Core/Core.hpp"
+#include "Vortex/Core/Log.hpp"
+#include "Vortex/Core/Window.hpp"
+#include "Vortex/Core/Input.hpp"
+#include "Vortex/Core/Codes.hpp"
+
 #include "Vortex/Layers/Layer.hpp"
 #include "Vortex/Layers/LayerStack.hpp"
 
-#include "Vortex/Window.hpp"
-#include "Vortex/Input.hpp"
-#include "Vortex/Codes.hpp"
 #include "Vortex/Events/Event.hpp"
 
 #include "Vortex/Renderer/GraphicsContext.hpp"
@@ -36,6 +36,7 @@
 #include "Vortex/Renderer/Buffer.hpp"
 #include "Vortex/Renderer/Render.hpp"
 #include "Vortex/Renderer/Renderer.hpp"
+#include "Vortex/Renderer/Renderer2D.hpp"
 #include "Vortex/Renderer/RendererAPI.hpp"
 #include "Vortex/Renderer/Texture.hpp"
 
@@ -57,10 +58,7 @@
 #include <glm/ext/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale
 #include <glm/ext/matrix_clip_space.hpp> // glm::perspective
 #include <glm/ext/scalar_constants.hpp> // glm::pi
+#include <glm/gtc/type_ptr.hpp>
 
 // STB
 #include <stb_image.h>
-
-#ifdef VT_PLATFORM_WIN
-	#include <Windows.h>
-#endif

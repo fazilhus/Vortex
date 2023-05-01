@@ -1,12 +1,10 @@
 #include "vtpch.hpp"
 
-#include <glad/glad.h>
-
-#include "Vortex/Application.hpp"
+#include "Vortex/Core/Application.hpp"
 #include "Vortex/Layers/ImGuiLayer.hpp"
 
-#include "backends/imgui_impl_opengl3.h"
-#include "backends/imgui_impl_glfw.h"
+#include <backends/imgui_impl_opengl3.h>
+#include <backends/imgui_impl_glfw.h>
 
 namespace Vortex {
 

@@ -1,44 +1,43 @@
 #include "vtpch.hpp"
-#include "Vortex/Renderer/Shader.hpp"
-#include "Vortex/Renderer/Renderer.hpp"
 
 #include "Platforms/OpenGL/OpenGLShader.hpp"
-
-#include <glad/glad.h>
-
-#include <glm/gtc/type_ptr.hpp>
 
 namespace Vortex {
 
 	Ref<Shader> Shader::Create(const std::string& filepath) {
 		switch (Renderer::GetAPI()) {
 			case RendererAPI::API::NONE:
+				VT_CORE_ERROR("RendererAPI::API::NONE");
 				VT_CORE_ASSERT(false, "[Shader] RendererAPI::API::NONE ");
 				return nullptr;
 			case RendererAPI::API::OPENGL:
-				return std::make_shared<OpenGLShader>(filepath);
-			default:
+				return CreateRef<OpenGLShader>(filepath);
+			default: {
+				VT_CORE_ERROR("Unknown renderer api");
 				VT_CORE_ASSERT(false, "[Shader] Unknown renderer api");
 				return nullptr;
+			}
 		}
 	}
 
 	Ref<Shader> Shader::Create(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc) {
 		switch (Renderer::GetAPI()) {
 			case RendererAPI::API::NONE:
+				VT_CORE_ERROR("RendererAPI::API::NONE");
 				VT_CORE_ASSERT(false, "[Shader] RendererAPI::API::NONE ");
 				return nullptr;
 			case RendererAPI::API::OPENGL:
-				return std::make_shared<OpenGLShader>(name, vertexSrc, fragmentSrc);
-			default:
+				return CreateRef<OpenGLShader>(name, vertexSrc, fragmentSrc);
+			default: {
+				VT_CORE_ERROR("Unknown renderer api");
 				VT_CORE_ASSERT(false, "[Shader] Unknown renderer api");
 				return nullptr;
+			}
 		}
 	}
 
 	void ShaderLib::Add(const std::string& name, const Ref<Shader>& shader) {
 		VT_CORE_ASSERT(!Exists(name), "[Shader] Shader with name {0} already exists", name);
-		VT_CORE_TRACE("[Shader] Shader {0} was loaded", name);
 		m_shaders[name] = shader;
 	}
 

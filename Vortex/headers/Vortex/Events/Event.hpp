@@ -2,8 +2,6 @@
 
 #include "vtpch.hpp"
 
-#include "Vortex/Core.hpp"
-
 namespace Vortex {
 
 	// Events are currently blocking, which means that the event will be handled as soon as it was called
@@ -29,7 +27,7 @@ namespace Vortex {
 // macros for some of virtual functions that are too trivial to implement in each event class
 #define EVENT_CLASS_CAT(cat) virtual int GetCatFlags() const override { return cat; }
 
-#define EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return EventType::##type; }\
+#define EVENT_CLASS_TYPE(type) static EventType GetStaticType() { return EventType::type; }\
 	                           virtual EventType GetEventType() const override { return GetStaticType(); }\
                                virtual const char* GetName() const override { return #type; }
 

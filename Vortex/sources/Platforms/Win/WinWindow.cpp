@@ -11,14 +11,14 @@
 
 namespace Vortex {
 
-	static bool s_isGLFWInitialized = false;
+	static uint s_GLFWwindowCount = 0;
 
 	static void GLFWErrorCallback(int code, const char* desc) {
 		VT_CORE_ERROR("GLFW Error: {0} {1}", code, desc);
 	}
 
-	WinWindow* WinWindow::Create(const WindowProps& props) {
-		return new WinWindow(props);
+	Scope<Window> Window::Create(const WindowProps& props) {
+		return CreateScope<WinWindow>(props);
 	}
 
 	WinWindow::WinWindow(const WindowProps& props) {
@@ -36,12 +36,12 @@ namespace Vortex {
 
 		VT_CORE_INFO("Creating a window {0} ({1}, {2})", m_data.title, m_data.width, m_data.height);
 
-		if (!s_isGLFWInitialized) {
+		if (s_GLFWwindowCount == 0) {
+			VT_CORE_INFO("Initializing GLFW");
 			int success = glfwInit();
 			VT_CORE_ASSERT(success, "Could not init GLFW");
 
 			glfwSetErrorCallback(GLFWErrorCallback);
-			s_isGLFWInitialized = true;
 		}
 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -49,7 +49,9 @@ namespace Vortex {
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 		m_window = glfwCreateWindow((int)m_data.width, (int)m_data.height, m_data.title.c_str(), nullptr, nullptr);
-		m_context = new OpenGLContext(m_window);
+		s_GLFWwindowCount++;
+
+		m_context = OpenGLContext::Create(m_window);
 		m_context->Init();
 
 		glfwSetWindowUserPointer(m_window, &m_data);
@@ -142,6 +144,11 @@ namespace Vortex {
 
 	void WinWindow::Shutdown() {
 		glfwDestroyWindow(m_window);
+
+		if (--s_GLFWwindowCount == 0) {
+			VT_CORE_INFO("Terminating GLFW");
+			glfwTerminate();
+		}
 	}
 
 	void WinWindow::OnUpdate(Timestep ts) {

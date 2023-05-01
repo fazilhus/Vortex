@@ -1,7 +1,7 @@
 #include "vtpch.hpp"
 #include "Platforms/Win/WinInput.hpp"
 
-#include "Vortex/Application.hpp"
+#include "Vortex/Core/Application.hpp"
 
 namespace Vortex {
 

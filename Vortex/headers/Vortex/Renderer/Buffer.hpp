@@ -107,7 +107,7 @@ namespace Vortex {
 		virtual const BufferLayout& GetLayout() const = 0;
 		virtual void SetLayout(const BufferLayout& layout) = 0;
 
-		static VertexBuffer* Create(float* vertices, uint size);
+		static Ref<VertexBuffer> Create(float* vertices, uint size);
 	};
 
 	class IndexBuffer {
@@ -119,7 +119,7 @@ namespace Vortex {
 
 		virtual uint GetCount() const = 0;
 
-		static IndexBuffer* Create(uint* indices, uint count);
+		static Ref<IndexBuffer> Create(uint* indices, uint count);
 	};
 
 	class VertexArray {
@@ -129,13 +129,13 @@ namespace Vortex {
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
-		virtual void AddVertexBuffer(const std::shared_ptr<VertexBuffer>& vb) = 0;
-		virtual void AddIndexBuffer(const std::shared_ptr<IndexBuffer>& ib) = 0;
+		virtual void AddVertexBuffer(const Ref<VertexBuffer>& vb) = 0;
+		virtual void AddIndexBuffer(const Ref<IndexBuffer>& ib) = 0;
 
-		virtual const std::vector<std::shared_ptr<VertexBuffer>>& GetVertexBuffers() const = 0;
-		virtual const std::shared_ptr<IndexBuffer>& GetIndexBuffer() const = 0;
+		virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const = 0;
+		virtual const Ref<IndexBuffer>& GetIndexBuffer() const = 0;
 
-		static VertexArray* Create();
+		static Ref<VertexArray> Create();
 	};
 
 }

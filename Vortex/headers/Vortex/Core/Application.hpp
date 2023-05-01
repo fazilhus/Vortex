@@ -22,9 +22,11 @@ namespace Vortex {
 
 		float m_lastFrameTime;
 
+		bool m_isMinimized = false;
+
 	public:
 		Application();
-		virtual ~Application() = default;
+		virtual ~Application();
 
 		void Run();
 
@@ -39,7 +41,8 @@ namespace Vortex {
 		inline static Application& Get() { return *s_instance; }
 
 	private:
-		bool OnAppClose(WindowCloseEvent& e);
+		bool OnWindowClose(WindowCloseEvent& e);
+		bool OnWindowResize(WindowResizeEvent& e);
 	};
 
 	// To be defined in the CLIENT

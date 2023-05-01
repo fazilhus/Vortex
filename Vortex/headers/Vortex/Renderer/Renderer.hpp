@@ -8,6 +8,7 @@ namespace Vortex {
 
 	struct RendererConfig {
 		bool enableBlending;
+		bool enableDepthTest;
 	};
 
 	class Renderer {
@@ -19,6 +20,9 @@ namespace Vortex {
 
 	public:
 		static void Init(const RendererConfig& cfg);
+		static void Shutdown();
+
+		static void OnWindowResize(uint width, uint height);
 
 		static void BeginScene(OrthoCamera& cam);
 		static void EndScene();

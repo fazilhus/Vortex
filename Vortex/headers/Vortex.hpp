@@ -1,10 +1,11 @@
 #pragma once
 
 //----Core-----------------------------
-#include "Vortex/Application.hpp"
-#include "Vortex/Log.hpp"
+#include "Vortex/Core/Core.hpp"
+#include "Vortex/Core/Application.hpp"
+#include "Vortex/Core/Log.hpp"
 #include "Vortex/Layers/Layer.hpp"
-#include "Vortex/Codes.hpp"
+#include "Vortex/Core/Codes.hpp"
 #include "Vortex/Core/Timestep.hpp"
 //-------------------------------------
 
@@ -15,14 +16,10 @@
 #include "Vortex/Renderer/Texture.hpp"
 #include "Vortex/Renderer/Render.hpp"
 #include "Vortex/Renderer/Renderer.hpp"
+#include "Vortex/Renderer/Renderer2D.hpp"
 //-------------------------------------
 
 
 //----Camera---------------------------
-#include "Vortex/Renderer/Cameras/OrthoCamera.hpp"
-//-------------------------------------
-
-
-//----Entry Point----------------------
-#include "Vortex/EntryPoint.hpp"
+#include "Vortex/Controllers/OrthoCameraController.hpp"
 //-------------------------------------
