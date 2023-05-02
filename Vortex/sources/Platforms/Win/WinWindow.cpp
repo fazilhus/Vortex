@@ -57,6 +57,13 @@ namespace Vortex {
 
 		{
 			VT_PROFILE_SCOPE("WinWindow::Init - GLFW create window");
+
+#ifdef VT_DEBUG
+			if (Renderer::GetAPI() == RendererAPI::API::OPENGL) {
+				glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+			}
+#endif
+
 			m_window = glfwCreateWindow((int)m_data.width, (int)m_data.height, m_data.title.c_str(), nullptr, nullptr);
 			s_GLFWwindowCount++;
 		}

@@ -7,7 +7,7 @@
 #include "Vortex/Layers/Layer.hpp"
 #include "Vortex/Core/Codes.hpp"
 #include "Vortex/Core/Timestep.hpp"
-#include "Vortex/Core/Debug/Profiler.hpp"
+#include "Vortex/Core/Profiling/Profiler.hpp"
 //-------------------------------------
 
 

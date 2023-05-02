@@ -4,8 +4,26 @@
 #include <glad/glad.h>
 
 namespace Vortex {
+	void OpenGLMessageCallback(uint source, uint type, uint id, uint severity, int len, const char* msg, const void* params) {
+		switch (severity) {
+			case GL_DEBUG_SEVERITY_HIGH: VT_CORE_CRITICAL(msg); return;
+			case GL_DEBUG_SEVERITY_MEDIUM: VT_CORE_ERROR(msg); return;
+			case GL_DEBUG_SEVERITY_LOW: VT_CORE_WARN(msg); return;
+			case GL_DEBUG_SEVERITY_NOTIFICATION: VT_CORE_TRACE(msg); return;
+			default: VT_CORE_ASSERT(false, "Unknown severity level"); return;
+		}
+	}
+
 	void OpenGLRendererAPI::Init(const RendererConfig& cfg) {
 		VT_PROFILE_FUNCTION();
+
+#ifdef VT_DEBUG
+		glEnable(GL_DEBUG_OUTPUT);
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+		glDebugMessageCallback(OpenGLMessageCallback, nullptr);
+		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, NULL, GL_FALSE);
+#endif
+
 		if (cfg.enableBlending) {
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

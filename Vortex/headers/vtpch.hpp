@@ -31,7 +31,7 @@
 #include "Vortex/Core/PlatformAPI.hpp"
 #include "Vortex/Core/Timestep.hpp"
 
-#include "Vortex/Core/Debug/Profiler.hpp"
+#include "Vortex/Core/Profiling/Profiler.hpp"
 
 #include "Vortex/Layers/Layer.hpp"
 #include "Vortex/Layers/LayerStack.hpp"

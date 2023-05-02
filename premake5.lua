@@ -1,5 +1,5 @@
 workspace "Vortex"
-    architecture "x64"
+    architecture "x86_64"
 
     configurations {
         "Debug",

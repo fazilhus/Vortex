@@ -3,6 +3,8 @@
 
 namespace Vortex {
 
+	void OpenGLMessageCallback(uint source, uint type, uint id, uint severity, int len, const char* msg, const void* params);
+
 	class OpenGLRendererAPI : public RendererAPI {
 	public:
 		virtual void Init(const RendererConfig& cfg) override;
