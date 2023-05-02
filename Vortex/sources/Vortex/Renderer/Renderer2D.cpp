@@ -66,6 +66,7 @@ namespace Vortex {
 	void Renderer2D::DrawQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color) {
 		VT_PROFILE_FUNC();
 		s_data->shader->SetFloat4("u_color", color);
+		s_data->shader->SetFloat("u_tilingFactor", 1.0f);
 		s_data->texture->Bind();
 
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
@@ -76,13 +77,16 @@ namespace Vortex {
 		VT_CORE_TRACE("Draw call: DrawQuad ({0} {1}, {2} {3}) color", pos.x, pos.x + size.x, pos.y, pos.y + size.y);
 	}
 
-	void Renderer2D::DrawQuad(const glm::vec2& pos, const glm::vec2& size, const Ref<Vortex::Texture2D>& texture) {
-		DrawQuad({ pos.x, pos.y, 0.0f }, size, texture);
+	void Renderer2D::DrawQuad(const glm::vec2& pos, const glm::vec2& size, const Ref<Vortex::Texture2D>& texture,
+		float tilingFactor, const glm::vec4 tintColor) {
+		DrawQuad({ pos.x, pos.y, 0.0f }, size, texture, tilingFactor, tintColor);
 	}
 
-	void Renderer2D::DrawQuad(const glm::vec3& pos, const glm::vec2& size, const Ref<Vortex::Texture2D>& texture) {
+	void Renderer2D::DrawQuad(const glm::vec3& pos, const glm::vec2& size, const Ref<Vortex::Texture2D>& texture,
+		float tilingFactor, const glm::vec4 tintColor) {
 		VT_PROFILE_FUNC();
-		s_data->shader->SetFloat4("u_color", glm::vec4(1.0f));
+		s_data->shader->SetFloat4("u_color", tintColor);
+		s_data->shader->SetFloat("u_tilingFactor", tilingFactor);
 		texture->Bind();
 
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
@@ -91,5 +95,47 @@ namespace Vortex {
 		s_data->vao->Bind();
 		Render::DrawIndexed(s_data->vao);
 		VT_CORE_TRACE("Draw call: DrawQuad ({0} {1}, {2} {3}) texture", pos.x, pos.x + size.x, pos.y, pos.y + size.y);
+	}
+
+	void Renderer2D::DrawRotatedQuad(const glm::vec2& pos, const glm::vec2& size, const glm::vec4& color, float rot) {
+		DrawRotatedQuad({pos.x, pos.y, 0.0f}, size, color, rot);
+	}
+
+	void Renderer2D::DrawRotatedQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color, float rot) {
+		VT_PROFILE_FUNC();
+		s_data->shader->SetFloat4("u_color", color);
+		s_data->shader->SetFloat("u_tilingFactor", 1.0f);
+		s_data->texture->Bind();
+
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos)
+		* glm::rotate(glm::mat4(1.0f), rot, {0.0f, 0.0f, 1.0f})
+		* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+		s_data->shader->SetMat4("u_transform", transform);
+
+		s_data->vao->Bind();
+		Render::DrawIndexed(s_data->vao);
+		VT_CORE_TRACE("Draw call: DrawRotatedQuad ({0} {1}, {2} {3}) color", pos.x, pos.x + size.x, pos.y, pos.y + size.y);
+	}
+
+	void Renderer2D::DrawRotatedQuad(const glm::vec2& pos, const glm::vec2& size, const Ref<Vortex::Texture2D>& texture,
+		float rot, float tilingFactor, const glm::vec4 tintColor) {
+		DrawRotatedQuad({ pos.x, pos.y, 0.0f }, size, texture, rot, tilingFactor, tintColor);
+	}
+
+	void Renderer2D::DrawRotatedQuad(const glm::vec3& pos, const glm::vec2& size, const Ref<Vortex::Texture2D>& texture,
+		float rot, float tilingFactor, const glm::vec4 tintColor) {
+		VT_PROFILE_FUNC();
+		s_data->shader->SetFloat4("u_color", tintColor);
+		s_data->shader->SetFloat("u_tilingFactor", tilingFactor);
+		s_data->texture->Bind();
+
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos)
+			* glm::rotate(glm::mat4(1.0f), rot, { 0.0f, 0.0f, 1.0f })
+			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+		s_data->shader->SetMat4("u_transform", transform);
+
+		s_data->vao->Bind();
+		Render::DrawIndexed(s_data->vao);
+		VT_CORE_TRACE("Draw call: DrawRotatedQuad ({0} {1}, {2} {3}) texture", pos.x, pos.x + size.x, pos.y, pos.y + size.y);
 	}
 }
