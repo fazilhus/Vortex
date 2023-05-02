@@ -17,18 +17,18 @@ void Sandbox2D::OnDetach() {
 void Sandbox2D::OnUpdate(Vortex::Timestep ts) {
 	VT_PROFILE_FUNC();
 	{
-		("CameraController::OnUpdate");
+		VT_PROFILE_SCOPE("CameraController::OnUpdate");
 		m_cameraController.OnUpdate(ts);
 	}
 
 	{
-		("Screen Prep");
+		VT_PROFILE_SCOPE("Screen Prep");
 		Vortex::Render::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		Vortex::Render::Clear();
 	}
 
 	{
-		("Draw all");
+		VT_PROFILE_SCOPE("Draw all");
 		Vortex::Renderer2D::BeginScene(m_cameraController.GetCamera());
 
 		Vortex::Renderer2D::DrawQuad({ -0.6f, 0.0f }, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
