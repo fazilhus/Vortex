@@ -2,21 +2,24 @@
 #version 460 core
 
 layout(location = 0) in vec3 a_position;
-layout(location = 1) in vec2 a_texPos;
+layout(location = 1) in vec4 a_color;
+layout(location = 2) in vec2 a_texPos;
 
 uniform mat4 u_viewproj;
-uniform mat4 u_transform;
 
+out vec4 v_color;
 out vec2 v_texPos;
 
 void main() {
+	gl_Position = u_viewproj * vec4(a_position, 1.0);	
+	v_color = a_color;
 	v_texPos = a_texPos;
-	gl_Position = u_viewproj * u_transform * vec4(a_position, 1.0);	
 }
 
 #type fragment
 #version 460 core
 
+in vec4 v_color;
 in vec2 v_texPos;
 
 layout(location = 0) out vec4 color;
@@ -26,5 +29,5 @@ uniform vec4 u_color;
 uniform float u_tilingFactor;
 
 void main() {
-	color = texture(u_texture, v_texPos * u_tilingFactor) * u_color;
+	color = v_color;
 }

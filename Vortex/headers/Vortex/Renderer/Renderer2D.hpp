@@ -5,6 +5,27 @@
 
 namespace Vortex {
 
+	struct QuadVertex {
+		glm::vec3 pos;
+		glm::vec4 color;
+		glm::vec2 texPos;
+	};
+
+	struct Renderer2DStorage {
+		const uint32 maxQuads = 10000;
+		const uint32 maxVert = maxQuads * 4;
+		const uint32 maxInd = maxQuads * 6;
+
+		Ref<VertexArray> quadVao;
+		Ref<VertexBuffer> quadVbo;
+		Ref<Shader> shader;
+		Ref<Texture2D> texture;
+
+		uint32 quadIndCount = 0;
+		QuadVertex* quadVertexBufferBase = nullptr;
+		QuadVertex* quadVertexBufferPtr = nullptr;
+	};
+
 	class Renderer2D {
 	public:
 		static void Init();
@@ -12,6 +33,8 @@ namespace Vortex {
 
 		static void BeginScene(const OrthoCamera& camera);
 		static void EndScene();
+
+		static void Flush();
 
 		static void DrawQuad(const glm::vec2& pos, const glm::vec2& size, const glm::vec4& color);
 		static void DrawQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color);
