@@ -8,24 +8,20 @@ namespace Vortex {
 	// VERTEX BUFFER
 
 	OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint4 size) {
-		VT_PROFILE_FUNCTION();
 		glCreateBuffers(1, &m_rendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_rendererID);
 		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 	}
 
 	OpenGLVertexBuffer::~OpenGLVertexBuffer() {
-		VT_PROFILE_FUNCTION();
 		glDeleteBuffers(1, &m_rendererID);
 	}
 
 	void OpenGLVertexBuffer::Bind() const {
-		VT_PROFILE_FUNCTION();
 		glBindBuffer(GL_ARRAY_BUFFER, m_rendererID);
 	}
 
 	void OpenGLVertexBuffer::Unbind() const {
-		VT_PROFILE_FUNCTION();
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
@@ -33,24 +29,20 @@ namespace Vortex {
 
 	OpenGLIndexBuffer::OpenGLIndexBuffer(uint4* indices, uint4 count) 
 		: m_count(count) {
-		VT_PROFILE_FUNCTION();
 		glCreateBuffers(1, &m_rendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_rendererID);
 		glBufferData(GL_ARRAY_BUFFER, count * sizeof(uint4), indices, GL_STATIC_DRAW);
 	}
 
 	OpenGLIndexBuffer::~OpenGLIndexBuffer() {
-		VT_PROFILE_FUNCTION();
 		glDeleteBuffers(1, &m_rendererID);
 	}
 
 	void OpenGLIndexBuffer::Bind() const {
-		VT_PROFILE_FUNCTION();
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_rendererID);
 	}
 
 	void OpenGLIndexBuffer::Unbind() const {
-		VT_PROFILE_FUNCTION();
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
@@ -78,27 +70,22 @@ namespace Vortex {
 
 	OpenGLVertexArray::OpenGLVertexArray() 
 		: m_vertexBufferInd(0) {
-		VT_PROFILE_FUNCTION();
 		glCreateVertexArrays(1, &m_rendererID);
 	}
 
 	OpenGLVertexArray::~OpenGLVertexArray() {
-		VT_PROFILE_FUNCTION();
 		glDeleteVertexArrays(1, &m_rendererID);
 	}
 
 	void OpenGLVertexArray::Bind() const {
-		VT_PROFILE_FUNCTION();
 		glBindVertexArray(m_rendererID);
 	}
 
 	void OpenGLVertexArray::Unbind() const {
-		VT_PROFILE_FUNCTION();
 		glBindVertexArray(0);
 	}
 
 	void OpenGLVertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vb) {
-		VT_PROFILE_FUNCTION();
 		VT_CORE_ASSERT(vb->GetLayout().GetElements().size(), "VertexBuffer has no layout");
 
 		glBindVertexArray(m_rendererID);
@@ -119,7 +106,6 @@ namespace Vortex {
 	}
 
 	void OpenGLVertexArray::AddIndexBuffer(const Ref<IndexBuffer>& ib) {
-		VT_PROFILE_FUNCTION();
 		glBindVertexArray(m_rendererID);
 		ib->Bind();
 

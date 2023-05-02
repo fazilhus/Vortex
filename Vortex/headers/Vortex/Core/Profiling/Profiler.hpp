@@ -3,12 +3,9 @@
 
 namespace Vortex {
 
-	using FloatingPointMicroseconds = std::chrono::duration<double, std::micro>;
-
 	struct ProfilerResult {
 		std::string name;
-		FloatingPointMicroseconds start;
-		std::chrono::microseconds elapsedTime;
+		long long start, end;
 		std::thread::id threadID;
 	};
 
@@ -28,8 +25,6 @@ namespace Vortex {
 		Profiler();
 		~Profiler() = default;
 
-		static void OnImGuiRender();
-
 		void BeginSession(const std::string& name, const std::string& filepath);
 		void EndSession();
 
@@ -47,7 +42,7 @@ namespace Vortex {
 	class Timer {
 	private:
 		const char* m_name;
-		std::chrono::time_point<std::chrono::steady_clock> m_startPoint;
+		std::chrono::time_point<std::chrono::high_resolution_clock> m_startPoint;
 		bool m_stopped;
 
 	public:
@@ -81,10 +76,10 @@ namespace Vortex {
 	#define VT_PROFILE_BEGIN_SESSION(name, filepath) ::Vortex::Profiler::Get().BeginSession(name, filepath)
 	#define VT_PROFILE_END_SESSION()                 ::Vortex::Profiler::Get().EndSession()
 	#define VT_PROFILE_SCOPE(name)                   ::Vortex::Timer timer##__LINE__(name)
-	#define VT_PROFILE_FUNCTION()                    VT_PROFILE_SCOPE(VT_FUNC_SIG)
+	#define VT_PROFILE_FUNC()                        VT_PROFILE_SCOPE(VT_FUNC_SIG)
 #else
 	#define VT_PROFILE_BEGIN_SESSION(name, filepath)
 	#define VT_PROFILE_END_SESSION()
 	#define VT_PROFILE_SCOPE(name)
-	#define VT_PROFILE_FUNCTION()
+	#define VT_PROFILE_FUNC()
 #endif

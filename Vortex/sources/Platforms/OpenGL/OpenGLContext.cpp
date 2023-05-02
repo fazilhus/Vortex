@@ -9,12 +9,10 @@ namespace Vortex {
 
 	OpenGLContext::OpenGLContext(GLFWwindow* window) 
 		: m_windowHandle(window) {
-		VT_PROFILE_FUNCTION();
 		VT_CORE_ASSERT(m_windowHandle, "Window handle is null");
 	}
 
 	void OpenGLContext::Init() {
-		VT_PROFILE_FUNCTION();
 		glfwMakeContextCurrent(m_windowHandle);
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		VT_CORE_ASSERT(status, "Failed to init glad");
@@ -38,7 +36,7 @@ namespace Vortex {
 	}
 
 	void OpenGLContext::SwapBuffers() {
-		VT_PROFILE_FUNCTION();
+		VT_PROFILE_FUNC();
 		glfwSwapBuffers(m_windowHandle);
 	}
 

@@ -10,7 +10,6 @@ namespace Vortex {
 	Ref<spdlog::logger> Log::s_clientLogger;
 
 	void Log::Init() {
-		VT_PROFILE_FUNCTION();
 		// Log pattern
 		const auto pattern = "%^[%T %e] %n-> %v%$";
 

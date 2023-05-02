@@ -15,7 +15,6 @@ namespace Vortex {
 	}
 
 	void OpenGLRendererAPI::Init(const RendererConfig& cfg) {
-		VT_PROFILE_FUNCTION();
 
 #ifdef VT_DEBUG
 		glEnable(GL_DEBUG_OUTPUT);
@@ -41,22 +40,21 @@ namespace Vortex {
 	}
 
 	void OpenGLRendererAPI::SetViewport(uint4 x, uint4 y, uint4 width, uint4 height) {
-		VT_PROFILE_FUNCTION();
 		glViewport(x, y, width, height);
 	}
 
 	void OpenGLRendererAPI::SetClearColor(const glm::vec4& color) {
-		VT_PROFILE_FUNCTION();
+		VT_PROFILE_FUNC();
 		glClearColor(color.r, color.g, color.b, color.a);
 	}
 
 	void OpenGLRendererAPI::Clear() {
-		VT_PROFILE_FUNCTION();
+		VT_PROFILE_FUNC();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
 	void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& va) {
-		VT_PROFILE_FUNCTION();
+		VT_PROFILE_FUNC();
 		glDrawElements(GL_TRIANGLES, va->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}

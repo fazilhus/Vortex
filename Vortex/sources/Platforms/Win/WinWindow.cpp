@@ -18,22 +18,18 @@ namespace Vortex {
 	}
 
 	Scope<Window> Window::Create(const WindowProps& props) {
-		VT_PROFILE_FUNCTION();
 		return CreateScope<WinWindow>(props);
 	}
 
 	WinWindow::WinWindow(const WindowProps& props) {
-		VT_PROFILE_FUNCTION();
 		Init(props);
 	}
 
 	WinWindow::~WinWindow() {
-		VT_PROFILE_FUNCTION();
 		Shutdown();
 	}
 
 	void WinWindow::Init(const WindowProps& props) {
-		VT_PROFILE_FUNCTION();
 		m_data.title = props.title;
 		m_data.width = props.width;
 		m_data.height = props.height;
@@ -42,7 +38,7 @@ namespace Vortex {
 
 		if (s_GLFWwindowCount == 0) {
 			{
-				VT_PROFILE_SCOPE("WinWindow::Init - GLFW init");
+				("WinWindow::Init - GLFW init");
 				VT_CORE_INFO("Initializing GLFW");
 				int success = glfwInit();
 				VT_CORE_ASSERT(success, "Could not init GLFW");
@@ -56,7 +52,7 @@ namespace Vortex {
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 		{
-			VT_PROFILE_SCOPE("WinWindow::Init - GLFW create window");
+			("WinWindow::Init - GLFW create window");
 
 #ifdef VT_DEBUG
 			if (Renderer::GetAPI() == RendererAPI::API::OPENGL) {
@@ -160,7 +156,6 @@ namespace Vortex {
 	}
 
 	void WinWindow::Shutdown() {
-		VT_PROFILE_FUNCTION();
 		glfwDestroyWindow(m_window);
 
 		if (--s_GLFWwindowCount == 0) {
@@ -170,13 +165,12 @@ namespace Vortex {
 	}
 
 	void WinWindow::OnUpdate(Timestep ts) {
-		VT_PROFILE_FUNCTION();
+		VT_PROFILE_FUNC();
 		glfwPollEvents();
 		m_context->SwapBuffers();
 	}
 
 	void WinWindow::SetVSync(bool enabled) {
-		VT_PROFILE_FUNCTION();
 		if (enabled)
 			glfwSwapInterval(1);
 		else
@@ -187,7 +181,6 @@ namespace Vortex {
 
 	
 	bool WinWindow::IsVSync() const {
-		VT_PROFILE_FUNCTION();
 		return m_data.vsync;
 	}
 
