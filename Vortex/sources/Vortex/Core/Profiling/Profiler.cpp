@@ -46,12 +46,12 @@ namespace Vortex {
 
 		ss << "	{\n";
 		ss << "		\"cat\":\"function\",\n";
-		ss << "		\"dur\":" << (res.end - res.start) << ",\n";
+		ss << "		\"dur\":" << res.elapsedTime.count() << ",\n";
 		ss << "		\"name\":\"" << name << "\",\n";
 		ss << "		\"ph\":\"X\",\n";
 		ss << "		\"pid\":0,\n";
 		ss << "		\"tid\":" << res.threadID << ",\n";
-		ss << "		\"ts\":" << res.start << "\n";
+		ss << "		\"ts\":" << res.start.count() << "\n";
 		ss << "	}";
 
 		std::lock_guard lock(m_mutex);
@@ -87,7 +87,7 @@ namespace Vortex {
 
 	Timer::Timer(const char* name)
 	: m_name(name), m_stopped(false) {
-		m_startPoint = std::chrono::high_resolution_clock::now();
+		m_startPoint = std::chrono::steady_clock::now();
 	}
 
 	Timer::~Timer() {
@@ -97,12 +97,11 @@ namespace Vortex {
 	}
 
 	void Timer::Stop() {
-		auto endPoint = std::chrono::high_resolution_clock::now();
+		auto startPoint = FloatingPointMicroseconds{ m_startPoint.time_since_epoch() };
+		auto endPoint = std::chrono::steady_clock::now();
+		auto elapsedTime = std::chrono::time_point_cast<std::chrono::microseconds>(endPoint).time_since_epoch() - std::chrono::time_point_cast<std::chrono::microseconds>(m_startPoint).time_since_epoch();
 
-		long long start = std::chrono::time_point_cast<std::chrono::microseconds>(m_startPoint).time_since_epoch().count();
-		long long end = std::chrono::time_point_cast<std::chrono::microseconds>(endPoint).time_since_epoch().count();
-
-		Profiler::Get().WriteProfile({ m_name, start, end, std::this_thread::get_id() });
+		Profiler::Get().WriteProfile({ m_name, startPoint, elapsedTime, std::this_thread::get_id() });
 
 		m_stopped = true;
 	}
