@@ -44,10 +44,12 @@ void Sandbox2D::OnUpdate(Vortex::Timestep ts) {
 
 void Sandbox2D::OnImGuiRender() {
 	VT_PROFILE_FUNCTION();
+	VT_CORE_TRACE("Sandbox2D::OnImGuiRender");
 	Layer::OnImGuiRender();
 }
 
 void Sandbox2D::OnEvent(Vortex::Event& e) {
 	VT_PROFILE_FUNCTION();
+	VT_CORE_TRACE("Sandbox2D::OnEvent");
 	m_cameraController.OnEvent(e);
 }

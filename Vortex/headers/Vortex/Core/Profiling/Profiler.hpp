@@ -59,7 +59,7 @@ namespace Vortex {
 #ifdef VT_PROFILE
 	#define VT_PROFILE_BEGIN_SESSION(name, filepath) ::Vortex::Profiler::Get().BeginSession(name, filepath)
 	#define VT_PROFILE_END_SESSION()                 ::Vortex::Profiler::Get().EndSession()
-	#define VT_PROFILE_SCOPE(name)                   ::Vortex::Timer timer##__LINE__(name);
+	#define VT_PROFILE_SCOPE(name)                   ::Vortex::Timer timer##__LINE__(name)
 	#define VT_PROFILE_FUNCTION()                    VT_PROFILE_SCOPE(__FUNCSIG__)
 #else
 	#define VT_PROFILE_BEGIN_SESSION(name, filepath)

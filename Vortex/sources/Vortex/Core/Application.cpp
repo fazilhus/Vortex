@@ -57,8 +57,9 @@ namespace Vortex {
 		dispatcher.Dispatch<WindowCloseEvent>(VT_BIND_EVENT_FN(Application::OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(VT_BIND_EVENT_FN(Application::OnWindowResize));
 
-		for (auto it = m_layerStack.end(); it != m_layerStack.begin();) {
-			(*--it)->OnEvent(e);
+		VT_CORE_INFO("Application::OnEvent LayerStack size {0}", m_layerStack.GetSize());
+		for (auto it = m_layerStack.rbegin(); it != m_layerStack.rend(); ++it) {
+			(*it)->OnEvent(e);
 			if (e.m_handled) {
 				break;
 			}
