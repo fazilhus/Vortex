@@ -36,6 +36,7 @@ namespace Vortex {
 	}
 
 	void OpenGLContext::SwapBuffers() {
+		VT_PROFILE_FUNC();
 		glfwSwapBuffers(m_windowHandle);
 	}
 

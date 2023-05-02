@@ -77,7 +77,15 @@
 
 #define VT_BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)
 
-using uint = unsigned int;
+using uint4 = unsigned int;
+using uint8 = std::uint8_t;
+using uint16 = std::uint16_t;
+using uint32 = std::uint32_t;
+
+using int4 = int;
+using int8 = std::int8_t;
+using int16 = std::int16_t;
+using int32 = std::int32_t;
 
 namespace Vortex {
 

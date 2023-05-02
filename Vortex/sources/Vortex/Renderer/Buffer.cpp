@@ -4,7 +4,7 @@
 
 namespace Vortex {
 
-	Ref<VertexBuffer> VertexBuffer::Create(float* vertices, uint size)
+	Ref<VertexBuffer> VertexBuffer::Create(float* vertices, uint4 size)
 	{
 		switch (Renderer::GetAPI()) {
 			case RendererAPI::API::NONE: {
@@ -20,7 +20,7 @@ namespace Vortex {
 		return nullptr;
 	}
 
-	Ref<IndexBuffer> IndexBuffer::Create(uint* indices, uint count)
+	Ref<IndexBuffer> IndexBuffer::Create(uint4* indices, uint4 count)
 	{
 		switch (Renderer::GetAPI()) {
 			case RendererAPI::API::NONE: {

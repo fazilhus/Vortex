@@ -30,14 +30,14 @@ namespace Vortex {
 
 		s_data->vao->AddVertexBuffer(vbo);
 
-		uint indices[6] = { 0, 1, 2, 2, 3, 0 };
-		Ref<IndexBuffer> ibo = IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint));
+		uint4 indices[6] = { 0, 1, 2, 2, 3, 0 };
+		Ref<IndexBuffer> ibo = IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint4));
 
 		s_data->vao->AddIndexBuffer(ibo);
 
 		s_data->texture = Texture2D::Create(1, 1);
-		uint texData = 0xffffffff;
-		s_data->texture->SetData(&texData, sizeof(uint));
+		uint4 texData = 0xffffffff;
+		s_data->texture->SetData(&texData, sizeof(uint4));
 
 		s_data->shader = Shader::Create("res/shaders/shader.glsl");
 		s_data->shader->Bind();
@@ -51,6 +51,7 @@ namespace Vortex {
 	}
 
 	void Renderer2D::BeginScene(const OrthoCamera& camera) {
+		VT_PROFILE_FUNC();
 		s_data->shader->Bind();
 		s_data->shader->SetMat4("u_viewproj", camera.GetViewProjMat());
 	}
@@ -63,6 +64,7 @@ namespace Vortex {
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color) {
+		VT_PROFILE_FUNC();
 		s_data->shader->SetFloat4("u_color", color);
 		s_data->texture->Bind();
 
@@ -79,6 +81,7 @@ namespace Vortex {
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec3& pos, const glm::vec2& size, const Ref<Vortex::Texture2D>& texture) {
+		VT_PROFILE_FUNC();
 		s_data->shader->SetFloat4("u_color", glm::vec4(1.0f));
 		texture->Bind();
 

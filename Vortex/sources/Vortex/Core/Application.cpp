@@ -27,31 +27,37 @@ namespace Vortex {
 	}
 
 	void Application::Run() {
+		VT_PROFILE_FUNC();
 		while (m_running) {
-			float time = (float)Platform::GetTimeSec();
-			Timestep timestep = time - m_lastFrameTime;
-			m_lastFrameTime = time;
+			{
+				VT_PROFILE_SCOPE("run loop");
+				float time = (float)Platform::GetTimeSec();
+				Timestep timestep = time - m_lastFrameTime;
+				m_lastFrameTime = time;
 
-			for (const auto& layer : m_layerStack) {
-				layer->OnUpdate(timestep);
+				for (const auto& layer : m_layerStack) {
+					layer->OnUpdate(timestep);
+				}
+
+				m_imguiLayer->Begin();
+				for (const auto& layer : m_layerStack)
+					layer->OnImGuiRender();
+				m_imguiLayer->End();
+
+				m_window->OnUpdate(timestep);
 			}
-
-			m_imguiLayer->Begin();
-			for (const auto& layer : m_layerStack)
-				layer->OnImGuiRender();
-			m_imguiLayer->End();
-
-			m_window->OnUpdate(timestep);
 		}
 	}
 
 	void Application::OnEvent(Event& e) {
+		VT_PROFILE_FUNC();
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(VT_BIND_EVENT_FN(Application::OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(VT_BIND_EVENT_FN(Application::OnWindowResize));
 
-		for (auto it = m_layerStack.end(); it != m_layerStack.begin();) {
-			(*--it)->OnEvent(e);
+		VT_CORE_INFO("Application::OnEvent LayerStack size {0}", m_layerStack.GetSize());
+		for (auto it = m_layerStack.rbegin(); it != m_layerStack.rend(); ++it) {
+			(*it)->OnEvent(e);
 			if (e.m_handled) {
 				break;
 			}

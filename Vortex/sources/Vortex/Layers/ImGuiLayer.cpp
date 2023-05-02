@@ -9,7 +9,8 @@
 namespace Vortex {
 
 	ImGuiLayer::ImGuiLayer() 
-		: Layer("ImGui layer"), m_time(0.0f) {}
+		: Layer("ImGui layer"), m_time(0.0f) {
+	}
 
 	void ImGuiLayer::OnAttach() {
 		IMGUI_CHECKVERSION();

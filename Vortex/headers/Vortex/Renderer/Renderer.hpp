@@ -22,7 +22,7 @@ namespace Vortex {
 		static void Init(const RendererConfig& cfg);
 		static void Shutdown();
 
-		static void OnWindowResize(uint width, uint height);
+		static void OnWindowResize(uint4 width, uint4 height);
 
 		static void BeginScene(OrthoCamera& cam);
 		static void EndScene();

@@ -7,19 +7,19 @@ namespace Vortex {
 
     Input* Input::s_instance = new WinInput();
 
-    bool WinInput::IsKeyPressedImpl(int keycode) {
+    bool WinInput::IsKeyPressedImpl(KeyCode keycode) {
         auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
         if (!window) return false;
 
-        auto state = glfwGetKey(window, keycode);
+        auto state = glfwGetKey(window, static_cast<int32>(keycode));
         return state == GLFW_PRESS || state == GLFW_REPEAT;
     }
 
-    bool WinInput::IsMouseButtonPressedImpl(int button) {
+    bool WinInput::IsMouseButtonPressedImpl(MouseCode button) {
         auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
         if (!window) return false;
 
-        auto state = glfwGetMouseButton(window, button);
+        auto state = glfwGetMouseButton(window, static_cast<int32>(button));
         return state == GLFW_PRESS;
     }
 

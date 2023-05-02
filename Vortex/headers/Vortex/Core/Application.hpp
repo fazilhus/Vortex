@@ -9,6 +9,8 @@
 #include "Vortex/Layers/ImGuiLayer.hpp"
 #include "Vortex/Layers/LayerStack.hpp"
 
+int main(int argc, char** argv);
+
 namespace Vortex {
 
 	class Application {
@@ -24,11 +26,11 @@ namespace Vortex {
 
 		bool m_isMinimized = false;
 
+		friend int ::main(int argc, char** argv);
+
 	public:
 		Application();
 		virtual ~Application();
-
-		void Run();
 
 		void OnEvent(Event& e);
 
@@ -41,6 +43,8 @@ namespace Vortex {
 		inline static Application& Get() { return *s_instance; }
 
 	private:
+		void Run();
+
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
 	};

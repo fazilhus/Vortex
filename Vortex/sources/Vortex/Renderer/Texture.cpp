@@ -19,7 +19,7 @@ namespace Vortex {
 		return nullptr;
 	}
 
-	Ref<Texture2D> Texture2D::Create(uint width, uint height) {
+	Ref<Texture2D> Texture2D::Create(uint4 width, uint4 height) {
 		switch (RendererAPI::GetAPI()) {
 		case RendererAPI::API::NONE: {
 			VT_CORE_ERROR("RendererAPI::API::NONE");

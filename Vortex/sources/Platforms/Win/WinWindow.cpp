@@ -11,7 +11,7 @@
 
 namespace Vortex {
 
-	static uint s_GLFWwindowCount = 0;
+	static uint4 s_GLFWwindowCount = 0;
 
 	static void GLFWErrorCallback(int code, const char* desc) {
 		VT_CORE_ERROR("GLFW Error: {0} {1}", code, desc);
@@ -37,19 +37,32 @@ namespace Vortex {
 		VT_CORE_INFO("Creating a window {0} ({1}, {2})", m_data.title, m_data.width, m_data.height);
 
 		if (s_GLFWwindowCount == 0) {
-			VT_CORE_INFO("Initializing GLFW");
-			int success = glfwInit();
-			VT_CORE_ASSERT(success, "Could not init GLFW");
+			{
+				("WinWindow::Init - GLFW init");
+				VT_CORE_INFO("Initializing GLFW");
+				int success = glfwInit();
+				VT_CORE_ASSERT(success, "Could not init GLFW");
 
-			glfwSetErrorCallback(GLFWErrorCallback);
+				glfwSetErrorCallback(GLFWErrorCallback);
+			}
 		}
 
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		m_window = glfwCreateWindow((int)m_data.width, (int)m_data.height, m_data.title.c_str(), nullptr, nullptr);
-		s_GLFWwindowCount++;
+		{
+			("WinWindow::Init - GLFW create window");
+
+#ifdef VT_DEBUG
+			if (Renderer::GetAPI() == RendererAPI::API::OPENGL) {
+				glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+			}
+#endif
+
+			m_window = glfwCreateWindow((int)m_data.width, (int)m_data.height, m_data.title.c_str(), nullptr, nullptr);
+			s_GLFWwindowCount++;
+		}
 
 		m_context = OpenGLContext::Create(m_window);
 		m_context->Init();
@@ -81,29 +94,29 @@ namespace Vortex {
 			{
 			case GLFW_PRESS:
 			{
-				KeyPressedEvent event(key, 0);
+				KeyPressedEvent event(static_cast<KeyCode>(key), 0);
 				data->eventCallback(event);
 				break;
 			}
 			case GLFW_RELEASE:
 			{
-				KeyReleasedEvent event(key);
+				KeyReleasedEvent event(static_cast<KeyCode>(key));
 				data->eventCallback(event);
 				break;
 			}
 			case GLFW_REPEAT:
 			{
-				KeyPressedEvent event(key, 1);
+				KeyPressedEvent event(static_cast<KeyCode>(key), 1);
 				data->eventCallback(event);
 				break;
 			}
 			}
 		});
 
-		glfwSetCharCallback(m_window, [](GLFWwindow* window, uint keycode) {
+		glfwSetCharCallback(m_window, [](GLFWwindow* window, uint4 keycode) {
 			WindowData* data = static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 
-			KeyTypedEvent event(keycode);
+			KeyTypedEvent event(static_cast<KeyCode>(keycode));
 			data->eventCallback(event);
 		});
 
@@ -114,13 +127,13 @@ namespace Vortex {
 			{
 			case GLFW_PRESS:
 			{
-				MouseButtonPressedEvent event(button);
+				MouseButtonPressedEvent event(static_cast<MouseCode>(button));
 				data->eventCallback(event);
 				break;
 			}
 			case GLFW_RELEASE:
 			{
-				MouseButtonReleasedEvent event(button);
+				MouseButtonReleasedEvent event(static_cast<MouseCode>(button));
 				data->eventCallback(event);
 				break;
 			}
@@ -152,6 +165,7 @@ namespace Vortex {
 	}
 
 	void WinWindow::OnUpdate(Timestep ts) {
+		VT_PROFILE_FUNC();
 		glfwPollEvents();
 		m_context->SwapBuffers();
 	}
