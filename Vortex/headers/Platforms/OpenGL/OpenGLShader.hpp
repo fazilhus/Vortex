@@ -1,15 +1,15 @@
 #pragma once
 #include "vtpch.hpp"
 
-typedef uint GLenum;
+typedef uint4 GLenum;
 
 namespace Vortex {
 
 	class OpenGLShader : public Shader {
 	private:
-		uint m_rendererID;
+		uint4 m_rendererID;
 		std::string m_name;
-		std::unordered_map<std::string, uint> m_uniformLoc;
+		std::unordered_map<std::string, uint4> m_uniformLoc;
 
 	public:
 		OpenGLShader(const std::string& filepath);

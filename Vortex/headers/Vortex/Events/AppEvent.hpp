@@ -5,15 +5,15 @@ namespace Vortex {
 
 	class WindowResizeEvent : public Event {
 	private:
-		uint m_width;
-		uint m_height;
+		uint4 m_width;
+		uint4 m_height;
 
 	public:
-		WindowResizeEvent(uint width, uint height) 
+		WindowResizeEvent(uint4 width, uint4 height) 
 			: m_width(width), m_height(height) {}
 
-		inline uint GetWidth() const { return m_width; }
-		inline uint GetHeight() const { return m_height; }
+		inline uint4 GetWidth() const { return m_width; }
+		inline uint4 GetHeight() const { return m_height; }
 
 #ifdef VT_DEBUG
 		std::string ToStr() const override {

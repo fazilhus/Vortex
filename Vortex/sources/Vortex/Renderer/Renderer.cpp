@@ -20,7 +20,7 @@ namespace Vortex {
 		VT_CORE_INFO("Renderer is terminated");
 	}
 
-	void Renderer::OnWindowResize(uint width, uint height) {
+	void Renderer::OnWindowResize(uint4 width, uint4 height) {
 		VT_PROFILE_FUNCTION();
 		Render::SetViewport(0, 0, width, height);
 	}

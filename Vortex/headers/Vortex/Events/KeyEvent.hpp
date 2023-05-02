@@ -7,13 +7,13 @@ namespace Vortex {
 	// Abstract event for any key events
 	class KeyEvent : public Event {
 	protected:
-		KeyEvent(int keycode)
+		KeyEvent(KeyCode keycode)
 			: m_keycode(keycode) {}
 
-		int m_keycode;
+		KeyCode m_keycode;
 
 	public:
-		inline int GetKeyCode() { return m_keycode; }
+		inline KeyCode GetKeyCode() const { return m_keycode; }
 
 		EVENT_CLASS_CAT(EventCatKeyboard | EventCatInput)
 	};
@@ -23,7 +23,7 @@ namespace Vortex {
 		int m_repeatCount;
 
 	public:
-		KeyPressedEvent(int keycode, int repeatCount) 
+		KeyPressedEvent(KeyCode keycode, int repeatCount)
 			: KeyEvent(keycode), m_repeatCount(repeatCount) {}
 
 		inline int GetRepeatCount() const { return m_repeatCount; }
@@ -41,7 +41,7 @@ namespace Vortex {
 
 	class KeyReleasedEvent : public KeyEvent {
 	public:
-		KeyReleasedEvent(int keycode) 
+		KeyReleasedEvent(KeyCode keycode)
 			: KeyEvent(keycode) {}
 
 #ifdef VT_DEBUG
@@ -57,7 +57,7 @@ namespace Vortex {
 
 	class KeyTypedEvent : public KeyEvent {
 	public:
-		KeyTypedEvent(int keycode) 
+		KeyTypedEvent(KeyCode keycode)
 			: KeyEvent(keycode) {}
 
 #ifdef VT_DEBUG

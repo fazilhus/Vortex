@@ -53,9 +53,9 @@ public:
 			vbo->SetLayout(layout);
 			m_vao2->AddVertexBuffer(vbo);
 
-			uint indices[6] = { 0, 1, 2, 2, 3, 0 };
+			uint4 indices[6] = { 0, 1, 2, 2, 3, 0 };
 			std::shared_ptr<Vortex::IndexBuffer> ibo;
-			ibo = Vortex::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint));
+			ibo = Vortex::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint4));
 			m_vao2->AddIndexBuffer(ibo);
 
 			auto shader = m_shaderLib.Load("res/shaders/boxShader.glsl");
@@ -81,9 +81,9 @@ public:
 			vbo->SetLayout(layout);
 			m_vao1->AddVertexBuffer(vbo);
 
-			uint indices[6] = { 0, 1, 2, 2, 3, 0 };
+			uint4 indices[6] = { 0, 1, 2, 2, 3, 0 };
 			std::shared_ptr<Vortex::IndexBuffer> ibo;
-			ibo = Vortex::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint));
+			ibo = Vortex::IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint4));
 			m_vao1->AddIndexBuffer(ibo);
 
 			auto texShader = m_shaderLib.Load("res/shaders/textureShader.glsl");

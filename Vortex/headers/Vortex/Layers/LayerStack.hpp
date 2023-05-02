@@ -6,7 +6,7 @@ namespace Vortex {
 	class LayerStack {
 	private:
 		std::vector<Ref<Layer>> m_layers;
-		uint m_layerInsertInd;
+		uint4 m_layerInsertInd;
 
 	public:
 		LayerStack();

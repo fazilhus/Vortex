@@ -12,7 +12,7 @@ namespace Vortex {
 		struct WindowData
 		{
 			std::string title = "";
-			uint width = 0, height = 0;
+			uint4 width = 0, height = 0;
 			bool vsync = false;
 
 			EventCallbackFn eventCallback;
@@ -26,8 +26,8 @@ namespace Vortex {
 
 		void OnUpdate(Timestep ts) override;
 
-		inline uint GetWidth() const override { return m_data.width; }
-		inline uint GetHeight() const override { return m_data.height; }
+		inline uint4 GetWidth() const override { return m_data.width; }
+		inline uint4 GetHeight() const override { return m_data.height; }
 
 		inline void SetEventCallback(const EventCallbackFn& callback) override { m_data.eventCallback = callback; }
 		void SetVSync(bool enabled) override;

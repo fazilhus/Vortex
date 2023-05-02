@@ -56,7 +56,7 @@ namespace Vortex {
 		stbi_image_free(data);
 	}
 
-	OpenGLTexture2D::OpenGLTexture2D(uint width, uint height)
+	OpenGLTexture2D::OpenGLTexture2D(uint4 width, uint4 height)
 	: m_width(width), m_height(height) {
 		VT_PROFILE_FUNCTION();
 		m_internalFormat = GL_RGBA8;
@@ -77,14 +77,14 @@ namespace Vortex {
 		glDeleteTextures(1, &m_rendererID);
 	}
 
-	void OpenGLTexture2D::SetData(void* data, uint size) {
+	void OpenGLTexture2D::SetData(void* data, uint4 size) {
 		VT_PROFILE_FUNCTION();
-		uint bpp = m_format == GL_RGBA ? 4 : 3;
+		uint4 bpp = m_format == GL_RGBA ? 4 : 3;
 		VT_CORE_ASSERT(size == m_width * m_height * bpp, "Not enought data to cover entire texture");
 		glTextureSubImage2D(m_rendererID, 0, 0, 0, m_width, m_height, m_format, GL_UNSIGNED_BYTE, data);
 	}
 
-	void OpenGLTexture2D::Bind(uint slot) const {
+	void OpenGLTexture2D::Bind(uint4 slot) const {
 		VT_PROFILE_FUNCTION();
 		glBindTextureUnit(slot, m_rendererID);
 	}

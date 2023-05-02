@@ -31,14 +31,14 @@ namespace Vortex {
 
 		s_data->vao->AddVertexBuffer(vbo);
 
-		uint indices[6] = { 0, 1, 2, 2, 3, 0 };
-		Ref<IndexBuffer> ibo = IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint));
+		uint4 indices[6] = { 0, 1, 2, 2, 3, 0 };
+		Ref<IndexBuffer> ibo = IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint4));
 
 		s_data->vao->AddIndexBuffer(ibo);
 
 		s_data->texture = Texture2D::Create(1, 1);
-		uint texData = 0xffffffff;
-		s_data->texture->SetData(&texData, sizeof(uint));
+		uint4 texData = 0xffffffff;
+		s_data->texture->SetData(&texData, sizeof(uint4));
 
 		s_data->shader = Shader::Create("res/shaders/shader.glsl");
 		s_data->shader->Bind();

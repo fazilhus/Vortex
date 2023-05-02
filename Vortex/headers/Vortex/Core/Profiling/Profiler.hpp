@@ -6,7 +6,7 @@ namespace Vortex {
 	struct ProfilerResult {
 		std::string name;
 		long long start, end;
-		uint threadID;
+		uint4 threadID;
 	};
 
 	struct ProfilerSession {

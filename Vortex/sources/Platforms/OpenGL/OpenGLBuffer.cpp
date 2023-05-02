@@ -7,7 +7,7 @@ namespace Vortex {
 
 	// VERTEX BUFFER
 
-	OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint size) {
+	OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint4 size) {
 		VT_PROFILE_FUNCTION();
 		glCreateBuffers(1, &m_rendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_rendererID);
@@ -31,12 +31,12 @@ namespace Vortex {
 
 	// INDEXBUFFER
 
-	OpenGLIndexBuffer::OpenGLIndexBuffer(uint* indices, uint count) 
+	OpenGLIndexBuffer::OpenGLIndexBuffer(uint4* indices, uint4 count) 
 		: m_count(count) {
 		VT_PROFILE_FUNCTION();
 		glCreateBuffers(1, &m_rendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_rendererID);
-		glBufferData(GL_ARRAY_BUFFER, count * sizeof(uint), indices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, count * sizeof(uint4), indices, GL_STATIC_DRAW);
 	}
 
 	OpenGLIndexBuffer::~OpenGLIndexBuffer() {
@@ -56,7 +56,7 @@ namespace Vortex {
 
 	// VERTEX ARRAY
 
-	static uint ShaderDataTypeToOpenGLType(ShaderDataType type) {
+	static uint4 ShaderDataTypeToOpenGLType(ShaderDataType type) {
 		switch (type) {
 			case ShaderDataType::Float:    return GL_FLOAT;
 			case ShaderDataType::Float2:   return GL_FLOAT;

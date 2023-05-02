@@ -4,7 +4,7 @@
 #include <glad/glad.h>
 
 namespace Vortex {
-	void OpenGLMessageCallback(uint source, uint type, uint id, uint severity, int len, const char* msg, const void* params) {
+	void OpenGLMessageCallback(uint4 source, uint4 type, uint4 id, uint4 severity, int len, const char* msg, const void* params) {
 		switch (severity) {
 			case GL_DEBUG_SEVERITY_HIGH: VT_CORE_CRITICAL(msg); return;
 			case GL_DEBUG_SEVERITY_MEDIUM: VT_CORE_ERROR(msg); return;
@@ -40,7 +40,7 @@ namespace Vortex {
 		}
 	}
 
-	void OpenGLRendererAPI::SetViewport(uint x, uint y, uint width, uint height) {
+	void OpenGLRendererAPI::SetViewport(uint4 x, uint4 y, uint4 width, uint4 height) {
 		VT_PROFILE_FUNCTION();
 		glViewport(x, y, width, height);
 	}
