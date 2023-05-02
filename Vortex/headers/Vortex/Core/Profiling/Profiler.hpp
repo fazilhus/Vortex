@@ -6,7 +6,7 @@ namespace Vortex {
 	struct ProfilerResult {
 		std::string name;
 		long long start, end;
-		uint4 threadID;
+		std::thread::id threadID;
 	};
 
 	struct ProfilerSession {
@@ -18,6 +18,8 @@ namespace Vortex {
 		Scope<ProfilerSession> m_currentSession;
 		std::ofstream m_output;
 		int m_profileCount;
+
+		std::mutex m_mutex;
 
 	public:
 		Profiler();
@@ -35,6 +37,8 @@ namespace Vortex {
 	private:
 		void WriteHeader();
 		void WriteFooter();
+
+		void InternalEndSession();
 	};
 
 	class Timer {
