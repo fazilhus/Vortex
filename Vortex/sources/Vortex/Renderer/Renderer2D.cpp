@@ -94,6 +94,7 @@ namespace Vortex {
 			s_data.texSlots[i]->Bind(i);
 		}
 		Render::DrawIndexed(s_data.quadVao, s_data.quadIndCount);
+		s_data.stats.drawcallsCount++;
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& pos, const glm::vec2& size, const glm::vec4& color) {
@@ -102,6 +103,11 @@ namespace Vortex {
 
 	void Renderer2D::DrawQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color) {
 		VT_PROFILE_FUNC();
+
+		if (s_data.quadIndCount >= Renderer2DStorage::maxInd) {
+			FlushAndReset();
+		}
+
 		constexpr float texIndex = 0.0f;
 		constexpr float tilingFactor = 1.0f;
 		constexpr float rot = 0.0f;
@@ -118,6 +124,10 @@ namespace Vortex {
 	void Renderer2D::DrawQuad(const glm::vec3& pos, const glm::vec2& size, const Ref<Vortex::Texture2D>& texture,
 		float tilingFactor, const glm::vec4 tintColor) {
 		VT_PROFILE_FUNC();
+
+		if (s_data.quadIndCount >= Renderer2DStorage::maxInd) {
+			FlushAndReset();
+		}
 
 		constexpr float rot = 0.0f;
 
@@ -147,6 +157,11 @@ namespace Vortex {
 
 	void Renderer2D::DrawRotatedQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color, float rot) {
 		VT_PROFILE_FUNC();
+
+		if (s_data.quadIndCount >= Renderer2DStorage::maxInd) {
+			FlushAndReset();
+		}
+
 		constexpr float texIndex = 0.0f;
 		constexpr float tilingFactor = 1.0f;
 
@@ -161,6 +176,10 @@ namespace Vortex {
 	void Renderer2D::DrawRotatedQuad(const glm::vec3& pos, const glm::vec2& size, const Ref<Vortex::Texture2D>& texture,
 		float rot, float tilingFactor, const glm::vec4 tintColor) {
 		VT_PROFILE_FUNC();
+
+		if (s_data.quadIndCount >= Renderer2DStorage::maxInd) {
+			FlushAndReset();
+		}
 
 		float texIndex = 0.0f;
 		for (uint32 i = 1; i < s_data.texSlotInd; ++i) {
@@ -182,8 +201,25 @@ namespace Vortex {
 		SetQuad(pos, size, tintColor, texIndex, tilingFactor, rot);
 	}
 
+	void Renderer2D::ResetStats() {
+		memset(&s_data.stats, 0, sizeof(RendererStatisics));
+	}
+
+	RendererStatisics Renderer2D::GetStats() {
+		return s_data.stats;
+	}
+
+	void Renderer2D::FlushAndReset() {
+		EndScene();
+
+		s_data.quadIndCount = 0;
+		s_data.quadVertexBufferPtr = s_data.quadVertexBufferBase;
+
+		s_data.texSlotInd = 1;
+	}
+
 	void Renderer2D::SetQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color,
-		float texIndex, float tilingFactor, float rot) {
+	                         float texIndex, float tilingFactor, float rot) {
 
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos)
 			* glm::rotate(glm::mat4(1.0f), glm::radians(rot), {0.0f, 0.0f, 1.0f}) 
@@ -218,5 +254,7 @@ namespace Vortex {
 		s_data.quadVertexBufferPtr++;
 
 		s_data.quadIndCount += 6;
+
+		s_data.stats.quadCount++;
 	}
 }

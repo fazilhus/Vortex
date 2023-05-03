@@ -13,10 +13,18 @@ namespace Vortex {
 		float tilingFactor;
 	};
 
+	struct RendererStatisics {
+		uint32 drawcallsCount = 0;
+		uint32 quadCount = 0;
+
+		uint32 GetVertexesCount() const { return quadCount * 4; }
+		uint32 GetIndicesCount() const { return quadCount * 6; }
+	};
+
 	struct Renderer2DStorage {
-		const uint32 maxQuads = 10000;
-		const uint32 maxVert = maxQuads * 4;
-		const uint32 maxInd = maxQuads * 6;
+		static const uint32 maxQuads = 20000;
+		static const uint32 maxVert = maxQuads * 4;
+		static const uint32 maxInd = maxQuads * 6;
 		static const uint32 maxTextureSLots = 32;
 
 		Ref<VertexArray> quadVao;
@@ -32,6 +40,8 @@ namespace Vortex {
 		uint32 texSlotInd = 1;
 
 		glm::vec4 quadVertexPos[4];
+
+		RendererStatisics stats;
 	};
 
 	class Renderer2D {
@@ -58,10 +68,14 @@ namespace Vortex {
 		static void DrawRotatedQuad(const glm::vec3& pos, const glm::vec2& size, const Ref<Vortex::Texture2D>& texture,
 			float rot = 0.0f, float tilingFactor = 1.0f, const glm::vec4 tintColor = glm::vec4(1.0f));
 
+		static void ResetStats();
+		static RendererStatisics GetStats();
+
 	private:
 		static void SetQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color,
 			float texIndex, float tilingFactor, float rot);
 
+		static void FlushAndReset();
 	};
 
 }
