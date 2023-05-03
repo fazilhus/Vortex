@@ -26,6 +26,7 @@ namespace Vortex {
 		if (cfg.enableBlending) {
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glBlendEquation(GL_FUNC_ADD);
 		}
 		else {
 			glDisable(GL_BLEND);
@@ -57,7 +58,7 @@ namespace Vortex {
 		VT_PROFILE_FUNC();
 		auto c = count ? va->GetIndexBuffer()->GetCount() : count;
 		glDrawElements(GL_TRIANGLES, c, GL_UNSIGNED_INT, nullptr);
-		glBindTexture(GL_TEXTURE_2D, 0);
+		//glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 }
