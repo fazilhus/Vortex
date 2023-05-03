@@ -35,5 +35,17 @@ out vec4 color;
 uniform sampler2D u_textures[32];
 
 void main() {
-	color = texture(u_textures[int(v_texInd)], v_texPos * v_tilingFactor) * v_color;
+	int ind = int(v_texInd);
+	if (ind == 0) {
+		color = texture(u_textures[0], v_texPos * v_tilingFactor) * v_color;
+	}
+	else if (ind == 1) {
+		color = texture(u_textures[1], v_texPos * v_tilingFactor) * v_color;
+	}
+	else if (ind == 2) {
+		color = texture(u_textures[2], v_texPos * v_tilingFactor) * v_color;
+	}
+	else {
+		color = vec4(1.0, 1.0, 1.0, 1.0);
+	}
 }

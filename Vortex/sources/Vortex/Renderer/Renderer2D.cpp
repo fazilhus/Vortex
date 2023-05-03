@@ -55,6 +55,11 @@ namespace Vortex {
 
 		s_data.texSlots[0] = s_data.texture;
 
+		s_data.quadVertexPos[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
+		s_data.quadVertexPos[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
+		s_data.quadVertexPos[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
+		s_data.quadVertexPos[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
+
 		VT_CORE_INFO("Renderer2D is initialized");
 	}
 
@@ -97,8 +102,12 @@ namespace Vortex {
 
 	void Renderer2D::DrawQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color) {
 		VT_PROFILE_FUNC();
+		constexpr float texIndex = 0.0f;
+		constexpr float tilingFactor = 1.0f;
+		constexpr float rot = 0.0f;
 
-		SetQuad(pos, size, color, 0.0f, 1.0f);
+
+		SetQuad(pos, size, color, texIndex, tilingFactor, rot);
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& pos, const glm::vec2& size, const Ref<Vortex::Texture2D>& texture,
@@ -110,7 +119,7 @@ namespace Vortex {
 		float tilingFactor, const glm::vec4 tintColor) {
 		VT_PROFILE_FUNC();
 
-		constexpr glm::vec4 color = { 1.0f, 1.0f, 1.0f, 1.0f };
+		constexpr float rot = 0.0f;
 
 		float texIndex = 0.0f;
 		for (uint32 i = 1; i < s_data.texSlotInd; ++i) {
@@ -129,7 +138,7 @@ namespace Vortex {
 		}
 
 		VT_CORE_TRACE("SetQuad texture {0} in index {1}", texture->GetPath(), texIndex);
-		SetQuad(pos, size, color, texIndex, tilingFactor);
+		SetQuad(pos, size, tintColor, texIndex, tilingFactor, rot);
 	}
 
 	void Renderer2D::DrawRotatedQuad(const glm::vec2& pos, const glm::vec2& size, const glm::vec4& color, float rot) {
@@ -138,17 +147,10 @@ namespace Vortex {
 
 	void Renderer2D::DrawRotatedQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color, float rot) {
 		VT_PROFILE_FUNC();
-		s_data.shader->SetFloat4("u_color", color);
-		s_data.shader->SetFloat("u_tilingFactor", 1.0f);
-		s_data.texture->Bind();
+		constexpr float texIndex = 0.0f;
+		constexpr float tilingFactor = 1.0f;
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos)
-		* glm::rotate(glm::mat4(1.0f), rot, {0.0f, 0.0f, 1.0f})
-		* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
-		s_data.shader->SetMat4("u_transform", transform);
-
-		s_data.quadVao->Bind();
-		Render::DrawIndexed(s_data.quadVao);
+		SetQuad(pos, size, color, texIndex, tilingFactor, rot);
 	}
 
 	void Renderer2D::DrawRotatedQuad(const glm::vec2& pos, const glm::vec2& size, const Ref<Vortex::Texture2D>& texture,
@@ -159,43 +161,56 @@ namespace Vortex {
 	void Renderer2D::DrawRotatedQuad(const glm::vec3& pos, const glm::vec2& size, const Ref<Vortex::Texture2D>& texture,
 		float rot, float tilingFactor, const glm::vec4 tintColor) {
 		VT_PROFILE_FUNC();
-		s_data.shader->SetFloat4("u_color", tintColor);
-		s_data.shader->SetFloat("u_tilingFactor", tilingFactor);
-		s_data.texture->Bind();
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos)
-			* glm::rotate(glm::mat4(1.0f), rot, { 0.0f, 0.0f, 1.0f })
-			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
-		s_data.shader->SetMat4("u_transform", transform);
+		float texIndex = 0.0f;
+		for (uint32 i = 1; i < s_data.texSlotInd; ++i) {
+			if (*s_data.texSlots[i].get() == *texture.get()) {
+				texIndex = static_cast<float>(i);
+				VT_CORE_TRACE("existing texture {0} in index {1}", texture->GetPath(), texIndex);
+				break;
+			}
+		}
 
-		s_data.quadVao->Bind();
-		Render::DrawIndexed(s_data.quadVao);
+		if (texIndex == 0.0f) {
+			texIndex = static_cast<float>(s_data.texSlotInd);
+			s_data.texSlots[s_data.texSlotInd] = texture;
+			VT_CORE_TRACE("new texture {0} in index {1}", texture->GetPath(), texIndex);
+			s_data.texSlotInd++;
+		}
+
+		VT_CORE_TRACE("SetQuad texture {0} in index {1}", texture->GetPath(), texIndex);
+		SetQuad(pos, size, tintColor, texIndex, tilingFactor, rot);
 	}
 
 	void Renderer2D::SetQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color,
-		const float texIndex, const float tilingFactor) {
-		s_data.quadVertexBufferPtr->pos = pos;
+		float texIndex, float tilingFactor, float rot) {
+
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos)
+			* glm::rotate(glm::mat4(1.0f), glm::radians(rot), {0.0f, 0.0f, 1.0f}) 
+			* glm::scale(glm::mat4(1.0f), {size.x, size.y, 1.0f});
+
+		s_data.quadVertexBufferPtr->pos = transform * s_data.quadVertexPos[0];
 		s_data.quadVertexBufferPtr->color = color;
 		s_data.quadVertexBufferPtr->texPos = { 0.0f, 0.0f };
 		s_data.quadVertexBufferPtr->texInd = texIndex;
 		s_data.quadVertexBufferPtr->tilingFactor = tilingFactor;
 		s_data.quadVertexBufferPtr++;
 
-		s_data.quadVertexBufferPtr->pos = { pos.x + size.x, pos.y, pos.z };
+		s_data.quadVertexBufferPtr->pos = transform * s_data.quadVertexPos[1];
 		s_data.quadVertexBufferPtr->color = color;
 		s_data.quadVertexBufferPtr->texPos = { 1.0f, 0.0f };
 		s_data.quadVertexBufferPtr->texInd = texIndex;
 		s_data.quadVertexBufferPtr->tilingFactor = tilingFactor;
 		s_data.quadVertexBufferPtr++;
 
-		s_data.quadVertexBufferPtr->pos = { pos.x + size.x, pos.y + size.y, pos.z };
+		s_data.quadVertexBufferPtr->pos = transform * s_data.quadVertexPos[2];
 		s_data.quadVertexBufferPtr->color = color;
 		s_data.quadVertexBufferPtr->texPos = { 1.0f, 1.0f };
 		s_data.quadVertexBufferPtr->texInd = texIndex;
 		s_data.quadVertexBufferPtr->tilingFactor = tilingFactor;
 		s_data.quadVertexBufferPtr++;
 
-		s_data.quadVertexBufferPtr->pos = { pos.x, pos.y + size.y, pos.z };
+		s_data.quadVertexBufferPtr->pos = transform * s_data.quadVertexPos[3];
 		s_data.quadVertexBufferPtr->color = color;
 		s_data.quadVertexBufferPtr->texPos = { 0.0f, 1.0f };
 		s_data.quadVertexBufferPtr->texInd = texIndex;

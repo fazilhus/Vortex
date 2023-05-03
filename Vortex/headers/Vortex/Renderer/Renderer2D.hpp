@@ -30,6 +30,8 @@ namespace Vortex {
 
 		std::array<Ref<Texture2D>, maxTextureSLots> texSlots;
 		uint32 texSlotInd = 1;
+
+		glm::vec4 quadVertexPos[4];
 	};
 
 	class Renderer2D {
@@ -58,7 +60,7 @@ namespace Vortex {
 
 	private:
 		static void SetQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color,
-			const float texIndex, const float tilingFactor);
+			float texIndex, float tilingFactor, float rot);
 
 	};
 
