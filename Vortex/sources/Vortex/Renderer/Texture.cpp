@@ -11,7 +11,8 @@ namespace Vortex {
 				VT_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
 				return nullptr; 
 			}
-			case RendererAPI::API::OPENGL:  
+			case RendererAPI::API::OPENGL:
+				VT_CORE_INFO("Created texture from img, path: {0}", path);
 				return CreateRef<OpenGLTexture2D>(path);
 		}
 		VT_CORE_ERROR("Unknown renderer api");
@@ -19,7 +20,7 @@ namespace Vortex {
 		return nullptr;
 	}
 
-	Ref<Texture2D> Texture2D::Create(uint width, uint height) {
+	Ref<Texture2D> Texture2D::Create(uint4 width, uint4 height) {
 		switch (RendererAPI::GetAPI()) {
 		case RendererAPI::API::NONE: {
 			VT_CORE_ERROR("RendererAPI::API::NONE");
@@ -27,6 +28,7 @@ namespace Vortex {
 			return nullptr;
 		}
 		case RendererAPI::API::OPENGL:
+			VT_CORE_INFO("Created texture, width: {0}, height: {1}", width, height);
 			return CreateRef<OpenGLTexture2D>(width, height);
 		}
 		VT_CORE_ERROR("Unknown renderer api");

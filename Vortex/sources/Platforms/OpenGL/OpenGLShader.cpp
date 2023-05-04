@@ -11,13 +11,13 @@ namespace Vortex {
 		if (type == "vertex") {
 			return GL_VERTEX_SHADER;
 		}
-		else if (type == "fragment" || type == "pixel") {
+
+		if (type == "fragment" || type == "pixel") {
 			return GL_FRAGMENT_SHADER;
 		}
-		else {
-			VT_CORE_ASSERT(false, "Unknown shader type");
-			return 0;
-		}
+
+		VT_CORE_ASSERT(false, "Unknown shader type");
+		return 0;
 	}
 
 	OpenGLShader::OpenGLShader(const std::string& filepath)
@@ -59,6 +59,11 @@ namespace Vortex {
 		UploadUniformInt(name, v);
 	}
 
+	void OpenGLShader::SetIntArray(const std::string& name, int* v, uint32 count) {
+		VT_CORE_TRACE("Shader SetIntArray: name = {0}, count = {1}", name, count);
+		UploadUniformIntArray(name, v, count);
+	}
+
 	void OpenGLShader::SetFloat(const std::string& name, float v) {
 		VT_CORE_TRACE("Shader SetFloat: name = {0}, v = {1}", name, v);
 		UploadUniformFloat(name, v);
@@ -94,6 +99,13 @@ namespace Vortex {
 			m_uniformLoc[name] = glGetUniformLocation(m_rendererID, name.c_str());
 		}
 		glUniform1i(m_uniformLoc[name], value);
+	}
+
+	void OpenGLShader::UploadUniformIntArray(const std::string& name, int* values, uint32_t count) {
+		if (m_uniformLoc.find(name) == m_uniformLoc.end()) {
+			m_uniformLoc[name] = glGetUniformLocation(m_rendererID, name.c_str());
+		}
+		glUniform1iv(m_uniformLoc[name], count, values);
 	}
 
 	void OpenGLShader::UploadUniformFloat(const std::string& name, float value) {
@@ -146,16 +158,11 @@ namespace Vortex {
 			return res;
 		}
 
-		size_t size = in.tellg();
-		if (size != -1) {
-			res.resize(size);
-			in.seekg(0, std::ios::beg);
-			in.read(&res[0], size);
-			in.close();
-		}
-		else {
-			VT_CORE_ERROR("Could not read from file '{0}'", filepath);
-		}
+		in.seekg(0, std::ios::end);
+		res.resize(in.tellg());
+		in.seekg(0, std::ios::beg);
+		in.read(&res[0], res.size());
+		in.close();
 		VT_CORE_INFO("shader was read from file");
 		return res;
 	}

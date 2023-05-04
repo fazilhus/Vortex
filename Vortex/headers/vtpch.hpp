@@ -15,6 +15,8 @@
 #include <memory>
 #include <string>
 #include <sstream>
+#include <chrono>
+#include <thread>
 
 // SPDLOG
 #include "spdlog/spdlog.h"
@@ -25,6 +27,11 @@
 #include "Vortex/Core/Window.hpp"
 #include "Vortex/Core/Input.hpp"
 #include "Vortex/Core/Codes.hpp"
+#include "Vortex/Core/Platform.hpp"
+#include "Vortex/Core/PlatformAPI.hpp"
+#include "Vortex/Core/Timestep.hpp"
+
+#include "Vortex/Core/Profiling/Profiler.hpp"
 
 #include "Vortex/Layers/Layer.hpp"
 #include "Vortex/Layers/LayerStack.hpp"
@@ -39,10 +46,6 @@
 #include "Vortex/Renderer/Renderer2D.hpp"
 #include "Vortex/Renderer/RendererAPI.hpp"
 #include "Vortex/Renderer/Texture.hpp"
-
-#include "Vortex/Core/Platform.hpp"
-#include "Vortex/Core/PlatformAPI.hpp"
-#include "Vortex/Core/Timestep.hpp"
 
 // GLFW
 #include <GLFW/glfw3.h>

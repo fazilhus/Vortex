@@ -6,7 +6,8 @@ namespace Vortex {
 	OrthoCameraController::OrthoCameraController(float aspectRatio, bool rotation)
 	: m_aspectRatio(aspectRatio),
 	m_camera(-m_aspectRatio * m_zoomLevel, m_aspectRatio * m_zoomLevel, -m_zoomLevel, m_zoomLevel),
-	m_rot(rotation) {}
+	m_rot(rotation) {
+	}
 
 	void OrthoCameraController::OnUpdate(Timestep ts) {
 		if (Vortex::Input::IsKeyPressed(VT_KEY_LEFT)) {

@@ -5,11 +5,12 @@ namespace Vortex {
 
 	class OpenGLVertexBuffer : public VertexBuffer {
 	private:
-		uint m_rendererID;
+		uint4 m_rendererID;
 		BufferLayout m_layout;
 
 	public:
-		OpenGLVertexBuffer(float* vertices, uint size);
+		OpenGLVertexBuffer(float* vertices, uint4 size);
+		OpenGLVertexBuffer(uint32 size);
 		virtual ~OpenGLVertexBuffer();
 
 		virtual void Bind() const override;
@@ -17,27 +18,29 @@ namespace Vortex {
 
 		virtual const BufferLayout& GetLayout() const override { return m_layout; }
 		virtual void SetLayout(const BufferLayout& layout) override { m_layout = layout; }
+
+		virtual void SetData(const void* data, uint32 size) override;
 	};
 
 	class OpenGLIndexBuffer : public IndexBuffer {
 	private:
-		uint m_rendererID;
-		uint m_count;
+		uint4 m_rendererID;
+		uint4 m_count;
 
 	public:
-		OpenGLIndexBuffer(uint* indices, uint count);
+		OpenGLIndexBuffer(uint32* indices, uint32 count);
 		virtual ~OpenGLIndexBuffer();
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 
-		inline virtual uint GetCount() const override { return m_count; }
+		inline virtual uint4 GetCount() const override { return m_count; }
 	};
 
 	class OpenGLVertexArray : public VertexArray {
 	private:
-		uint m_rendererID;
-		uint m_vertexBufferInd;
+		uint4 m_rendererID;
+		uint4 m_vertexBufferInd;
 		std::vector<Ref<VertexBuffer>> m_vbs;
 		Ref<IndexBuffer> m_ib;
 

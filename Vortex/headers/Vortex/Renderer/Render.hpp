@@ -13,7 +13,7 @@ namespace Vortex {
 			s_rendererAPI->Init(cfg);
 		}
 
-		inline static void SetViewport(uint x, uint y, uint width, uint height) {
+		inline static void SetViewport(uint4 x, uint4 y, uint4 width, uint4 height) {
 			s_rendererAPI->SetViewport(x, y, width, height);
 		}
 
@@ -25,8 +25,8 @@ namespace Vortex {
 			s_rendererAPI->Clear();
 		}
 
-		inline static void DrawIndexed(const Ref<VertexArray>& va) {
-			s_rendererAPI->DrawIndexed(va);
+		inline static void DrawIndexed(const Ref<VertexArray>& va, uint32 count = 0) {
+			s_rendererAPI->DrawIndexed(va, count);
 		}
 	};
 

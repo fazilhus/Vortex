@@ -7,7 +7,7 @@ namespace Vortex {
 		Float, Float2, Float3, Float4, Mat3, Mat4, Int, Int2, Int3, Int4, Bool
 	};
 
-	static uint ShaderDataTypeSize(ShaderDataType type) {
+	static uint4 ShaderDataTypeSize(ShaderDataType type) {
 		switch (type) {
 			case ShaderDataType::Float:    return 4;
 			case ShaderDataType::Float2:   return 4 * 2;
@@ -30,8 +30,8 @@ namespace Vortex {
 	struct BufferElement {
 		std::string name;
 		ShaderDataType type;
-		uint size;
-		uint offset;
+		uint4 size;
+		uint4 offset;
 		bool normalized;
 
 		BufferElement() 
@@ -39,7 +39,7 @@ namespace Vortex {
 		BufferElement(const std::string& name, ShaderDataType type, bool normalized = false) 
 			: name(name), type(type), size(ShaderDataTypeSize(type)), offset(0), normalized(normalized) {}
 
-		uint GetComponentCount() const {
+		uint4 GetComponentCount() const {
 			switch (type) {
 				case ShaderDataType::Float:    return 1;
 				case ShaderDataType::Float2:   return 2;
@@ -63,7 +63,7 @@ namespace Vortex {
 	class BufferLayout {
 	private:
 		std::vector<BufferElement> m_elements;
-		uint m_stride;
+		uint4 m_stride;
 
 	public:
 		BufferLayout()
@@ -77,7 +77,7 @@ namespace Vortex {
 			VT_CORE_INFO("BufferLayout copy constructor {0} {1}", m_elements.size(), m_stride);
 		}
 
-		inline uint GetStride() const { return m_stride; }
+		inline uint4 GetStride() const { return m_stride; }
 		inline const std::vector<BufferElement>& GetElements() const { return m_elements; }
 
 		std::vector<BufferElement>::iterator begin() { return m_elements.begin(); }
@@ -87,7 +87,7 @@ namespace Vortex {
 
 	private:
 		void CalcOffsetAndStride() {
-			uint offset = 0;
+			uint4 offset = 0;
 			m_stride = 0;
 			for (auto& element : m_elements) {
 				element.offset = offset;
@@ -107,7 +107,10 @@ namespace Vortex {
 		virtual const BufferLayout& GetLayout() const = 0;
 		virtual void SetLayout(const BufferLayout& layout) = 0;
 
-		static Ref<VertexBuffer> Create(float* vertices, uint size);
+		virtual void SetData(const void* data, uint32 size) = 0;
+
+		static Ref<VertexBuffer> Create(float* vertices, uint4 size);
+		static Ref<VertexBuffer> Create(uint32 size);
 	};
 
 	class IndexBuffer {
@@ -117,9 +120,9 @@ namespace Vortex {
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
-		virtual uint GetCount() const = 0;
+		virtual uint4 GetCount() const = 0;
 
-		static Ref<IndexBuffer> Create(uint* indices, uint count);
+		static Ref<IndexBuffer> Create(uint32* indices, uint32 count);
 	};
 
 	class VertexArray {

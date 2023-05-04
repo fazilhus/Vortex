@@ -18,6 +18,7 @@ namespace Vortex {
 		virtual const std::string& GetName() const = 0;
 
 		virtual void SetInt(const std::string& name, int v) = 0;
+		virtual void SetIntArray(const std::string& name, int* v, uint32 count) = 0;
 		virtual void SetFloat(const std::string& name, float v) = 0;
 		virtual void SetFloat2(const std::string& name, const glm::vec2& v) = 0;
 		virtual void SetFloat3(const std::string& name, const glm::vec3& v) = 0;

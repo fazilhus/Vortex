@@ -6,21 +6,24 @@ namespace Vortex {
 	class OpenGLTexture2D : public Texture2D {
 	private:
 		std::string m_path;
-		uint m_width, m_height;
-		uint m_rendererID;
-		uint m_internalFormat, m_format;
+		uint32 m_width, m_height;
+		uint32 m_rendererID;
+		uint32 m_internalFormat, m_format;
 
 	public:
 		OpenGLTexture2D(const std::string& path);
-		OpenGLTexture2D(uint width, uint height);
+		OpenGLTexture2D(uint32 width, uint32 height);
 		virtual ~OpenGLTexture2D();
 
-		virtual uint GetWidth() const override { return m_width; }
-		virtual uint GetHeight() const override { return m_height; }
+		virtual uint32 GetWidth() const override { return m_width; }
+		virtual uint32 GetHeight() const override { return m_height; }
+		virtual const std::string& GetPath() const override { return m_path; }
 
-		virtual void SetData(void* data, uint size) override;
+		virtual void SetData(void* data, uint32 size) override;
 
-		virtual void Bind(uint slot = 0) const override;
+		virtual void Bind(uint32 slot = 0) const override;
+
+		virtual bool operator==(const Texture& other) const override;
 	};
 
 }

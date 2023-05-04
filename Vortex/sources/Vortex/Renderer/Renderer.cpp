@@ -18,7 +18,7 @@ namespace Vortex {
 		VT_CORE_INFO("Renderer is terminated");
 	}
 
-	void Renderer::OnWindowResize(uint width, uint height) {
+	void Renderer::OnWindowResize(uint4 width, uint4 height) {
 		Render::SetViewport(0, 0, width, height);
 	}
 
@@ -30,9 +30,10 @@ namespace Vortex {
 	}
 
 	void Renderer::Submit(const Ref<Shader>& shader, const Ref<VertexArray>& va, const glm::mat4& transform) {
+		VT_PROFILE_FUNC();
 		shader->Bind();
-		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_viewproj", s_sceneData->viewproj);
-		std::dynamic_pointer_cast<OpenGLShader>(shader)->UploadUniformMat4("u_transform", transform);
+		shader->SetMat4("u_viewproj", s_sceneData->viewproj);
+		shader->SetMat4("u_transform", transform);
 
 		va->Bind();
 		Render::DrawIndexed(va);
