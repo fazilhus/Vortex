@@ -26,6 +26,7 @@ namespace Vortex {
 		if (cfg.enableBlending) {
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glBlendEquation(GL_FUNC_ADD);
 		}
 		else {
 			glDisable(GL_BLEND);
@@ -53,10 +54,11 @@ namespace Vortex {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& va) {
+	void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& va, uint32 count) {
 		VT_PROFILE_FUNC();
-		glDrawElements(GL_TRIANGLES, va->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
-		glBindTexture(GL_TEXTURE_2D, 0);
+		auto c = count ? va->GetIndexBuffer()->GetCount() : count;
+		glDrawElements(GL_TRIANGLES, c, GL_UNSIGNED_INT, nullptr);
+		//glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 }

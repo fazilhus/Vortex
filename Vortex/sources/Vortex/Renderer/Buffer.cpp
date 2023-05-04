@@ -20,7 +20,22 @@ namespace Vortex {
 		return nullptr;
 	}
 
-	Ref<IndexBuffer> IndexBuffer::Create(uint4* indices, uint4 count)
+	Ref<VertexBuffer> VertexBuffer::Create(uint32 size) {
+		switch (Renderer::GetAPI()) {
+		case RendererAPI::API::NONE: {
+			VT_CORE_ASSERT(false, "RendererAPI::API::NONE");
+			return nullptr;
+		}
+		case RendererAPI::API::OPENGL: {
+			return CreateRef<OpenGLVertexBuffer>(size);
+		}
+		}
+		VT_CORE_ERROR("Unsupported api");
+		VT_CORE_ASSERT(false, "Unsupported api");
+		return nullptr;
+	}
+
+	Ref<IndexBuffer> IndexBuffer::Create(uint32* indices, uint32 count)
 	{
 		switch (Renderer::GetAPI()) {
 			case RendererAPI::API::NONE: {

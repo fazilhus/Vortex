@@ -8,7 +8,8 @@ private:
 
 	Vortex::Ref<Vortex::VertexArray> m_vao;
 	Vortex::Ref<Vortex::Shader> m_shader;
-	Vortex::Ref<Vortex::Texture2D> m_texture;
+	Vortex::Ref<Vortex::Texture2D> m_texture1;
+	Vortex::Ref<Vortex::Texture2D> m_texture2;
 
 public:
 	Sandbox2D();

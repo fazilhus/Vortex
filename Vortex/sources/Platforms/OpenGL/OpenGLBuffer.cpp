@@ -13,6 +13,12 @@ namespace Vortex {
 		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 	}
 
+	OpenGLVertexBuffer::OpenGLVertexBuffer(uint32 size) {
+		glCreateBuffers(1, &m_rendererID);
+		glBindBuffer(GL_ARRAY_BUFFER, m_rendererID);
+		glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
+	}
+
 	OpenGLVertexBuffer::~OpenGLVertexBuffer() {
 		glDeleteBuffers(1, &m_rendererID);
 	}
@@ -25,9 +31,14 @@ namespace Vortex {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
+	void OpenGLVertexBuffer::SetData(const void* data, uint32 size) {
+		glBindBuffer(GL_ARRAY_BUFFER, m_rendererID);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
+	}
+
 	// INDEXBUFFER
 
-	OpenGLIndexBuffer::OpenGLIndexBuffer(uint4* indices, uint4 count) 
+	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32* indices, uint32 count) 
 		: m_count(count) {
 		glCreateBuffers(1, &m_rendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_rendererID);

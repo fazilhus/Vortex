@@ -11,7 +11,7 @@ namespace Vortex {
 		virtual void SetViewport(uint4 x, uint4 y, uint4 width, uint4 height) override;
 		virtual void SetClearColor(const glm::vec4& color) override;
 		virtual void Clear() override;
-		virtual void DrawIndexed(const Ref<VertexArray>& va) override;
+		virtual void DrawIndexed(const Ref<VertexArray>& va, uint32 count = 0) override;
 	};
 
 }

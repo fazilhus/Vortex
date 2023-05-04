@@ -107,7 +107,10 @@ namespace Vortex {
 		virtual const BufferLayout& GetLayout() const = 0;
 		virtual void SetLayout(const BufferLayout& layout) = 0;
 
+		virtual void SetData(const void* data, uint32 size) = 0;
+
 		static Ref<VertexBuffer> Create(float* vertices, uint4 size);
+		static Ref<VertexBuffer> Create(uint32 size);
 	};
 
 	class IndexBuffer {
@@ -119,7 +122,7 @@ namespace Vortex {
 
 		virtual uint4 GetCount() const = 0;
 
-		static Ref<IndexBuffer> Create(uint4* indices, uint4 count);
+		static Ref<IndexBuffer> Create(uint32* indices, uint32 count);
 	};
 
 	class VertexArray {

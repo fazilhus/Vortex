@@ -25,8 +25,8 @@ namespace Vortex {
 			s_rendererAPI->Clear();
 		}
 
-		inline static void DrawIndexed(const Ref<VertexArray>& va) {
-			s_rendererAPI->DrawIndexed(va);
+		inline static void DrawIndexed(const Ref<VertexArray>& va, uint32 count = 0) {
+			s_rendererAPI->DrawIndexed(va, count);
 		}
 	};
 
