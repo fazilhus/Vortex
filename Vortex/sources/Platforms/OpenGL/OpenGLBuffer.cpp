@@ -7,13 +7,13 @@ namespace Vortex {
 
 	// VERTEX BUFFER
 
-	OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint4 size) {
+	OpenGLVertexBuffer::OpenGLVertexBuffer(const float* vertices, uint4 size) : m_rendererID(0) {
 		glCreateBuffers(1, &m_rendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_rendererID);
 		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
 	}
 
-	OpenGLVertexBuffer::OpenGLVertexBuffer(uint32 size) {
+	OpenGLVertexBuffer::OpenGLVertexBuffer(uint32 size) : m_rendererID(0) {
 		glCreateBuffers(1, &m_rendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_rendererID);
 		glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
@@ -38,8 +38,8 @@ namespace Vortex {
 
 	// INDEXBUFFER
 
-	OpenGLIndexBuffer::OpenGLIndexBuffer(uint32* indices, uint32 count) 
-		: m_count(count) {
+	OpenGLIndexBuffer::OpenGLIndexBuffer(const uint32* indices, uint32 count) 
+		: m_rendererID(0), m_count(count) {
 		glCreateBuffers(1, &m_rendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_rendererID);
 		glBufferData(GL_ARRAY_BUFFER, count * sizeof(uint4), indices, GL_STATIC_DRAW);
@@ -80,7 +80,7 @@ namespace Vortex {
 	}
 
 	OpenGLVertexArray::OpenGLVertexArray() 
-		: m_vertexBufferInd(0) {
+		: m_rendererID(0), m_vertexBufferInd(0) {
 		glCreateVertexArrays(1, &m_rendererID);
 	}
 
@@ -104,14 +104,47 @@ namespace Vortex {
 
 		const auto& layout = vb->GetLayout();
 		for (const auto item : layout) {
-			glEnableVertexAttribArray(m_vertexBufferInd);
-			glVertexAttribPointer(m_vertexBufferInd, 
-				item.GetComponentCount(),
-				ShaderDataTypeToOpenGLType(item.type),
-				item.normalized ? GL_TRUE : GL_FALSE,
-				layout.GetStride(),
-				(const void*)(intptr_t)item.offset);
-			m_vertexBufferInd++;
+			switch (item.type) {
+				case ShaderDataType::Float:
+				case ShaderDataType::Float2:
+				case ShaderDataType::Float3:
+				case ShaderDataType::Float4:
+				case ShaderDataType::Int:
+				case ShaderDataType::Int2:
+				case ShaderDataType::Int3:
+				case ShaderDataType::Int4:
+				case ShaderDataType::Bool: {
+					glEnableVertexAttribArray(m_vertexBufferInd);
+					glVertexAttribPointer(m_vertexBufferInd,
+						item.GetComponentCount(),
+						ShaderDataTypeToOpenGLType(item.type),
+						item.normalized ? GL_TRUE : GL_FALSE,
+						layout.GetStride(),
+						reinterpret_cast<const void*>(item.offset));
+					m_vertexBufferInd++;
+					break;
+				}
+				case ShaderDataType::Mat3:
+				case ShaderDataType::Mat4: {
+					const auto count = item.GetComponentCount();
+					for (std::size_t i = 0; i < count; i++)
+					{
+						glEnableVertexAttribArray(m_vertexBufferInd);
+						glVertexAttribPointer(m_vertexBufferInd,
+							count,
+							ShaderDataTypeToOpenGLType(item.type),
+							item.normalized ? GL_TRUE : GL_FALSE,
+							layout.GetStride(),
+							reinterpret_cast<const void*>(sizeof(float) * count * i));
+						glVertexAttribDivisor(m_vertexBufferInd, 1);
+						m_vertexBufferInd++;
+					}
+					break;
+				}
+				default: {
+					VT_CORE_ASSERT(false, "Unknown data type");
+				}
+			}
 		}
 		m_vbs.push_back(vb);
 	}

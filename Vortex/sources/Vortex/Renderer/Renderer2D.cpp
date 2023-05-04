@@ -20,7 +20,7 @@ namespace Vortex {
 
 		s_data.quadVertexBufferBase = new QuadVertex[s_data.maxVert];
 
-		auto ind = new uint32[s_data.maxInd];
+		const auto ind = new uint32[s_data.maxInd];
 		uint32 offset = 0;
 
 		for (uint32 i = 0; i < s_data.maxInd; i += 6) {
@@ -82,13 +82,17 @@ namespace Vortex {
 
 	void Renderer2D::EndScene() {
 		VT_PROFILE_FUNC();
-		uint32 dataSize = reinterpret_cast<uint8*>(s_data.quadVertexBufferPtr) - reinterpret_cast<uint8*>(s_data.quadVertexBufferBase);
+		const auto dataSize = static_cast<uint32>(reinterpret_cast<uint8*>(s_data.quadVertexBufferPtr) - reinterpret_cast<uint8*>(s_data.quadVertexBufferBase));
 		s_data.quadVbo->SetData(s_data.quadVertexBufferBase, dataSize);
 
 		Flush();
 	}
 
 	void Renderer2D::Flush() {
+		if(s_data.quadIndCount == 0) {
+			return;
+		}
+
 		for (uint32 i = 0; i < s_data.texSlotInd; ++i) {
 			VT_CORE_TRACE("Bind texture {0} in slot {1}", s_data.texSlots[i]->GetPath(), i);
 			s_data.texSlots[i]->Bind(i);
@@ -141,6 +145,10 @@ namespace Vortex {
 		}
 
 		if (texIndex == 0.0f) {
+			if (s_data.quadIndCount >= Renderer2DStorage::maxInd) {
+				FlushAndReset();
+			}
+
 			texIndex = static_cast<float>(s_data.texSlotInd);
 			s_data.texSlots[s_data.texSlotInd] = texture;
 			VT_CORE_TRACE("new texture {0} in index {1}", texture->GetPath(), texIndex);
@@ -191,6 +199,10 @@ namespace Vortex {
 		}
 
 		if (texIndex == 0.0f) {
+			if (s_data.quadIndCount >= Renderer2DStorage::maxInd) {
+				FlushAndReset();
+			}
+
 			texIndex = static_cast<float>(s_data.texSlotInd);
 			s_data.texSlots[s_data.texSlotInd] = texture;
 			VT_CORE_TRACE("new texture {0} in index {1}", texture->GetPath(), texIndex);
@@ -221,37 +233,20 @@ namespace Vortex {
 	void Renderer2D::SetQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color,
 	                         float texIndex, float tilingFactor, float rot) {
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos)
+		constexpr glm::vec2 texPos[] = { {0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f} };
+
+		const glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos)
 			* glm::rotate(glm::mat4(1.0f), glm::radians(rot), {0.0f, 0.0f, 1.0f}) 
 			* glm::scale(glm::mat4(1.0f), {size.x, size.y, 1.0f});
 
-		s_data.quadVertexBufferPtr->pos = transform * s_data.quadVertexPos[0];
-		s_data.quadVertexBufferPtr->color = color;
-		s_data.quadVertexBufferPtr->texPos = { 0.0f, 0.0f };
-		s_data.quadVertexBufferPtr->texInd = texIndex;
-		s_data.quadVertexBufferPtr->tilingFactor = tilingFactor;
-		s_data.quadVertexBufferPtr++;
-
-		s_data.quadVertexBufferPtr->pos = transform * s_data.quadVertexPos[1];
-		s_data.quadVertexBufferPtr->color = color;
-		s_data.quadVertexBufferPtr->texPos = { 1.0f, 0.0f };
-		s_data.quadVertexBufferPtr->texInd = texIndex;
-		s_data.quadVertexBufferPtr->tilingFactor = tilingFactor;
-		s_data.quadVertexBufferPtr++;
-
-		s_data.quadVertexBufferPtr->pos = transform * s_data.quadVertexPos[2];
-		s_data.quadVertexBufferPtr->color = color;
-		s_data.quadVertexBufferPtr->texPos = { 1.0f, 1.0f };
-		s_data.quadVertexBufferPtr->texInd = texIndex;
-		s_data.quadVertexBufferPtr->tilingFactor = tilingFactor;
-		s_data.quadVertexBufferPtr++;
-
-		s_data.quadVertexBufferPtr->pos = transform * s_data.quadVertexPos[3];
-		s_data.quadVertexBufferPtr->color = color;
-		s_data.quadVertexBufferPtr->texPos = { 0.0f, 1.0f };
-		s_data.quadVertexBufferPtr->texInd = texIndex;
-		s_data.quadVertexBufferPtr->tilingFactor = tilingFactor;
-		s_data.quadVertexBufferPtr++;
+		for (size_t i = 0; i < 4; ++i) {
+			s_data.quadVertexBufferPtr->pos = transform * s_data.quadVertexPos[i];
+			s_data.quadVertexBufferPtr->color = color;
+			s_data.quadVertexBufferPtr->texPos = texPos[i];
+			s_data.quadVertexBufferPtr->texInd = texIndex;
+			s_data.quadVertexBufferPtr->tilingFactor = tilingFactor;
+			s_data.quadVertexBufferPtr++;
+		}
 
 		s_data.quadIndCount += 6;
 

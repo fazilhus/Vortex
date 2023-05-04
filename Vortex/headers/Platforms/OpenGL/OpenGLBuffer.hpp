@@ -9,7 +9,7 @@ namespace Vortex {
 		BufferLayout m_layout;
 
 	public:
-		OpenGLVertexBuffer(float* vertices, uint4 size);
+		OpenGLVertexBuffer(const float* vertices, uint4 size);
 		OpenGLVertexBuffer(uint32 size);
 		virtual ~OpenGLVertexBuffer();
 
@@ -28,7 +28,7 @@ namespace Vortex {
 		uint4 m_count;
 
 	public:
-		OpenGLIndexBuffer(uint32* indices, uint32 count);
+		OpenGLIndexBuffer(const uint32* indices, uint32 count);
 		virtual ~OpenGLIndexBuffer();
 
 		virtual void Bind() const override;

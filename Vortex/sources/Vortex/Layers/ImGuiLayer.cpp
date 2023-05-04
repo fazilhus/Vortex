@@ -49,6 +49,14 @@ namespace Vortex {
 		ImGui::ShowDemoWindow(&show);*/
 	}
 
+	void ImGuiLayer::OnEvent(Event& e) {
+		Layer::OnEvent(e);
+
+		ImGuiIO& io = ImGui::GetIO();
+		e.m_handled |= e.IsInCat(EventCatMouse) & io.WantCaptureMouse;
+		e.m_handled |= e.IsInCat(EventCatKeyboard) & io.WantCaptureKeyboard;
+	}
+
 	void ImGuiLayer::Begin() {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();

@@ -56,7 +56,7 @@ namespace Vortex {
 
 	void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& va, uint32 count) {
 		VT_PROFILE_FUNC();
-		auto c = count ? va->GetIndexBuffer()->GetCount() : count;
+		auto c = count ? count : va->GetIndexBuffer()->GetCount();
 		glDrawElements(GL_TRIANGLES, c, GL_UNSIGNED_INT, nullptr);
 		//glBindTexture(GL_TEXTURE_2D, 0);
 	}
