@@ -39,6 +39,8 @@ namespace Vortex {
 		void PushOverlay(Ref<Layer> o);
 		void PopOverlay(Ref<Layer> o);
 
+		void Close();
+
 		inline Window& GetWindow() const { return *m_window; }
 		inline static Application& Get() { return *s_instance; }
 

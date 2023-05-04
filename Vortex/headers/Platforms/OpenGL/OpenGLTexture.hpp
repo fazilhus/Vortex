@@ -13,11 +13,12 @@ namespace Vortex {
 	public:
 		OpenGLTexture2D(const std::string& path);
 		OpenGLTexture2D(uint32 width, uint32 height);
-		virtual ~OpenGLTexture2D();
+		virtual ~OpenGLTexture2D() override;
 
 		virtual uint32 GetWidth() const override { return m_width; }
 		virtual uint32 GetHeight() const override { return m_height; }
 		virtual const std::string& GetPath() const override { return m_path; }
+		virtual uint32 GetID() const override { return m_rendererID; }
 
 		virtual void SetData(void* data, uint32 size) override;
 

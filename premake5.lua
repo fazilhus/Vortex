@@ -132,7 +132,6 @@ group ""
             "%{includedir.imgui}",
             "%{includedir.glm}",
             "%{includedir.stb}"
-
         }
 
         links {

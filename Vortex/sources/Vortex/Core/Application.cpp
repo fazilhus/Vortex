@@ -80,6 +80,10 @@ namespace Vortex {
 		m_layerStack.PopOverlay(o);
 	}
 
+	void Application::Close() {
+		m_running = false;
+	}
+
 	bool Application::OnWindowClose(WindowCloseEvent& e) {
 		VT_CORE_TRACE("Window close event");
 		m_running = false;
