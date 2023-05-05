@@ -2,7 +2,7 @@
 
 #include "Vortex.hpp"
 
-class Sandbox2D : public Vortex::Layer {
+class EditorLayer : public Vortex::Layer {
 private:
 	Vortex::OrthoCameraController m_cameraController;
 
@@ -10,10 +10,11 @@ private:
 	Vortex::Ref<Vortex::Shader> m_shader;
 	Vortex::Ref<Vortex::Texture2D> m_texture1;
 	Vortex::Ref<Vortex::Texture2D> m_texture2;
+	Vortex::Ref<Vortex::FrameBuffer> m_frameBuffer;
 
 public:
-	Sandbox2D();
-	virtual ~Sandbox2D() = default;
+	EditorLayer();
+	virtual ~EditorLayer() override = default;
 
 	virtual void OnAttach() override;
 	virtual void OnDetach() override;

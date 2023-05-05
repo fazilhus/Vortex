@@ -141,4 +141,24 @@ namespace Vortex {
 		static Ref<VertexArray> Create();
 	};
 
+	struct FrameBufferSpec {
+		uint32 width, height;
+		uint32 samples = 1;
+
+		bool swapChainTarget = false;
+	};
+
+	class FrameBuffer {
+	public:
+		virtual ~FrameBuffer() {}
+
+		virtual void Bind() const = 0;
+		virtual void Unbind() const = 0;
+
+		virtual uint32 GetColorAttachmentID() const = 0;
+		virtual const FrameBufferSpec& GetSpec() const = 0;
+
+		static Ref<FrameBuffer> Create(const FrameBufferSpec& spec);
+	};
+
 }

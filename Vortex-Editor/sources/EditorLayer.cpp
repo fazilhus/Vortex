@@ -1,21 +1,23 @@
-#include "Sandbox2D.hpp"
+#include "EditorLayer.hpp"
 #include "Platforms/OpenGL/OpenGLShader.hpp"
 
-Sandbox2D::Sandbox2D()
-: Layer("Sandbox2D"), m_cameraController(16.0f / 9.0f, true) {}
+EditorLayer::EditorLayer()
+: Layer("EditorLayer"), m_cameraController(16.0f / 9.0f, true) {}
 
-void Sandbox2D::OnAttach() {
+void EditorLayer::OnAttach() {
 	Layer::OnAttach();
 
 	m_texture1 = Vortex::Texture2D::Create("res/textures/img3.png");
 	m_texture2 = Vortex::Texture2D::Create("res/textures/img2.png");
+
+    m_frameBuffer = Vortex::FrameBuffer::Create({1600, 900, 1, false});
 }
 
-void Sandbox2D::OnDetach() {
+void EditorLayer::OnDetach() {
 	Layer::OnDetach();
 }
 
-void Sandbox2D::OnUpdate(Vortex::Timestep ts) {
+void EditorLayer::OnUpdate(Vortex::Timestep ts) {
 	VT_PROFILE_FUNC();
 
 	Vortex::Renderer2D::ResetStats();
@@ -27,6 +29,7 @@ void Sandbox2D::OnUpdate(Vortex::Timestep ts) {
 
 	{
 		VT_PROFILE_SCOPE("Screen Prep");
+        m_frameBuffer->Bind();
 		Vortex::Render::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		Vortex::Render::Clear();
 	}
@@ -39,30 +42,33 @@ void Sandbox2D::OnUpdate(Vortex::Timestep ts) {
 
 		Vortex::Renderer2D::BeginScene(m_cameraController.GetCamera());
 
-		Vortex::Renderer2D::DrawRotatedQuad({ 0.0f, 0.0f, -0.01f }, { 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, -45.0f);
-		Vortex::Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
+		Vortex::Renderer2D::DrawQuad({ -0.5f, 0.0f}, { 1.0f, 1.0f }, m_texture2, 1.0f, {0.8f, 0.2f, 0.3f, 1.0f});
+		Vortex::Renderer2D::DrawRotatedQuad({ 0.5f, 0.0f }, { 1.0f, 1.0f }, m_texture1, rot);
 		Vortex::Renderer2D::DrawQuad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, { 0.2f, 0.3f, 0.8f, 1.0f });
-		Vortex::Renderer2D::DrawRotatedQuad({ 0.5f, 0.0f, 0.01f }, { 1.0f, 1.0f }, m_texture1, rot);
-		Vortex::Renderer2D::DrawQuad({ -0.5f, 0.0f, 0.02f }, { 1.0f, 1.0f }, m_texture2, 1.0f, {0.8f, 0.2f, 0.3f, 1.0f});
+		Vortex::Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
+		Vortex::Renderer2D::DrawRotatedQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, -45.0f);
 
 		Vortex::Renderer2D::EndScene();
 
-		Vortex::Renderer2D::BeginScene(m_cameraController.GetCamera());
+        Vortex::Renderer2D::BeginScene(m_cameraController.GetCamera());
 
-		for (float y = -5.0f; y < 5.0f; y += 0.5f) {
-			for (float x = -5.0f; x < 5.0f; x += 0.5f) {
-				glm::vec4 color = { (x + 5.0f) / 10.0f, 0.4f, (y + 5.0f) / 10.0f, 0.7f };
-				Vortex::Renderer2D::DrawQuad({ x, y }, { 0.45f, 0.45f }, color);
-			}
-		}
+        float f = 5.0f;
+        for (float y = -f; y < f; y += 0.5f) {
+            for (float x = -f; x < f; x += 0.5f) {
+                glm::vec4 color = { (x + f) / (2 * f), 0.4f, (y + f) / (2 * f), 0.7f };
+                Vortex::Renderer2D::DrawQuad({ x, y }, { 0.45f, 0.45f }, color);
+            }
+        }
 
-		Vortex::Renderer2D::EndScene();
+        Vortex::Renderer2D::EndScene();
+
+        m_frameBuffer->Unbind();
 	}
 }
 
-void Sandbox2D::OnImGuiRender() {
+void EditorLayer::OnImGuiRender() {
 	VT_PROFILE_FUNC();
-	VT_CORE_TRACE("Sandbox2D::OnImGuiRender");
+	VT_CORE_TRACE("EditorLayer::OnImGuiRender");
 	Layer::OnImGuiRender();
 
     static bool open = true;
@@ -153,14 +159,17 @@ void Sandbox2D::OnImGuiRender() {
         ImGui::Text("Vertices: %d", stats.GetVertexesCount());
         ImGui::Text("Indices: %d", stats.GetIndicesCount());
 
+        uint32 texID = m_frameBuffer->GetColorAttachmentID();
+        ImGui::Image(reinterpret_cast<void*>(texID), ImVec2{ 1600.0f, 900.0f });
+
         ImGui::End();
     }
 
     ImGui::End();
 }
 
-void Sandbox2D::OnEvent(Vortex::Event& e) {
+void EditorLayer::OnEvent(Vortex::Event& e) {
 	VT_PROFILE_FUNC();
-	VT_CORE_TRACE("Sandbox2D::OnEvent");
+	VT_CORE_TRACE("EditorLayer::OnEvent");
 	m_cameraController.OnEvent(e);
 }
