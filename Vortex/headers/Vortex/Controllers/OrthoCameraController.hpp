@@ -26,6 +26,8 @@ namespace Vortex {
 		void OnUpdate(Timestep ts);
 		void OnEvent(Event& e);
 
+		void OnResize(float x, float y);
+
 		OrthoCamera& GetCamera() { return m_camera; }
 		const OrthoCamera& GetCamera() const { return m_camera; }
 		float GetZoomLevel() const { return m_zoomLevel; }

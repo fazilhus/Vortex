@@ -8,6 +8,7 @@
 #include "Vortex/Core/Codes.hpp"
 #include "Vortex/Core/Timestep.hpp"
 #include "Vortex/Core/Profiling/Profiler.hpp"
+#include "Vortex/Events/Event.hpp"
 //-------------------------------------
 
 

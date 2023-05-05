@@ -17,6 +17,7 @@ namespace Vortex {
 		static API s_api;
 
 	public:
+		virtual ~RendererAPI() = default;
 		virtual void Init(const RendererConfig& cfg) = 0;
 		virtual void SetViewport(uint4 x, uint4 y, uint4 width, uint4 height) = 0;
 		virtual void SetClearColor(const glm::vec4& color) = 0;

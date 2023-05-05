@@ -22,7 +22,7 @@ namespace Vortex {
 	};
 
 	struct Renderer2DStorage {
-		static const uint32 maxQuads = 20000;
+		static const uint32 maxQuads = 50000;
 		static const uint32 maxVert = maxQuads * 4;
 		static const uint32 maxInd = maxQuads * 6;
 		static const uint32 maxTextureSLots = 32;

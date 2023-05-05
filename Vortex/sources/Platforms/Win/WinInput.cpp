@@ -1,45 +1,42 @@
 #include "vtpch.hpp"
-#include "Platforms/Win/WinInput.hpp"
 
 #include "Vortex/Core/Application.hpp"
 
 namespace Vortex {
 
-    Input* Input::s_instance = new WinInput();
-
-    bool WinInput::IsKeyPressedImpl(KeyCode keycode) {
-        auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+    bool Input::IsKeyPressed(KeyCode keycode) {
+        const auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
         if (!window) return false;
 
-        auto state = glfwGetKey(window, static_cast<int32>(keycode));
+        const auto state = glfwGetKey(window, static_cast<int32>(keycode));
         return state == GLFW_PRESS || state == GLFW_REPEAT;
     }
 
-    bool WinInput::IsMouseButtonPressedImpl(MouseCode button) {
-        auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+    bool Input::IsMouseButtonPressed(MouseCode button) {
+        const auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
         if (!window) return false;
 
-        auto state = glfwGetMouseButton(window, static_cast<int32>(button));
+        const auto state = glfwGetMouseButton(window, static_cast<int32>(button));
         return state == GLFW_PRESS;
     }
 
-    std::pair<float, float> WinInput::GetMousePosImpl() {
-        auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
+    std::pair<float, float> Input::GetMousePos() {
+        const auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
         if (!window) return {0.0f, 0.0f};
 
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
 
-        return {(float)xpos, (float)ypos};
+        return {static_cast<float>(xpos), static_cast<float>(ypos)};
     }
 
-    float WinInput::GetMouseXImpl() {
-        auto [x, y] = GetMousePosImpl();
+    float Input::GetMouseX() {
+        auto [x, y] = GetMousePos();
         return x;
     }
 
-    float WinInput::GetMouseYImpl() {
-        auto [x, y] = GetMousePosImpl();
+    float Input::GetMouseY() {
+        auto [x, y] = GetMousePos();
         return y;
     }
 

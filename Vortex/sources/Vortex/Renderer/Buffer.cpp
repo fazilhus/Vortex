@@ -67,4 +67,18 @@ namespace Vortex {
 		return nullptr;
 	}
 
+	Ref<FrameBuffer> FrameBuffer::Create(const FrameBufferSpec& spec) {
+		switch (Renderer::GetAPI()) {
+		case RendererAPI::API::NONE: {
+			VT_CORE_ASSERT(false, "RendererAPI::API::NONE");
+			return nullptr;
+		}
+		case RendererAPI::API::OPENGL: {
+			return CreateRef<OpenGLFrameBuffer>(spec);
+		}
+		}
+		VT_CORE_ERROR("Unsupported api");
+		VT_CORE_ASSERT(false, "Unsupported api");
+		return nullptr;
+	}
 }
