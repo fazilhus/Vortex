@@ -56,6 +56,11 @@ namespace Vortex {
 		dispatcher.Dispatch<WindowResizeEvent>(VT_BIND_EVENT_FN(OrthoCameraController::OnWindowResized));
 	}
 
+	void OrthoCameraController::OnResize(float x, float y) {
+		m_aspectRatio = x / y;
+		m_camera.SetProjection(-m_aspectRatio * m_zoomLevel, m_aspectRatio * m_zoomLevel, -m_zoomLevel, m_zoomLevel);
+	}
+
 	bool OrthoCameraController::OnMouseScrolled(MouseScrolledEvent& e) {
 		m_zoomLevel -= e.GetOffsetY() * 0.25f;
 		m_zoomLevel = std::max(m_zoomLevel, 0.25f);
@@ -65,8 +70,7 @@ namespace Vortex {
 	}
 
 	bool OrthoCameraController::OnWindowResized(WindowResizeEvent& e) {
-		m_aspectRatio = (float)e.GetWidth() / (float)e.GetHeight();
-		m_camera.SetProjection(-m_aspectRatio * m_zoomLevel, m_aspectRatio * m_zoomLevel, -m_zoomLevel, m_zoomLevel);
+		OnResize(static_cast<float>(e.GetWidth()), static_cast<float>(e.GetHeight()));
 		VT_CORE_TRACE("Window resize event");
 		return false;
 	}

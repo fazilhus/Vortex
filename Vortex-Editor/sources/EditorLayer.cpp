@@ -2,7 +2,7 @@
 #include "Platforms/OpenGL/OpenGLShader.hpp"
 
 EditorLayer::EditorLayer()
-: Layer("EditorLayer"), m_cameraController(16.0f / 9.0f, true) {}
+: Layer("EditorLayer"), m_cameraController(16.0f / 9.0f, true), m_viewportPanelSize({1600, 900}) {}
 
 void EditorLayer::OnAttach() {
 	Layer::OnAttach();
@@ -122,6 +122,12 @@ void EditorLayer::OnImGuiRender() {
     }
 
     if (ImGui::BeginMenuBar()) {
+        if (ImGui::BeginMenu("File")) {
+            if (ImGui::MenuItem("Exit")) {
+                Vortex::Application::Get().Close();
+            }
+            ImGui::EndMenu();
+        }
         if (ImGui::BeginMenu("Options")) {
             // Disabling fullscreen would allow the window to be moved to the front of other windows,
             // which we can't undo at the moment without finer window depth/z control.
@@ -148,6 +154,23 @@ void EditorLayer::OnImGuiRender() {
         ImGui::EndMenuBar();
     }
 
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
+    ImGui::Begin("Viewport");
+
+    ImVec2 size = ImGui::GetContentRegionAvail();
+
+    if (m_viewportPanelSize.x != size.x || m_viewportPanelSize.y != size.y) {
+        m_frameBuffer->Resize(static_cast<uint32>(size.x), static_cast<uint32>(size.x));
+        m_viewportPanelSize = { size.x, size.y };
+        m_cameraController.OnResize(size.x, size.y);
+
+    }
+    uint32 texID = m_frameBuffer->GetColorAttachmentID();
+    ImGui::Image(reinterpret_cast<void*>(texID), ImVec2{ m_viewportPanelSize.x, m_viewportPanelSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+
+    ImGui::End();
+    ImGui::PopStyleVar();
+
     if (statsOpen) {
         auto stats = Vortex::Renderer2D::GetStats();
 
@@ -158,9 +181,6 @@ void EditorLayer::OnImGuiRender() {
         ImGui::Text("Quads: %d", stats.quadCount);
         ImGui::Text("Vertices: %d", stats.GetVertexesCount());
         ImGui::Text("Indices: %d", stats.GetIndicesCount());
-
-        uint32 texID = m_frameBuffer->GetColorAttachmentID();
-        ImGui::Image(reinterpret_cast<void*>(texID), ImVec2{ 1600.0f, 900.0f });
 
         ImGui::End();
     }

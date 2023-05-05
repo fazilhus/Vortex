@@ -73,6 +73,8 @@ namespace Vortex {
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 
+		virtual void Resize(uint32 x, uint32 y) override;
+
 		virtual uint32 GetColorAttachmentID() const override { return m_colorAttachment; }
 		virtual const FrameBufferSpec& GetSpec() const override { return m_spec; }
 	};

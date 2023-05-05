@@ -163,9 +163,17 @@ namespace Vortex {
 
 	OpenGLFrameBuffer::~OpenGLFrameBuffer() {
 		glDeleteFramebuffers(1, &m_rendererID);
+		glDeleteTextures(1, &m_colorAttachment);
+		glDeleteTextures(1, &m_depthAttachment);
 	}
 
 	void OpenGLFrameBuffer::Invalidate() {
+		if (m_rendererID) {
+			glDeleteFramebuffers(1, &m_rendererID);
+			glDeleteTextures(1, &m_colorAttachment);
+			glDeleteTextures(1, &m_depthAttachment);
+		}
+
 		glCreateFramebuffers(1, &m_rendererID);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_rendererID);
 
@@ -190,10 +198,17 @@ namespace Vortex {
 
 	void OpenGLFrameBuffer::Bind() const {
 		glBindFramebuffer(GL_FRAMEBUFFER, m_rendererID);
+		glViewport(0, 0, m_spec.width, m_spec.height);
 	}
 
 	void OpenGLFrameBuffer::Unbind() const {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
+	void OpenGLFrameBuffer::Resize(uint32 x, uint32 y) {
+		m_spec.width = x;
+		m_spec.height = y;
+
+		Invalidate();
+	}
 }

@@ -12,6 +12,8 @@ private:
 	Vortex::Ref<Vortex::Texture2D> m_texture2;
 	Vortex::Ref<Vortex::FrameBuffer> m_frameBuffer;
 
+	glm::vec2 m_viewportPanelSize;
+
 public:
 	EditorLayer();
 	virtual ~EditorLayer() override = default;
