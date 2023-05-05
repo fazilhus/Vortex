@@ -356,4 +356,4 @@ bin-int/
 *.vcsproj.user
 Vortex/vendor/imgui/examples
 /Sandbox/imgui.ini
-/Vortex-Editor/VortexProfile-App.json
+*.json
