@@ -21,6 +21,14 @@ void EditorLayer::OnDetach() {
 void EditorLayer::OnUpdate(Vortex::Timestep ts) {
 	VT_PROFILE_FUNC();
 
+    if (Vortex::FrameBufferSpec spec = m_frameBuffer->GetSpec();
+        m_viewportPanelSize.x > 0.0f && m_viewportPanelSize.y > 0.0f &&
+        (spec.width != m_viewportPanelSize.x || spec.height != m_viewportPanelSize.y))
+    {
+        m_frameBuffer->Resize(static_cast<uint32>(m_viewportPanelSize.x), static_cast<uint32>(m_viewportPanelSize.y));
+        m_cameraController.OnResize(m_viewportPanelSize.x, m_viewportPanelSize.y);
+    }
+
 	Vortex::Renderer2D::ResetStats();
 
 	{
@@ -165,13 +173,8 @@ void EditorLayer::OnImGuiRender() {
     Vortex::Application::Get().GetImGuiLayer()->BlockEvents(!m_viewportFocused || !m_viewportHovered);
 
     ImVec2 size = ImGui::GetContentRegionAvail();
+    m_viewportPanelSize = { size.x, size.y };
 
-    if (m_viewportPanelSize.x != size.x || m_viewportPanelSize.y != size.y) {
-        m_frameBuffer->Resize(static_cast<uint32>(size.x), static_cast<uint32>(size.x));
-        m_viewportPanelSize = { size.x, size.y };
-        m_cameraController.OnResize(size.x, size.y);
-
-    }
     uint32 texID = m_frameBuffer->GetColorAttachmentID();
     ImGui::Image(reinterpret_cast<void*>(texID), ImVec2{ m_viewportPanelSize.x, m_viewportPanelSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
