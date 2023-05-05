@@ -40,6 +40,7 @@ namespace Vortex {
 		friend class EventDispatcher;
 
 	public:
+		virtual ~Event() = default;
 		virtual const char* GetName() const = 0;
 #ifdef VT_DEBUG
 		virtual std::string ToStr() const { return GetName(); }

@@ -13,7 +13,7 @@ namespace Vortex {
 
 		m_window = Window::Create({ "Vortex Engine", 1600, 900 });
 		m_running = true;
-		m_window->SetVSync(true);
+		m_window->SetVSync(false);
 		m_window->SetEventCallback(VT_BIND_EVENT_FN(Application::OnEvent));
 
 		Renderer::Init({true, true});
@@ -57,9 +57,12 @@ namespace Vortex {
 
 		VT_CORE_INFO("Application::OnEvent LayerStack size {0}", m_layerStack.GetSize());
 		for (auto it = m_layerStack.rbegin(); it != m_layerStack.rend(); ++it) {
+			VT_CORE_INFO("Application::OnEvent Layer {0}", (*it)->GetName());
+			VT_CORE_INFO("Application::OnEvent event {0}, handled {1}", e.GetName(), e.m_handled);
 			if (e.m_handled) {
 				break;
 			}
+			VT_CORE_INFO("Application::OnEvent propagated event {0}", e.GetName());
 			(*it)->OnEvent(e);
 		}
 	}
@@ -78,6 +81,10 @@ namespace Vortex {
 
 	void Application::PopOverlay(Ref<Layer> o) {
 		m_layerStack.PopOverlay(o);
+	}
+
+	void Application::Close() {
+		m_running = false;
 	}
 
 	bool Application::OnWindowClose(WindowCloseEvent& e) {

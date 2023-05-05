@@ -9,7 +9,7 @@
 namespace Vortex {
 
 	ImGuiLayer::ImGuiLayer() 
-		: Layer("ImGui layer"), m_time(0.0f) {
+		: Layer("ImGui layer"), m_time(0.0f), m_blockEvents(true) {
 	}
 
 	void ImGuiLayer::OnAttach() {
@@ -30,7 +30,7 @@ namespace Vortex {
 		}
 
 		Application& app = Application::Get();
-		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
+		const auto window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
 		
 		VT_CORE_ASSERT(window, "Failed to cast GLFWwindow");
 
@@ -51,10 +51,6 @@ namespace Vortex {
 
 	void ImGuiLayer::OnEvent(Event& e) {
 		Layer::OnEvent(e);
-
-		ImGuiIO& io = ImGui::GetIO();
-		e.m_handled |= e.IsInCat(EventCatMouse) & io.WantCaptureMouse;
-		e.m_handled |= e.IsInCat(EventCatKeyboard) & io.WantCaptureKeyboard;
 	}
 
 	void ImGuiLayer::Begin() {
@@ -66,7 +62,7 @@ namespace Vortex {
 	void ImGuiLayer::End() {
 		ImGuiIO& io = ImGui::GetIO();
 		Application& app = Application::Get();
-		io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
+		io.DisplaySize = ImVec2(static_cast<float>(app.GetWindow().GetWidth()), static_cast<float>(app.GetWindow().GetHeight()));
 
 		// Rendering
 		ImGui::Render();

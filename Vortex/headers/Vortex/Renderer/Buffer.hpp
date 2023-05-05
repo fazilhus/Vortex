@@ -99,7 +99,7 @@ namespace Vortex {
 
 	class VertexBuffer {
 	public:
-		virtual ~VertexBuffer() {}
+		virtual ~VertexBuffer() = default;
 
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
@@ -115,7 +115,7 @@ namespace Vortex {
 
 	class IndexBuffer {
 	public:
-		virtual ~IndexBuffer() {}
+		virtual ~IndexBuffer() = default;
 
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
@@ -127,7 +127,7 @@ namespace Vortex {
 
 	class VertexArray {
 	public:
-		virtual ~VertexArray() {}
+		virtual ~VertexArray() = default;
 
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
@@ -139,6 +139,28 @@ namespace Vortex {
 		virtual const Ref<IndexBuffer>& GetIndexBuffer() const = 0;
 
 		static Ref<VertexArray> Create();
+	};
+
+	struct FrameBufferSpec {
+		uint32 width, height;
+		uint32 samples = 1;
+
+		bool swapChainTarget = false;
+	};
+
+	class FrameBuffer {
+	public:
+		virtual ~FrameBuffer() = default;
+
+		virtual void Bind() const = 0;
+		virtual void Unbind() const = 0;
+
+		virtual void Resize(uint32 x, uint32 y) = 0;
+
+		virtual uint32 GetColorAttachmentID() const = 0;
+		virtual const FrameBufferSpec& GetSpec() const = 0;
+
+		static Ref<FrameBuffer> Create(const FrameBufferSpec& spec);
 	};
 
 }

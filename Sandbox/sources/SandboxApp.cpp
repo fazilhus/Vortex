@@ -15,6 +15,6 @@ public:
 	~Sandbox() {}
 };
 
-Vortex::Application* Vortex::CreateApplication() {
-	return new Sandbox();
-}
+//Vortex::Application* Vortex::CreateApplication() {
+//	return new Sandbox();
+//}

@@ -58,4 +58,25 @@ namespace Vortex {
 		inline virtual const Ref<IndexBuffer>& GetIndexBuffer() const override { return m_ib; }
 	};
 
+	class OpenGLFrameBuffer : public FrameBuffer {
+	private:
+		uint32 m_rendererID;
+		uint32 m_colorAttachment, m_depthAttachment;
+		FrameBufferSpec m_spec;
+
+	public:
+		OpenGLFrameBuffer(const FrameBufferSpec& spec);
+		virtual ~OpenGLFrameBuffer() override;
+
+		void Invalidate();
+
+		virtual void Bind() const override;
+		virtual void Unbind() const override;
+
+		virtual void Resize(uint32 x, uint32 y) override;
+
+		virtual uint32 GetColorAttachmentID() const override { return m_colorAttachment; }
+		virtual const FrameBufferSpec& GetSpec() const override { return m_spec; }
+	};
+
 }

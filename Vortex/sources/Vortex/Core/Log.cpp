@@ -17,7 +17,7 @@ namespace Vortex {
 		coreConsoleSink->set_level(spdlog::level::trace);
 		coreConsoleSink->set_pattern(pattern);
 
-		const auto coreFileSink = CreateRef<spdlog::sinks::rotating_file_sink_mt>("../SandBox/logs/log.txt", 1024 * 1024, 5, true);
+		const auto coreFileSink = CreateRef<spdlog::sinks::rotating_file_sink_mt>("../Vortex-Editor/logs/log.txt", 1024 * 1024, 5, true);
 		coreFileSink->set_level(spdlog::level::trace);
 		coreFileSink->set_pattern(pattern);
 
@@ -30,7 +30,7 @@ namespace Vortex {
 		appConsoleSink->set_level(spdlog::level::trace);
 		appConsoleSink->set_pattern(pattern);
 
-		const auto appFileSink = CreateRef<spdlog::sinks::rotating_file_sink_mt>("../SandBox/logs/log.txt", 1024 * 1024, 5, true);
+		const auto appFileSink = CreateRef<spdlog::sinks::rotating_file_sink_mt>("../Vortex-Editor/logs/log.txt", 1024 * 1024, 5, true);
 		appFileSink->set_level(spdlog::level::trace);
 		appFileSink->set_pattern(pattern);
 

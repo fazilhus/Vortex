@@ -51,22 +51,27 @@ namespace Vortex {
 	}
 
 	void OrthoCameraController::OnEvent(Event& e) {
+		VT_CORE_TRACE("OrthoCameraController::OnEvent {0}", e.GetName());
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<MouseScrolledEvent>(VT_BIND_EVENT_FN(OrthoCameraController::OnMouseScrolled));
 		dispatcher.Dispatch<WindowResizeEvent>(VT_BIND_EVENT_FN(OrthoCameraController::OnWindowResized));
+	}
+
+	void OrthoCameraController::OnResize(float x, float y) {
+		m_aspectRatio = x / y;
+		m_camera.SetProjection(-m_aspectRatio * m_zoomLevel, m_aspectRatio * m_zoomLevel, -m_zoomLevel, m_zoomLevel);
 	}
 
 	bool OrthoCameraController::OnMouseScrolled(MouseScrolledEvent& e) {
 		m_zoomLevel -= e.GetOffsetY() * 0.25f;
 		m_zoomLevel = std::max(m_zoomLevel, 0.25f);
 		m_camera.SetProjection(-m_aspectRatio * m_zoomLevel, m_aspectRatio * m_zoomLevel, -m_zoomLevel, m_zoomLevel);
-		VT_CORE_TRACE("Mouse scroll event");
+		VT_CORE_TRACE("OrthoCameraController::OnEvent dispatched Mouse scroll event");
 		return false;
 	}
 
 	bool OrthoCameraController::OnWindowResized(WindowResizeEvent& e) {
-		m_aspectRatio = (float)e.GetWidth() / (float)e.GetHeight();
-		m_camera.SetProjection(-m_aspectRatio * m_zoomLevel, m_aspectRatio * m_zoomLevel, -m_zoomLevel, m_zoomLevel);
+		OnResize(static_cast<float>(e.GetWidth()), static_cast<float>(e.GetHeight()));
 		VT_CORE_TRACE("Window resize event");
 		return false;
 	}
