@@ -14,6 +14,8 @@ private:
 
 	glm::vec2 m_viewportPanelSize;
 
+	bool m_viewportFocused, m_viewportHovered;
+
 public:
 	EditorLayer();
 	virtual ~EditorLayer() override = default;

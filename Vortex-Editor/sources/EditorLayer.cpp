@@ -2,7 +2,8 @@
 #include "Platforms/OpenGL/OpenGLShader.hpp"
 
 EditorLayer::EditorLayer()
-: Layer("EditorLayer"), m_cameraController(16.0f / 9.0f, true), m_viewportPanelSize({1600, 900}) {}
+: Layer("EditorLayer"), m_cameraController(16.0f / 9.0f, true), m_viewportPanelSize({1600, 900}),
+ m_viewportFocused(false), m_viewportHovered(false) {}
 
 void EditorLayer::OnAttach() {
 	Layer::OnAttach();
@@ -24,7 +25,9 @@ void EditorLayer::OnUpdate(Vortex::Timestep ts) {
 
 	{
 		VT_PROFILE_SCOPE("CameraController::OnUpdate");
-		m_cameraController.OnUpdate(ts);
+        if (m_viewportFocused) {
+			m_cameraController.OnUpdate(ts);
+        }
 	}
 
 	{
@@ -157,6 +160,10 @@ void EditorLayer::OnImGuiRender() {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{0, 0});
     ImGui::Begin("Viewport");
 
+    m_viewportFocused = ImGui::IsWindowFocused();
+    m_viewportHovered = ImGui::IsWindowHovered();
+    Vortex::Application::Get().GetImGuiLayer()->BlockEvents(!m_viewportFocused || !m_viewportHovered);
+
     ImVec2 size = ImGui::GetContentRegionAvail();
 
     if (m_viewportPanelSize.x != size.x || m_viewportPanelSize.y != size.y) {
@@ -190,6 +197,11 @@ void EditorLayer::OnImGuiRender() {
 
 void EditorLayer::OnEvent(Vortex::Event& e) {
 	VT_PROFILE_FUNC();
-	VT_CORE_TRACE("EditorLayer::OnEvent");
+	VT_CORE_TRACE("EditorLayer::OnEvent {0}", e.GetName());
+
+    ImGuiIO& io = ImGui::GetIO();
+    e.m_handled |= e.IsInCat(Vortex::EventCatMouse) & io.WantCaptureMouse;
+    e.m_handled |= e.IsInCat(Vortex::EventCatKeyboard) & io.WantCaptureKeyboard;
+
 	m_cameraController.OnEvent(e);
 }

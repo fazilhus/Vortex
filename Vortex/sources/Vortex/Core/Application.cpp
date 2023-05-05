@@ -57,9 +57,12 @@ namespace Vortex {
 
 		VT_CORE_INFO("Application::OnEvent LayerStack size {0}", m_layerStack.GetSize());
 		for (auto it = m_layerStack.rbegin(); it != m_layerStack.rend(); ++it) {
+			VT_CORE_INFO("Application::OnEvent Layer {0}", (*it)->GetName());
+			VT_CORE_INFO("Application::OnEvent event {0}, handled {1}", e.GetName(), e.m_handled);
 			if (e.m_handled) {
 				break;
 			}
+			VT_CORE_INFO("Application::OnEvent propagated event {0}", e.GetName());
 			(*it)->OnEvent(e);
 		}
 	}

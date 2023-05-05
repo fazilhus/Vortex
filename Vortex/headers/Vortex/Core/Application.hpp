@@ -41,8 +41,9 @@ namespace Vortex {
 
 		void Close();
 
-		inline Window& GetWindow() const { return *m_window; }
-		inline static Application& Get() { return *s_instance; }
+		Window& GetWindow() const { return *m_window; }
+		static Application& Get() { return *s_instance; }
+		Ref<ImGuiLayer> GetImGuiLayer() const { return m_imguiLayer; }
 
 	private:
 		void Run();

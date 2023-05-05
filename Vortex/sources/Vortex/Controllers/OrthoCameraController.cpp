@@ -51,6 +51,7 @@ namespace Vortex {
 	}
 
 	void OrthoCameraController::OnEvent(Event& e) {
+		VT_CORE_TRACE("OrthoCameraController::OnEvent {0}", e.GetName());
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<MouseScrolledEvent>(VT_BIND_EVENT_FN(OrthoCameraController::OnMouseScrolled));
 		dispatcher.Dispatch<WindowResizeEvent>(VT_BIND_EVENT_FN(OrthoCameraController::OnWindowResized));
@@ -65,7 +66,7 @@ namespace Vortex {
 		m_zoomLevel -= e.GetOffsetY() * 0.25f;
 		m_zoomLevel = std::max(m_zoomLevel, 0.25f);
 		m_camera.SetProjection(-m_aspectRatio * m_zoomLevel, m_aspectRatio * m_zoomLevel, -m_zoomLevel, m_zoomLevel);
-		VT_CORE_TRACE("Mouse scroll event");
+		VT_CORE_TRACE("OrthoCameraController::OnEvent dispatched Mouse scroll event");
 		return false;
 	}
 
