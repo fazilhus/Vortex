@@ -51,11 +51,6 @@ namespace Vortex {
 
 	void ImGuiLayer::OnEvent(Event& e) {
 		Layer::OnEvent(e);
-
-		/*ImGuiIO& io = ImGui::GetIO();
-		e.m_handled |= e.IsInCat(EventCatMouse) & io.WantCaptureMouse;
-		e.m_handled |= e.IsInCat(EventCatKeyboard) & io.WantCaptureKeyboard;*/
-		//VT_CORE_TRACE("ImGuiLayer::OnEvent Event {0} is handled {1}", e.GetName(), e.m_handled);
 	}
 
 	void ImGuiLayer::Begin() {
