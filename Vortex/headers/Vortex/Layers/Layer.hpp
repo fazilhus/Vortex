@@ -1,5 +1,5 @@
 #pragma once
-#include "vtpch.hpp"
+#include <vtpch.hpp>
 #include "Vortex/Core/Timestep.hpp"
 #include "Vortex/Events/Event.hpp"
 

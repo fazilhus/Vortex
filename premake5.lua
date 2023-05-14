@@ -137,7 +137,7 @@ project "Vortex"
         "GLFW",
         "opengl32.lib",
         "GLAD",
-        "ImGui"
+        "ImGui",
     }
 
     filter "system:windows"

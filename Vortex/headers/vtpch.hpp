@@ -6,12 +6,6 @@
 #include <algorithm>
 #include <utility>
 #include <functional>
-#include <array>
-#include <vector>
-#include <set>
-#include <unordered_set>
-#include <map>
-#include <unordered_map>
 #include <memory>
 #include <string>
 #include <sstream>
@@ -30,6 +24,8 @@
 #include "Vortex/Core/Platform.hpp"
 #include "Vortex/Core/PlatformAPI.hpp"
 #include "Vortex/Core/Timestep.hpp"
+
+#include "Vortex/Core/Containers/ContainerWrappers.hpp"
 
 #include "Vortex/Core/Profiling/Profiler.hpp"
 

@@ -1,6 +1,19 @@
 #pragma once
 
 #include "Vortex.hpp"
+#include "Vortex/ECS/Component.hpp"
+
+struct PositionComponent : public Vortex::ecs::Component<PositionComponent> {
+	float x, y, z;
+
+	PositionComponent(float x, float y, float z) : x(x), y(y), z(z) {}
+
+	PositionComponent& operator=(const PositionComponent& other) {
+		x = other.x;
+		y = other.y;
+		z = other.z;
+	}
+};
 
 class EditorLayer : public Vortex::Layer {
 private:
@@ -15,6 +28,8 @@ private:
 	glm::vec2 m_viewportPanelSize;
 
 	bool m_viewportFocused, m_viewportHovered;
+
+	PositionComponent m_comp;
 
 public:
 	EditorLayer();

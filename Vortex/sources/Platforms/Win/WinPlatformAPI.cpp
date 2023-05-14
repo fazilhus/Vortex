@@ -1,4 +1,4 @@
-#include "vtpch.hpp"
+#include <vtpch.hpp>
 #include "Platforms/Win/WinPlatformAPI.hpp"
 
 namespace Vortex {

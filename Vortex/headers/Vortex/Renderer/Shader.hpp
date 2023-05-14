@@ -1,5 +1,5 @@
 #pragma once
-#include "vtpch.hpp"
+#include <vtpch.hpp>
 
 #include "glm/glm.hpp"
 
@@ -29,7 +29,7 @@ namespace Vortex {
 
 	class ShaderLib {
 	private:
-		std::unordered_map<std::string, Ref<Shader>> m_shaders;
+		HashMap<std::string, Ref<Shader>> m_shaders;
 
 	public:
 		void Add(const std::string& name, const Ref<Shader>& shader);

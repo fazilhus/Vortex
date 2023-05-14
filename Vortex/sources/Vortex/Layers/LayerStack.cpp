@@ -1,10 +1,10 @@
-#include "vtpch.hpp"
+#include <vtpch.hpp>
 #include "Vortex/Layers/LayerStack.hpp"
 
 namespace Vortex {
 
 	LayerStack::LayerStack() 
-		: m_layers(std::vector<Ref<Layer>>()), m_layerInsertInd(0) {
+		: m_layers(Vector<Ref<Layer>>()), m_layerInsertInd(0) {
 	}
 
 	void LayerStack::PushLayer(Ref<Layer> l) {
