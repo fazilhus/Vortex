@@ -62,12 +62,12 @@ namespace Vortex {
 
 	class BufferLayout {
 	private:
-		std::vector<BufferElement> m_elements;
+		Vector<BufferElement> m_elements;
 		uint4 m_stride;
 
 	public:
 		BufferLayout()
-			: m_elements(std::vector<BufferElement>(0)), m_stride(0) {}
+			: m_elements(Vector<BufferElement>(0)), m_stride(0) {}
 		BufferLayout(std::initializer_list<BufferElement> elements)
 			: m_elements(elements) {
 			CalcOffsetAndStride();
@@ -78,12 +78,12 @@ namespace Vortex {
 		}
 
 		inline uint4 GetStride() const { return m_stride; }
-		inline const std::vector<BufferElement>& GetElements() const { return m_elements; }
+		inline const Vector<BufferElement>& GetElements() const { return m_elements; }
 
-		std::vector<BufferElement>::iterator begin() { return m_elements.begin(); }
-		std::vector<BufferElement>::iterator end() { return m_elements.end(); }
-		std::vector<BufferElement>::const_iterator begin() const { return m_elements.begin(); }
-		std::vector<BufferElement>::const_iterator end() const { return m_elements.end(); }
+		Vector<BufferElement>::iterator begin() { return m_elements.begin(); }
+		Vector<BufferElement>::iterator end() { return m_elements.end(); }
+		Vector<BufferElement>::const_iterator begin() const { return m_elements.begin(); }
+		Vector<BufferElement>::const_iterator end() const { return m_elements.end(); }
 
 	private:
 		void CalcOffsetAndStride() {
@@ -135,7 +135,7 @@ namespace Vortex {
 		virtual void AddVertexBuffer(const Ref<VertexBuffer>& vb) = 0;
 		virtual void AddIndexBuffer(const Ref<IndexBuffer>& ib) = 0;
 
-		virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const = 0;
+		virtual const Vector<Ref<VertexBuffer>>& GetVertexBuffers() const = 0;
 		virtual const Ref<IndexBuffer>& GetIndexBuffer() const = 0;
 
 		static Ref<VertexArray> Create();

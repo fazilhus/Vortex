@@ -1,5 +1,5 @@
 #pragma once
-#include "vtpch.hpp"
+#include <vtpch.hpp>
 
 namespace Vortex {
 
@@ -41,7 +41,7 @@ namespace Vortex {
 	private:
 		uint4 m_rendererID;
 		uint4 m_vertexBufferInd;
-		std::vector<Ref<VertexBuffer>> m_vbs;
+		Vector<Ref<VertexBuffer>> m_vbs;
 		Ref<IndexBuffer> m_ib;
 
 	public:
@@ -54,7 +54,7 @@ namespace Vortex {
 		virtual void AddVertexBuffer(const Ref<VertexBuffer>& vb) override;
 		virtual void AddIndexBuffer(const Ref<IndexBuffer>& ib) override;
 
-		inline virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const override { return m_vbs; }
+		inline virtual const Vector<Ref<VertexBuffer>>& GetVertexBuffers() const override { return m_vbs; }
 		inline virtual const Ref<IndexBuffer>& GetIndexBuffer() const override { return m_ib; }
 	};
 

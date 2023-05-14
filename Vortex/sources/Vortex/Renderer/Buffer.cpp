@@ -1,4 +1,4 @@
-#include "vtpch.hpp"
+#include <vtpch.hpp>
 
 #include "Platforms/OpenGL/OpenGLBuffer.hpp"
 

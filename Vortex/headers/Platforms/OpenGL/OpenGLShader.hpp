@@ -1,5 +1,5 @@
 #pragma once
-#include "vtpch.hpp"
+#include <vtpch.hpp>
 
 typedef uint4 GLenum;
 
@@ -9,7 +9,7 @@ namespace Vortex {
 	private:
 		uint4 m_rendererID;
 		std::string m_name;
-		std::unordered_map<std::string, uint4> m_uniformLoc;
+		HashMap<std::string, uint4> m_uniformLoc;
 
 	public:
 		OpenGLShader(const std::string& filepath);
@@ -41,8 +41,8 @@ namespace Vortex {
 
 	private:
 		std::string ReadShaderFile(const std::string& filepath);
-		void PreProcess(const std::string& src, std::unordered_map<GLenum, std::string>&);
-		void CompileShader(const std::unordered_map<GLenum, std::string>& shaderSrcs);
+		void PreProcess(const std::string& src, HashMap<GLenum, std::string>&);
+		void CompileShader(const HashMap<GLenum, std::string>& shaderSrcs);
 	};
 
 };

@@ -1,5 +1,5 @@
 #pragma once
-#include "vtpch.hpp"
+#include <vtpch.hpp>
 
 #ifdef VT_PLATFORM_WIN
 #include "Platforms/Win/WinWindow.hpp"

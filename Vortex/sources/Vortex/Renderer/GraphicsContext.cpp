@@ -1,4 +1,4 @@
-#include "vtpch.hpp"
+#include <vtpch.hpp>
 #include "Vortex/Renderer/GraphicsContext.hpp"
 
 #include "Platforms/OpenGL/OpenGLContext.hpp"

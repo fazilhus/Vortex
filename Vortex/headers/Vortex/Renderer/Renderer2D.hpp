@@ -1,5 +1,5 @@
 #pragma once
-#include "vtpch.hpp"
+#include <vtpch.hpp>
 
 #include "Vortex/Renderer/Texture.hpp"
 
@@ -36,7 +36,7 @@ namespace Vortex {
 		QuadVertex* quadVertexBufferBase = nullptr;
 		QuadVertex* quadVertexBufferPtr = nullptr;
 
-		std::array<Ref<Texture2D>, maxTextureSLots> texSlots;
+		Array<Ref<Texture2D>, maxTextureSLots> texSlots;
 		uint32 texSlotInd = 1;
 
 		glm::vec4 quadVertexPos[4];
