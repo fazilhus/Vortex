@@ -5,54 +5,79 @@ namespace Vortex {
 
 	namespace ecs {
 
-		static ComponentID compID = 0;
+		struct BaseComponent;
+		typedef void* EntityHandle;
+		typedef uint32 (*ComponentCreateFunction)(Vector<uint8>& memory, EntityHandle entity, BaseComponent* comp);
+		typedef void (*ComponentDeleteFunction)(BaseComponent* comp);
 
 		struct BaseComponent {
-		private:
+		public:
 			EntityHandle m_entity;
 
-		public:
-			BaseComponent() : m_entity(nullptr) {}
-			virtual ~BaseComponent() {}
-
-			static ComponentID GenerateID() {
-				return compID++;
+			BaseComponent() : m_entity(nullptr) {
+				s_componentTypes = Vector<std::tuple<ComponentCreateFunction, ComponentDeleteFunction, size_t>>{};
 			}
 
-			const EntityHandle& GetEntity() const { return m_entity; }
-			void SetEntity(const EntityHandle& e) { m_entity = e; }
-		};
 
+			static uint32 RegisterComponentType(ComponentCreateFunction createfn, ComponentDeleteFunction delfn, size_t size) {
+				ComponentID id = s_componentTypes.size();
+				s_componentTypes.push_back(std::tuple<ComponentCreateFunction, ComponentDeleteFunction, std::size_t>(createfn, delfn, size));
+				return id;
+			}
 
-		template <typename Comp>
-		struct Component : public BaseComponent {
+			inline static ComponentCreateFunction GetTypeCreateFunction(ComponentID id) {
+				return std::get<0>(s_componentTypes[id]);
+			}
+
+			inline static ComponentDeleteFunction GetTypeDeleteFunction(ComponentID id) {
+				return std::get<1>(s_componentTypes[id]);
+			}
+
+			inline static size_t GetTypeSize(ComponentID id) {
+				return std::get<2>(s_componentTypes[id]);
+			}
+
+			inline static bool IsTypeValid(ComponentID id) {
+				return id < s_componentTypes.size();
+			}
 		private:
-			ComponentID m_id;
-			std::size_t m_size;
-
-		public:
-			Component() {
-				m_id = BaseComponent::GenerateID();
-				m_size = sizeof(Comp);
-			}
-			virtual ~Component() = default;
-
-			static const ComponentID Create(Vector<uint8>& memory, EntityHandle e, BaseComponent* comp) {
-				uint32 i = memory.size();
-				memory.resize(i + Component::m_size);
-				Component* component = new(&memory[i]) Component(*(Component*)comp);
-				component->SetEntity(e);
-				return i;
-			}
-
-			static const void Delete(BaseComponent* comp) {
-				Component* component = (Component*)comp;
-				component->~Component();
-			}
-
-			inline ComponentID GetID() const { return m_id; }
-			inline std::size_t GetSize() const { return m_size; }
+			static Vector<std::tuple<ComponentCreateFunction, ComponentDeleteFunction, size_t>> s_componentTypes;
 		};
+
+		template<typename T>
+		struct Component : public BaseComponent {
+			static const ComponentCreateFunction CREATE_FUNCTION;
+			static const ComponentDeleteFunction DELETE_FUNCTION;
+			static const ComponentID ID;
+			static const size_t SIZE;
+		};
+
+		template<typename Component>
+		ComponentID ComponentCreate(Vector<uint8>& memory, EntityHandle entity, BaseComponent* comp) {
+			uint32 index = memory.size();
+			memory.resize(index + Component::SIZE);
+			Component* component = new(&memory[index])Component(*(Component*)comp);
+			component->entity = entity;
+			return index;
+		}
+
+		template<typename Component>
+		void ComponentDelete(BaseComponent* comp) {
+			Component* component = (Component*)comp;
+			component->~Component();
+		}
+
+		template<typename T>
+		const uint32 Component<T>::ID(BaseComponent::RegisterComponentType(ComponentCreate<T>, ComponentDelete<T>, sizeof(T)));
+
+		template<typename T>
+		const size_t Component<T>::SIZE(sizeof(T));
+
+		template<typename T>
+		const ComponentCreateFunction Component<T>::CREATE_FUNCTION(ComponentCreate<T>);
+
+		template<typename T>
+		const ComponentDeleteFunction Component<T>::DELETE_FUNCTION(ComponentDelete<T>);
 
 	}// namespace ecs
 

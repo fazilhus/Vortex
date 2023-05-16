@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <utility>
 #include <functional>
+#include <tuple>
 #include <memory>
 #include <string>
 #include <sstream>
