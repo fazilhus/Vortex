@@ -115,7 +115,7 @@ namespace Vortex {
 						}
 					}
 					else {
-
+						UpdateSystemWithMultipleComponents(i, ts, compTypes, componentParam, componentVectors);
 					}
 				}
 			}
@@ -204,8 +204,8 @@ namespace Vortex {
 				return minInd;
 			}
 
-			inline void UpdateSystemWithMultipleComponents(uint32 index, Timestep ts, const Vector<ComponentID> compTypes,
-				Vector<BaseComponent*> componentParam, Vector<Vector<uint8>*> componentVectors) {
+			inline void UpdateSystemWithMultipleComponents(uint32 index, Timestep ts, const Vector<ComponentID>& compTypes,
+				Vector<BaseComponent*>& componentParam, Vector<Vector<uint8>*>& componentVectors) {
 				componentParam.resize(std::max(componentParam.size(), compTypes.size()));
 				componentVectors.resize(std::max(componentVectors.size(), compTypes.size()));
 
