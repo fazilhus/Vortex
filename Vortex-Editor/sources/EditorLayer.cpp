@@ -3,7 +3,7 @@
 
 EditorLayer::EditorLayer()
 : Layer("EditorLayer"), m_cameraController(16.0f / 9.0f, true), m_viewportPanelSize({1600, 900}),
- m_viewportFocused(false), m_viewportHovered(false), m_comp(1.0f, 0.0f, 0.5f) {}
+ m_viewportFocused(false), m_viewportHovered(false) {}
 
 void EditorLayer::OnAttach() {
 	Layer::OnAttach();
@@ -191,13 +191,6 @@ void EditorLayer::OnImGuiRender() {
         ImGui::Text("Quads: %d", stats.quadCount);
         ImGui::Text("Vertices: %d", stats.GetVertexesCount());
         ImGui::Text("Indices: %d", stats.GetIndicesCount());
-
-        ImGui::Begin("Component Test");
-
-        ImGui::Text("Comp ind %d of size %d", m_comp.GetID(), m_comp.GetSize());
-        ImGui::Text("Data: %0.3f %0.3f %0.3f", m_comp.x, m_comp.y, m_comp.z);
-
-        ImGui::End();
 
         ImGui::End();
     }
