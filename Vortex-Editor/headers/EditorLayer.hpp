@@ -2,6 +2,20 @@
 
 #include "Vortex.hpp"
 
+struct Transform {
+	float x, y, z;
+
+	void SetTranslation(float x, float y, float z) {
+		this->x = x;
+		this->y = y;
+		this->z = z;
+	}
+};
+
+struct TransformComponent : public Vortex::ecs::Component<TransformComponent> {
+	Transform transform;
+};
+
 class EditorLayer : public Vortex::Layer {
 private:
 	Vortex::OrthoCameraController m_cameraController;
@@ -15,6 +29,11 @@ private:
 	glm::vec2 m_viewportPanelSize;
 
 	bool m_viewportFocused, m_viewportHovered;
+
+	Vortex::ecs::Manager m_ecs;
+	TransformComponent m_trcomp;
+	Vortex::ecs::EntityHandle m_entity;
+
 
 public:
 	EditorLayer();

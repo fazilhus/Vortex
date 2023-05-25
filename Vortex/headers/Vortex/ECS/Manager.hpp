@@ -7,17 +7,17 @@ namespace Vortex {
 
 	namespace ecs {
 
-		class ECSManager {
+		class Manager {
 		private:
 			Vector<std::pair<EntityID, Vector<std::pair<ComponentID, uint32>>>*> m_entities;
 			HashMap<ComponentID, Vector<uint8>> m_components;
 			Vector<BaseSystem*> m_systems;
 
 		public:
-			ECSManager() = default;
-			ECSManager(const ECSManager& other) = delete;
-			ECSManager(ECSManager&&) = delete;
-			~ECSManager() {
+			Manager() = default;
+			Manager(const Manager& other) = delete;
+			Manager(Manager&&) = delete;
+			~Manager() {
 				for (auto it = m_components.begin(); it != m_components.end(); ++it) {
 					auto size = BaseComponent::GetTypeSize(it->first);
 					ComponentDeleteFunction delfn = BaseComponent::GetTypeDeleteFunction(it->first);
@@ -31,27 +31,40 @@ namespace Vortex {
 				}
 			}
 
-			ECSManager& operator=(const ECSManager& other) = delete;
-			ECSManager& operator=(ECSManager&&) = delete;
+			Manager& operator=(const Manager& other) = delete;
+			Manager& operator=(Manager&&) = delete;
 
 			// Entity
-			EntityHandle CreateEntity(BaseComponent* components, const ComponentID* compIDs, std::size_t num) {
+			EntityHandle CreateEntity(BaseComponent** components, const ComponentID* compIDs, std::size_t num) {
 				auto newEntity = new std::pair<EntityID, Vector<std::pair<ComponentID, uint32>>>;
 				EntityHandle handle = (EntityHandle)newEntity;
 
 				for (uint32 i = 0; i < num; ++i) {
 					if (!BaseComponent::IsTypeValid(compIDs[i])) {
-						VT_CORE_ERROR("ECSManager::CreateEntity Could not create entity: %u is not a valid ComponentID", compIDs[i]);
+						VT_CORE_ERROR("Manager::CreateEntity Could not create entity: %u is not a valid ComponentID", compIDs[i]);
 						delete newEntity;
 						return nullptr;
 					}
 
-					AddComponentInternal(handle, newEntity->second, compIDs[i], &components[i]);
+					AddComponentInternal(handle, newEntity->second, compIDs[i], components[i]);
 				}
 
 				newEntity->first = m_entities.size();
 				m_entities.push_back(newEntity);
 				return handle;
+			}
+
+			template <class ...Comp>
+			EntityHandle CreateEntity(Comp& ...comp) {
+				/*std::vector<BaseComponent*> comps;
+				std::vector<ComponentID> compIDs;
+				AddToVector(&comps, &compIDs, comp...);
+
+				return CreateEntity(&comps[0], &compIDs[0], comps.size());*/
+
+				BaseComponent* comps[] = { &(comp)... };
+				ComponentID compIDs[] = { std::remove_reference_t<Comp>::ID... };
+				return CreateEntity(comps, compIDs, sizeof...(Comp));
 			}
 
 			void DeleteEntity(EntityHandle e) {
@@ -81,59 +94,55 @@ namespace Vortex {
 
 			template <typename Component>
 			Component* GetComponent(EntityHandle handle) {
-				return GetComponentInternal(HandleToEntity(handle), m_components[Component::ID], Component::ID);
+				return (Component*)GetComponentInternal(HandleToEntity(handle), m_components[Component::ID], Component::ID);
 			}
 
 			// System
-			inline void AddSystem(BaseSystem& s) {
+			void AddSystem(BaseSystem& s) {
 				m_systems.push_back(&s);
 			}
 
-			inline bool RemoveSystem(BaseSystem& system) {
-				for (uint32 i = 0; i < m_systems.size(); ++i) {
-					if (&system == m_systems[i]) {
-						m_systems.erase(m_systems.begin() + i); // erase because we need to have the same order of systems after removal
-						return true;
-					}
-				}
-				return false;
-			}
-
-			inline void UpdateSystems(Timestep ts) {
+			void UpdateSystems(Timestep ts, SystemsList& systems) {
 				Vector<BaseComponent*> componentParam;
 				Vector<Vector<uint8>*> componentVectors;
 
-				for (uint32 i = 0; i < m_systems.size(); ++i) {
-					const Vector<ComponentID>& compTypes = m_systems[i]->GetComponentTypes();
+				for (uint32 i = 0; i < systems.Size(); ++i) {
+					const Vector<ComponentID>& compTypes = systems[i]->GetComponentTypes();
 					if (compTypes.size() == 1) {
 						std::size_t size = BaseComponent::GetTypeSize(compTypes[0]);
 						Vector<uint8>& v = m_components[compTypes[0]];
 
 						for (uint32 j = 0; j < v.size(); ++j) {
 							auto comp = (BaseComponent*)&v[j];
-							m_systems[i]->OnUpdate(ts, &comp);
+							systems[i]->OnUpdate(ts, &comp);
 						}
 					}
 					else {
-						UpdateSystemWithMultipleComponents(i, ts, compTypes, componentParam, componentVectors);
+						UpdateSystemWithMultipleComponents(i, ts, systems, compTypes, componentParam, componentVectors);
 					}
 				}
 			}
 
 		private:
-			inline std::pair<EntityID, Vector<std::pair<ComponentID, uint32>>>* HandleToRaw(EntityHandle e) {
+			std::pair<EntityID, Vector<std::pair<ComponentID, uint32>>>* HandleToRaw(EntityHandle e) {
 				return (std::pair<EntityID, Vector<std::pair<ComponentID, uint32>>>*)e;
 			}
 
-			inline EntityID HandleToEntityID(EntityHandle e) {
+			EntityID HandleToEntityID(EntityHandle e) {
 				return HandleToRaw(e)->first;
 			}
 
-			inline Vector<std::pair<ComponentID, uint32>>& HandleToEntity(EntityHandle e) {
+			Vector<std::pair<ComponentID, uint32>>& HandleToEntity(EntityHandle e) {
 				return HandleToRaw(e)->second;
 			}
 
-			inline void DeleteComponent(ComponentID id, uint32 index) {
+			template <typename Head>
+			void AddToVector(std::vector<BaseComponent*> comps, std::vector<ComponentID> compIDs, Head head) {
+				comps.push_back(&head);
+				compIDs.push_back(Head::ID);
+			}
+
+			void DeleteComponent(ComponentID id, uint32 index) {
 				Vector<uint8>& v = m_components[id];
 				ComponentDeleteFunction delfn = BaseComponent::GetTypeDeleteFunction(id);
 				std::size_t size = BaseComponent::GetTypeSize(id);
@@ -159,14 +168,14 @@ namespace Vortex {
 				v.resize(srcInd);
 			}
 
-			inline void AddComponentInternal(EntityHandle handle, Vector<std::pair<ComponentID, uint32>>& entity, ComponentID id, BaseComponent* comp) {
+			void AddComponentInternal(EntityHandle handle, Vector<std::pair<ComponentID, uint32>>& entity, ComponentID id, BaseComponent* comp) {
 				ComponentCreateFunction createfn = BaseComponent::GetTypeCreateFunction(id);
 				std::pair<ComponentID, uint32> newPair;
 				newPair.first = id;
 				newPair.second = createfn(m_components[id], handle, comp);
 				entity.push_back(newPair);
 			}
-			inline bool RemoveComponentInternal(EntityHandle handle, ComponentID id) {
+			bool RemoveComponentInternal(EntityHandle handle, ComponentID id) {
 				Vector<std::pair<ComponentID, uint32>>& entityComps = HandleToEntity(handle);
 
 				for (uint32 i = 0; i < entityComps.size(); ++i) {
@@ -181,7 +190,7 @@ namespace Vortex {
 				}
 				return false;
 			}
-			inline BaseComponent* GetComponentInternal(Vector<std::pair<ComponentID, uint32>>& entity, Vector<uint8>& v, ComponentID id) {
+			BaseComponent* GetComponentInternal(Vector<std::pair<ComponentID, uint32>>& entity, Vector<uint8>& v, ComponentID id) {
 				for (uint32 i = 0; i < entity.size(); ++i) {
 					if (id == entity[i].first) {
 						return (BaseComponent*)&v[entity[i].second];
@@ -190,11 +199,13 @@ namespace Vortex {
 				return nullptr;
 			}
 
-			inline ComponentID FindLeastCommonComponent(const Vector<ComponentID>& componentTypes) {
+			ComponentID FindLeastCommonComponent(const Vector<ComponentID>& componentTypes, const Vector<uint32>& componentFlags) {
 				uint32 minSize = m_components[componentTypes[0]].size() / BaseComponent::GetTypeSize(componentTypes[0]);
 				uint32 minInd = 0;
 
 				for (uint32 i = 0; i < componentTypes.size(); ++i) {
+					if ((componentFlags[i] & ComponentFlag::FLAG_OPTIONAL) != 0) continue;
+
 					uint32 size = m_components[componentTypes[i]].size() / BaseComponent::GetTypeSize(componentTypes[i]);
 					if (size < minSize) {
 						minSize = size;
@@ -204,16 +215,18 @@ namespace Vortex {
 				return minInd;
 			}
 
-			inline void UpdateSystemWithMultipleComponents(uint32 index, Timestep ts, const Vector<ComponentID>& compTypes,
+			void UpdateSystemWithMultipleComponents(uint32 index, Timestep ts, SystemsList& systems, const Vector<ComponentID>& compTypes,
 				Vector<BaseComponent*>& componentParam, Vector<Vector<uint8>*>& componentVectors) {
 				componentParam.resize(std::max(componentParam.size(), compTypes.size()));
 				componentVectors.resize(std::max(componentVectors.size(), compTypes.size()));
+
+				const Vector<uint32>& compFlags = systems[0]->GetComponentFlags();
 
 				for (uint32 i = 0; i < compTypes.size(); ++i) {
 					componentVectors[i] = &m_components[compTypes[i]];
 				}
 
-				uint32 minSizeInd = FindLeastCommonComponent(compTypes);
+				uint32 minSizeInd = FindLeastCommonComponent(compTypes, compFlags);
 
 				std::size_t size = BaseComponent::GetTypeSize(compTypes[minSizeInd]);
 				Vector<uint8>& v = *componentVectors[minSizeInd];
@@ -229,14 +242,14 @@ namespace Vortex {
 						}
 
 						componentParam[j] = GetComponentInternal(entity, *componentVectors[j], compTypes[j]);
-						if (componentParam[j] == nullptr) {
+						if (componentParam[j] == nullptr && (compFlags[j] & ComponentFlag::FLAG_OPTIONAL) == 0) {
 							isValid = false;
 							break;
 						}
 					}
 
 					if (isValid) {
-						m_systems[index]->OnUpdate(ts, &componentParam[0]);
+						systems[index]->OnUpdate(ts, &componentParam[0]);
 					}
 				}
 			}
