@@ -11,37 +11,37 @@ namespace Vortex {
 		typedef void (*ComponentDeleteFunction)(BaseComponent* comp);
 
 		struct BaseComponent {
+		private:
+			static Vector<std::tuple<ComponentCreateFunction, ComponentDeleteFunction, size_t>>* s_componentTypes;
+
 		public:
 			EntityHandle m_entity;
 
-			BaseComponent() : m_entity(nullptr) {
-				s_componentTypes = Vector<std::tuple<ComponentCreateFunction, ComponentDeleteFunction, size_t>>{};
-			}
-
-
 			static uint32 RegisterComponentType(ComponentCreateFunction createfn, ComponentDeleteFunction delfn, size_t size) {
-				ComponentID id = s_componentTypes.size();
-				s_componentTypes.push_back(std::tuple<ComponentCreateFunction, ComponentDeleteFunction, std::size_t>(createfn, delfn, size));
+				if (s_componentTypes == nullptr) {
+					s_componentTypes = new Vector<std::tuple<ComponentCreateFunction, ComponentDeleteFunction, size_t>>();
+				}
+
+				ComponentID id = s_componentTypes->size();
+				s_componentTypes->push_back(std::tuple<ComponentCreateFunction, ComponentDeleteFunction, std::size_t>(createfn, delfn, size));
 				return id;
 			}
 
 			inline static ComponentCreateFunction GetTypeCreateFunction(ComponentID id) {
-				return std::get<0>(s_componentTypes[id]);
+				return std::get<0>((*s_componentTypes)[id]);
 			}
 
 			inline static ComponentDeleteFunction GetTypeDeleteFunction(ComponentID id) {
-				return std::get<1>(s_componentTypes[id]);
+				return std::get<1>((*s_componentTypes)[id]);
 			}
 
 			inline static size_t GetTypeSize(ComponentID id) {
-				return std::get<2>(s_componentTypes[id]);
+				return std::get<2>((*s_componentTypes)[id]);
 			}
 
 			inline static bool IsTypeValid(ComponentID id) {
-				return id < s_componentTypes.size();
+				return id < s_componentTypes->size();
 			}
-		private:
-			static Vector<std::tuple<ComponentCreateFunction, ComponentDeleteFunction, size_t>> s_componentTypes;
 		};
 
 		template<typename T>
@@ -56,8 +56,8 @@ namespace Vortex {
 		ComponentID ComponentCreate(Vector<uint8>& memory, EntityHandle entity, BaseComponent* comp) {
 			uint32 index = memory.size();
 			memory.resize(index + Component::SIZE);
-			Component* component = new(&memory[index])Component(*(Component*)comp);
-			component->entity = entity;
+			Component* component = new(&memory[index]) Component(*(Component*)comp);
+			component->m_entity = entity;
 			return index;
 		}
 

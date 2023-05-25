@@ -3,7 +3,7 @@
 
 EditorLayer::EditorLayer()
 : Layer("EditorLayer"), m_cameraController(16.0f / 9.0f, true), m_viewportPanelSize({1600, 900}),
- m_viewportFocused(false), m_viewportHovered(false) {}
+ m_viewportFocused(false), m_viewportHovered(false), m_ecs() {}
 
 void EditorLayer::OnAttach() {
 	Layer::OnAttach();
@@ -12,6 +12,9 @@ void EditorLayer::OnAttach() {
 	m_texture2 = Vortex::Texture2D::Create("res/textures/img2.png");
 
     m_frameBuffer = Vortex::FrameBuffer::Create({1600, 900, 1, false});
+    m_trcomp.transform.SetTranslation(0.0f, 0.0f, 1.0f);
+    m_entity = m_ecs.CreateEntity(m_trcomp);
+
 }
 
 void EditorLayer::OnDetach() {
@@ -63,7 +66,7 @@ void EditorLayer::OnUpdate(Vortex::Timestep ts) {
 
         Vortex::Renderer2D::BeginScene(m_cameraController.GetCamera());
 
-        float f = 5.0f;
+        float f = 1.0f;
         for (float y = -f; y < f; y += 0.5f) {
             for (float x = -f; x < f; x += 0.5f) {
                 glm::vec4 color = { (x + f) / (2 * f), 0.4f, (y + f) / (2 * f), 0.7f };
@@ -88,6 +91,7 @@ void EditorLayer::OnImGuiRender() {
     static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
     static bool statsOpen = false;
+    static bool testOpen = false;
 
     // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
     // because it would be confusing to have two docking targets within each others.
@@ -161,6 +165,10 @@ void EditorLayer::OnImGuiRender() {
             if (ImGui::MenuItem("BatchRender stats", nullptr, &statsOpen));
             ImGui::EndMenu();
         }
+        if (ImGui::BeginMenu("Test")) {
+            if (ImGui::MenuItem("ECS test", nullptr, &testOpen));
+            ImGui::EndMenu();
+        }
 
         ImGui::EndMenuBar();
     }
@@ -179,7 +187,6 @@ void EditorLayer::OnImGuiRender() {
     ImGui::Image(reinterpret_cast<void*>(texID), ImVec2{ m_viewportPanelSize.x, m_viewportPanelSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
     ImGui::End();
-    ImGui::PopStyleVar();
 
     if (statsOpen) {
         auto stats = Vortex::Renderer2D::GetStats();
@@ -194,7 +201,15 @@ void EditorLayer::OnImGuiRender() {
 
         ImGui::End();
     }
+    if (testOpen) {
+        Transform& t = m_ecs.GetComponent<TransformComponent>(m_entity)->transform;
 
+        ImGui::Begin("Transform Component");
+        ImGui::Text("X: %0.2f, Y: %0.2f, Z: %0.2f", t.x, t.y, t.z);
+        ImGui::End();
+    }
+
+    ImGui::PopStyleVar();
     ImGui::End();
 }
 
