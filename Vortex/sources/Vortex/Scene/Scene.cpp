@@ -19,11 +19,33 @@ namespace Vortex {
 	}	
 
 	void Scene::OnUpdate(Timestep ts) {
-		auto group = m_registry.group<TransformComponent>(entt::get<SpriteComponent>);
+		Scope<Camera> mainCamera = nullptr;
+		Scope<glm::mat4> cameraTransform = nullptr;
+
+		auto group = m_registry.view<TransformComponent, CameraComponent>();
 		for (auto entity : group) {
-			auto [transform, sprite] = group.get<TransformComponent, SpriteComponent>(entity);
-			Renderer2D::DrawQuad(transform.Transform, sprite.Color);
+			auto [transform, camera] = group.get<TransformComponent, CameraComponent>(entity);
+
+			if (camera.Primary) {
+				mainCamera.reset(&camera.Camera);
+				cameraTransform.reset(&transform.Transform);
+				break;
+			}
 		}
+
+		if (mainCamera) {
+			Renderer2D::BeginScene(*mainCamera, *cameraTransform);
+
+			auto group = m_registry.group<TransformComponent>(entt::get<SpriteComponent>);
+			for (auto entity : group) {
+				auto [transform, sprite] = m_registry.get<TransformComponent, SpriteComponent>(entity);
+				Renderer2D::DrawQuad(transform.Transform, sprite.Color);
+			}
+
+			Renderer2D::EndScene();
+		}
+		mainCamera.release();
+		cameraTransform.release();
 	}
 
 }

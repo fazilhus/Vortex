@@ -69,6 +69,20 @@ namespace Vortex {
 		VT_CORE_INFO("Renderer2D is terminated");
 	}
 
+	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4 transform) {
+		VT_PROFILE_FUNC();
+
+		glm::mat4 viewproj = camera.GetProjection() * glm::inverse(transform);
+
+		s_data.shader->Bind();
+		s_data.shader->SetMat4("u_viewproj", viewproj);
+
+		s_data.quadIndCount = 0;
+		s_data.quadVertexBufferPtr = s_data.quadVertexBufferBase;
+
+		s_data.texSlotInd = 1;
+	}
+
 	void Renderer2D::BeginScene(const OrthoCamera& camera) {
 		VT_PROFILE_FUNC();
 		s_data.shader->Bind();

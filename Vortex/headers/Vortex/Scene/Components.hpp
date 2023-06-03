@@ -1,5 +1,6 @@
 #pragma once
-#include <vtpch.hpp>
+#include <glm/glm.hpp>
+#include "Vortex/Renderer/Cameras/Camera.hpp"
 
 namespace Vortex {
 
@@ -19,14 +20,21 @@ namespace Vortex {
 		TransformComponent(const TransformComponent&) = default;
 	};
 
-
-
 	struct SpriteComponent {
 		glm::vec4 Color{1.0f, 1.0f, 1.0f, 1.0f};
 
 		SpriteComponent() = default;
 		SpriteComponent(const glm::vec4& color) : Color(color) {}
 		SpriteComponent(const SpriteComponent&) = default;
+	};
+
+	struct CameraComponent {
+		Camera Camera;
+		bool Primary = true;
+
+		CameraComponent() = default;
+		CameraComponent(const glm::mat4 proj, bool primary) : Camera(proj), Primary(primary) {}
+		CameraComponent(const CameraComponent&) = default;
 	};
 
 }

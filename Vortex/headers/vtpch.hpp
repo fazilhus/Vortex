@@ -45,6 +45,9 @@
 #include "Vortex/Renderer/RendererAPI.hpp"
 #include "Vortex/Renderer/Texture.hpp"
 
+#include "Vortex/Renderer/Cameras/Camera.hpp"
+#include "Vortex/Renderer/Cameras/OrthoCamera.hpp"
+
 #include "Vortex/Scene/Scene.hpp"
 #include "Vortex/Scene/Components.hpp"
 

@@ -21,6 +21,12 @@ void EditorLayer::OnAttach() {
     m_square = square;
 
     m_scenes.push_back(m_currentScene);
+
+    m_primaryCamera = m_currentScene->CreateEntity("Primary camera");
+    m_primaryCamera.AddComponent<Vortex::CameraComponent>(glm::ortho(-16.0f, 16.0f, -9.0f, 9.0f, -1.0f, 1.0f), true);
+
+    m_secondaryCamera = m_currentScene->CreateEntity("Clip-space entity");
+    m_secondaryCamera.AddComponent<Vortex::CameraComponent>(glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f), false);
 }
 
 void EditorLayer::OnDetach() {
@@ -148,14 +154,14 @@ void EditorLayer::OnImGuiRender() {
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Stats")) {
-            if (ImGui::MenuItem("BatchRender stats", nullptr, &statsOpen));
+            if (ImGui::MenuItem("BatchRender stats", nullptr, &statsOpen)) {}
             if (ImGui::MenuItem("Close", nullptr, false)) {
                 statsOpen = false;
             }
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Test")) {
-            if (ImGui::MenuItem("ECS test", nullptr, &testOpen));
+            if (ImGui::MenuItem("ECS test", nullptr, &testOpen)) {}
             if (ImGui::MenuItem("Close", nullptr, false)) {
                 testOpen = false;
             }
@@ -201,6 +207,14 @@ void EditorLayer::OnImGuiRender() {
 
         auto& sprite = m_square.GetComponent<Vortex::SpriteComponent>();
         ImGui::ColorPicker4("Square Color", glm::value_ptr(sprite.Color));
+
+        auto& transform = m_primaryCamera.GetComponent<Vortex::TransformComponent>().Transform;
+        ImGui::DragFloat3("Camera Transform", glm::value_ptr(transform[3]));
+
+        if (ImGui::Checkbox("Camera A", &m_isPrimaryCamera)) {
+            m_primaryCamera.GetComponent<Vortex::CameraComponent>().Primary = m_isPrimaryCamera;
+            m_secondaryCamera.GetComponent<Vortex::CameraComponent>().Primary = !m_isPrimaryCamera;
+        }
 
         ImGui::End();
     }
