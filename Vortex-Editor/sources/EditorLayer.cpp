@@ -4,7 +4,7 @@
 
 EditorLayer::EditorLayer()
 : Layer("EditorLayer"), m_cameraController(16.0f / 9.0f, true), m_viewportPanelSize({1600, 900}),
- m_viewportFocused(false), m_viewportHovered(false) {}
+ m_viewportFocused(false), m_viewportHovered(false), m_ecs() {}
 
 void EditorLayer::OnAttach() {
 	Layer::OnAttach();
@@ -168,6 +168,10 @@ void EditorLayer::OnImGuiRender() {
             }
             ImGui::EndMenu();
         }
+        if (ImGui::BeginMenu("Test")) {
+            if (ImGui::MenuItem("ECS test", nullptr, &testOpen));
+            ImGui::EndMenu();
+        }
 
         ImGui::EndMenuBar();
     }
@@ -200,6 +204,8 @@ void EditorLayer::OnImGuiRender() {
 
         ImGui::End();
     }
+    if (testOpen) {
+        Transform& t = m_ecs.GetComponent<TransformComponent>(m_entity)->transform;
 
     ImGui::PopStyleVar();
     ImGui::End();

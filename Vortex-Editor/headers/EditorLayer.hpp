@@ -2,6 +2,20 @@
 
 #include "Vortex.hpp"
 
+struct Transform {
+	float x, y, z;
+
+	void SetTranslation(float x, float y, float z) {
+		this->x = x;
+		this->y = y;
+		this->z = z;
+	}
+};
+
+struct TransformComponent : public Vortex::ecs::Component<TransformComponent> {
+	Transform transform;
+};
+
 class EditorLayer : public Vortex::Layer {
 private:
 	Vortex::OrthoCameraController m_cameraController;
