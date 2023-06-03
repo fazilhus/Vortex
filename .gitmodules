@@ -15,3 +15,6 @@
 	path = Vortex/vendor/glm
 	url = https://github.com/fazilhus/glm
 	branch = master
+[submodule "entt"]
+	path = entt
+	url = https://github.com/fazilhus/entt
