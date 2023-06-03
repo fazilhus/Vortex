@@ -63,3 +63,6 @@
 
 // STB
 #include <stb_image.h>
+
+// ENTT
+#include <entt/entt.hpp>

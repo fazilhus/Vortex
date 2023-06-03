@@ -5,21 +5,24 @@
 namespace Vortex {
 
 	Scene::Scene() {
-		RenderSystem render{ {TransformComponent::ID} };
-		VT_CORE_INFO("Scene comp types and flags {0} {1}", render.GetComponentTypes().size(), render.GetComponentFlags().size());
-		if (!m_systems.AddSystem(render)) {
-			VT_CORE_WARN("Scene::Scene could not add render system");
-		}
-		VT_CORE_INFO("Scene amount of systems {0}", m_systems.Size());
+		
 	}
 
 	Scene::~Scene() {
 
 	}
 
+	entt::entity Scene::CreateEntity()
+	{
+		return m_registry.create();
+	}
+
 	void Scene::OnUpdate(Timestep ts) {
-		m_manager.OnUpdate(ts);
-		//m_manager.UpdateSystems(ts, m_systems);
+		auto group = m_registry.group<TransformComponent>(entt::get<SpriteComponent>);
+		for (auto entity : group) {
+			auto [transform, sprite] = group.get<TransformComponent, SpriteComponent>(entity);
+			Renderer2D::DrawQuad(transform.Transform, sprite.Color);
+		}
 	}
 
 }

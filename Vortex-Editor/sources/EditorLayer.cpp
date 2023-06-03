@@ -4,7 +4,7 @@
 
 EditorLayer::EditorLayer()
 : Layer("EditorLayer"), m_cameraController(16.0f / 9.0f, true), m_viewportPanelSize({1600, 900}),
- m_viewportFocused(false), m_viewportHovered(false), m_ecs() {}
+ m_viewportFocused(false), m_viewportHovered(false) {}
 
 void EditorLayer::OnAttach() {
 	Layer::OnAttach();
@@ -14,22 +14,16 @@ void EditorLayer::OnAttach() {
 
     m_frameBuffer = Vortex::FrameBuffer::Create({ 1600, 900, 1, false });
 
-    auto ent = m_scene.CreateEntity();
-    auto tag = new Vortex::TagComponent{ "Test Entity" };
-    auto transform = new Vortex::TransformComponent{ glm::mat4(1.0f) };
-    auto sprite = new Vortex::SpriteComponent{ glm::vec4(0.0f, 1.0f, 1.0f, 1.0f) };
-    //m_scene.CreateEntity(tag, transform, sprite);
-    m_scene.AddComponent<Vortex::TagComponent>(ent, tag);
-    m_scene.AddComponent<Vortex::TransformComponent>(ent, transform);
-    m_scene.AddComponent<Vortex::SpriteComponent>(ent, sprite);
+    m_currentScene = Vortex::CreateRef<Vortex::Scene>();
 
+    auto square = m_currentScene->CreateEntity();
+    m_currentScene->GetRegistry().emplace<Vortex::TagComponent>(square, "Example entity");
+    m_currentScene->GetRegistry().emplace<Vortex::TransformComponent>(square, glm::mat4(1.0f));
+    m_currentScene->GetRegistry().emplace<Vortex::SpriteComponent>(square, glm::vec4(0.2f, 0.3f, 0.8f, 1.0f));
 
-    auto render = Vortex::RenderSystem{ {Vortex::TransformComponent::ID} };
-    VT_CL_INFO("Scene comp types and flags {0} {1}", render.GetComponentTypes().size(), render.GetComponentFlags().size());
-    if (!m_scene.AddSystem(render)) {
-        VT_CL_WARN("Scene::Scene could not add render system");
-    }
-    //VT_CL_INFO("Scene amount of systems {0}", m_systems.Size());
+    m_square = square;
+
+    m_scenes.push_back(m_currentScene);
 }
 
 void EditorLayer::OnDetach() {
@@ -65,7 +59,9 @@ void EditorLayer::OnUpdate(Vortex::Timestep ts) {
 
 	{
 		VT_PROFILE_SCOPE("Draw all");
-        m_scene.OnUpdate(ts);
+        Vortex::Renderer2D::BeginScene(m_cameraController.GetCamera());
+
+        m_currentScene->OnUpdate(ts);
 
         Vortex::Renderer2D::EndScene();
 
@@ -168,10 +164,6 @@ void EditorLayer::OnImGuiRender() {
             }
             ImGui::EndMenu();
         }
-        if (ImGui::BeginMenu("Test")) {
-            if (ImGui::MenuItem("ECS test", nullptr, &testOpen));
-            ImGui::EndMenu();
-        }
 
         ImGui::EndMenuBar();
     }
@@ -205,7 +197,16 @@ void EditorLayer::OnImGuiRender() {
         ImGui::End();
     }
     if (testOpen) {
-        Transform& t = m_ecs.GetComponent<TransformComponent>(m_entity)->transform;
+        ImGui::Begin("ECS Test");
+
+        auto tag = m_currentScene->GetRegistry().get<Vortex::TagComponent>(m_square);
+        ImGui::Text("Entity tag: %s", &tag.Tag[0]);
+
+        auto sprite = m_currentScene->GetRegistry().get<Vortex::SpriteComponent>(m_square);
+        ImGui::Text("Entity sprite color %0.2f, %0.2f, %0.2f, %0.2f", sprite.Color.r, sprite.Color.g, sprite.Color.b, sprite.Color.a);
+
+        ImGui::End();
+    }
 
     ImGui::PopStyleVar();
     ImGui::End();

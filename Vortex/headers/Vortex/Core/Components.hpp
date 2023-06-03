@@ -1,11 +1,9 @@
 #pragma once
 #include <vtpch.hpp>
-#include "Vortex/ECS/Config.hpp"
-#include "Vortex/ECS/Component.hpp"
 
 namespace Vortex {
 
-	struct TagComponent : public ecs::Component<TagComponent> {
+	struct TagComponent {
 		std::string Tag;
 
 		TagComponent() = default;
@@ -13,7 +11,7 @@ namespace Vortex {
 		TagComponent(const TagComponent&) = default;
 	};
 
-	struct TransformComponent : public ecs::Component<TransformComponent> {
+	struct TransformComponent {
 		glm::mat4 Transform{ 1.0f };
 
 		TransformComponent() = default;
@@ -23,7 +21,7 @@ namespace Vortex {
 
 
 
-	struct SpriteComponent : public ecs::Component<SpriteComponent> {
+	struct SpriteComponent {
 		glm::vec4 Color{1.0f, 1.0f, 1.0f, 1.0f};
 
 		SpriteComponent() = default;

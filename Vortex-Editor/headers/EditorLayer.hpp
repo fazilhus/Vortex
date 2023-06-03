@@ -2,20 +2,6 @@
 
 #include "Vortex.hpp"
 
-struct Transform {
-	float x, y, z;
-
-	void SetTranslation(float x, float y, float z) {
-		this->x = x;
-		this->y = y;
-		this->z = z;
-	}
-};
-
-struct TransformComponent : public Vortex::ecs::Component<TransformComponent> {
-	Transform transform;
-};
-
 class EditorLayer : public Vortex::Layer {
 private:
 	Vortex::OrthoCameraController m_cameraController;
@@ -30,8 +16,10 @@ private:
 
 	bool m_viewportFocused, m_viewportHovered;
 
-	//Vortex::Scene m_scene;
-	Vortex::ecs::Manager m_scene;
+	Vortex::Vector<Vortex::Ref<Vortex::Scene>> m_scenes;
+	Vortex::Ref<Vortex::Scene> m_currentScene;
+
+	entt::entity m_square;
 
 public:
 	EditorLayer();
