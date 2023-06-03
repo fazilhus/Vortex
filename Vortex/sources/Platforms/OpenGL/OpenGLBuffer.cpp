@@ -156,6 +156,8 @@ namespace Vortex {
 		m_ib = ib;
 	}
 
+	static const uint32 s_maxFrameBuffer = 8192;
+
 	OpenGLFrameBuffer::OpenGLFrameBuffer(const FrameBufferSpec& spec)
 	: m_rendererID(0), m_colorAttachment(0), m_depthAttachment(0), m_spec(spec) {
 		Invalidate();
@@ -205,9 +207,13 @@ namespace Vortex {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	void OpenGLFrameBuffer::Resize(uint32 x, uint32 y) {
-		m_spec.width = x;
-		m_spec.height = y;
+	void OpenGLFrameBuffer::Resize(uint32 width, uint32 height) {
+		if (width == 0 || height == 0 || width > s_maxFrameBuffer || height > s_maxFrameBuffer) {
+			VT_CORE_WARN("Attempted to resize window to {0}, {1}", width, height);
+			return;
+		}
+		m_spec.width = width;
+		m_spec.height = height;
 
 		Invalidate();
 	}

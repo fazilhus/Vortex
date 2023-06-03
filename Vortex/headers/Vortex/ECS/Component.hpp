@@ -17,7 +17,7 @@ namespace Vortex {
 		public:
 			EntityHandle m_entity;
 
-			static uint32 RegisterComponentType(ComponentCreateFunction createfn, ComponentDeleteFunction delfn, size_t size) {
+			inline static uint32 RegisterComponentType(ComponentCreateFunction createfn, ComponentDeleteFunction delfn, size_t size) {
 				if (s_componentTypes == nullptr) {
 					s_componentTypes = new Vector<std::tuple<ComponentCreateFunction, ComponentDeleteFunction, size_t>>();
 				}

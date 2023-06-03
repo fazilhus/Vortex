@@ -12,38 +12,27 @@ namespace Vortex {
 		};
 
 		class BaseSystem {
-		private:
+		protected:
 			Vector<ComponentID> m_componentTypes;
-			Vector<uint32> m_componentFlags;
+			Vector<ComponentFlag> m_componentFlags;
 
 		public:
-			BaseSystem(const Vector<ComponentID>& componentTypes) : m_componentTypes(componentTypes) {}
+			BaseSystem() : m_componentTypes(), m_componentFlags() {}
+			BaseSystem(const BaseSystem& other) : m_componentTypes(other.GetComponentTypes()), m_componentFlags(other.GetComponentFlags()) {}
 			virtual ~BaseSystem() = default;
 
+			//virtual void OnUpdate(Timestep ts, BaseComponent* components) {}
 			virtual void OnUpdate(Timestep ts, BaseComponent** components) {}
 
-			const Vector<ComponentID>& GetComponentTypes() const {
+			const Vector<ComponentID>& GetComponentTypes() const { 
 				return m_componentTypes;
 			}
+			const Vector<ComponentFlag>& GetComponentFlags() const { return m_componentFlags; }
 
-			const Vector<uint32>& GetComponentFlags() const {
-				return m_componentFlags;
-			}
-
-			bool IsValid() {
-				for (uint32 i = 0; i < m_componentFlags.size(); ++i) {
-					if ((m_componentFlags[i] & ComponentFlag::FLAG_OPTIONAL) == 0) {
-						return true;
-					}
-				}
-				return false;
-			}
+			bool IsValid();
 
 		protected:
-			void AddComponentType(ComponentID id, ComponentFlag flag = ComponentFlag::NONE) {
-				m_componentTypes.push_back(id);
-				m_componentFlags.push_back(flag);
-			}
+			void AddComponentType(ComponentID id, ComponentFlag flag = ComponentFlag::NONE);
 		};
 
 		class SystemsList {
@@ -59,24 +48,8 @@ namespace Vortex {
 			SystemsList& operator=(const SystemsList& other) = delete;
 			SystemsList& operator=(SystemsList&&) = delete;
 
-			bool AddSystem(BaseSystem& s) {
-				if (!s.IsValid()) {
-					return false;
-				}
-
-				m_systems.push_back(&s);
-				return true;
-			}
-
-			bool RemoveSystem(BaseSystem& s) {
-				for (uint32 i = 0; i < m_systems.size(); i++) {
-					if (&s == m_systems[i]) {
-						m_systems.erase(m_systems.begin() + i);
-						return true;
-					}
-				}
-				return false;
-			}
+			bool AddSystem(BaseSystem& s);
+			bool RemoveSystem(BaseSystem& s);
 
 			std::size_t Size() const { return m_systems.size(); }
 			BaseSystem* operator[](uint32 i) { return m_systems[i]; }

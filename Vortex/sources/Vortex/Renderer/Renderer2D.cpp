@@ -159,6 +159,35 @@ namespace Vortex {
 		SetQuad(pos, size, tintColor, texIndex, tilingFactor, rot);
 	}
 
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color) {
+		VT_PROFILE_FUNC();
+
+		constexpr std::size_t vertcount{ 4 };
+		constexpr float texInd{ 0.0f };
+		constexpr glm::vec2 texCoord[] = { {0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f} };
+		constexpr float tiling = 1.0f;
+
+		if (s_data.quadIndCount > Renderer2DStorage::maxInd) {
+			FlushAndReset();
+		}
+
+		for (size_t i = 0; i < vertcount; ++i) {
+			s_data.quadVertexBufferPtr->pos = transform * s_data.quadVertexPos[i];
+			s_data.quadVertexBufferPtr->color = color;
+			s_data.quadVertexBufferPtr->texPos = texCoord[i];
+			s_data.quadVertexBufferPtr->texInd = texInd;
+			s_data.quadVertexBufferPtr->tilingFactor = tiling;
+			s_data.quadVertexBufferPtr++;
+		}
+
+		s_data.quadIndCount += 6;
+
+		s_data.stats.quadCount++;
+	}
+
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Vortex::Texture2D>& texture, float tilingFactor, const glm::vec4 tintColor) {
+	}
+
 	void Renderer2D::DrawRotatedQuad(const glm::vec2& pos, const glm::vec2& size, const glm::vec4& color, float rot) {
 		DrawRotatedQuad({pos.x, pos.y, 0.0f}, size, color, rot);
 	}

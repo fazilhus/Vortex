@@ -4,7 +4,9 @@
 namespace Vortex {
 	
 	namespace ecs {
+
 		Vector<std::tuple<ComponentCreateFunction, ComponentDeleteFunction, size_t>>* BaseComponent::s_componentTypes;
+
 	}
 
 }

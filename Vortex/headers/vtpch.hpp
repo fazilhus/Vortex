@@ -12,6 +12,7 @@
 #include <sstream>
 #include <chrono>
 #include <thread>
+#include <climits>
 
 // SPDLOG
 #include "spdlog/spdlog.h"

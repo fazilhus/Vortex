@@ -1,9 +1,10 @@
 #include "EditorLayer.hpp"
 #include "Platforms/OpenGL/OpenGLShader.hpp"
+#include "Vortex/Core/Components.hpp"
 
 EditorLayer::EditorLayer()
 : Layer("EditorLayer"), m_cameraController(16.0f / 9.0f, true), m_viewportPanelSize({1600, 900}),
- m_viewportFocused(false), m_viewportHovered(false), m_ecs() {}
+ m_viewportFocused(false), m_viewportHovered(false) {}
 
 void EditorLayer::OnAttach() {
 	Layer::OnAttach();
@@ -11,10 +12,24 @@ void EditorLayer::OnAttach() {
 	m_texture1 = Vortex::Texture2D::Create("res/textures/img3.png");
 	m_texture2 = Vortex::Texture2D::Create("res/textures/img2.png");
 
-    m_frameBuffer = Vortex::FrameBuffer::Create({1600, 900, 1, true});
-    m_trcomp.transform.SetTranslation(0.0f, 0.0f, 1.0f);
-    m_entity = m_ecs.CreateEntity(m_trcomp);
+    m_frameBuffer = Vortex::FrameBuffer::Create({ 1600, 900, 1, false });
 
+    auto ent = m_scene.CreateEntity();
+    auto tag = new Vortex::TagComponent{ "Test Entity" };
+    auto transform = new Vortex::TransformComponent{ glm::mat4(1.0f) };
+    auto sprite = new Vortex::SpriteComponent{ glm::vec4(0.0f, 1.0f, 1.0f, 1.0f) };
+    //m_scene.CreateEntity(tag, transform, sprite);
+    m_scene.AddComponent<Vortex::TagComponent>(ent, tag);
+    m_scene.AddComponent<Vortex::TransformComponent>(ent, transform);
+    m_scene.AddComponent<Vortex::SpriteComponent>(ent, sprite);
+
+
+    auto render = Vortex::RenderSystem{ {Vortex::TransformComponent::ID} };
+    VT_CL_INFO("Scene comp types and flags {0} {1}", render.GetComponentTypes().size(), render.GetComponentFlags().size());
+    if (!m_scene.AddSystem(render)) {
+        VT_CL_WARN("Scene::Scene could not add render system");
+    }
+    //VT_CL_INFO("Scene amount of systems {0}", m_systems.Size());
 }
 
 void EditorLayer::OnDetach() {
@@ -50,29 +65,7 @@ void EditorLayer::OnUpdate(Vortex::Timestep ts) {
 
 	{
 		VT_PROFILE_SCOPE("Draw all");
-		static float rot = 0.0f;
-		rot += ts * 50.0f;
-		if (rot > 360.0f) { rot -= 360.0f; }
-
-		Vortex::Renderer2D::BeginScene(m_cameraController.GetCamera());
-
-		Vortex::Renderer2D::DrawQuad({ -0.5f, 0.0f}, { 1.0f, 1.0f }, m_texture2, 1.0f, {0.8f, 0.2f, 0.3f, 1.0f});
-		Vortex::Renderer2D::DrawRotatedQuad({ 0.5f, 0.0f }, { 1.0f, 1.0f }, m_texture1, rot);
-		Vortex::Renderer2D::DrawQuad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, { 0.2f, 0.3f, 0.8f, 1.0f });
-		Vortex::Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
-		Vortex::Renderer2D::DrawRotatedQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, -45.0f);
-
-		Vortex::Renderer2D::EndScene();
-
-        Vortex::Renderer2D::BeginScene(m_cameraController.GetCamera());
-
-        float f = 1.0f;
-        for (float y = -f; y < f; y += 0.5f) {
-            for (float x = -f; x < f; x += 0.5f) {
-                glm::vec4 color = { (x + f) / (2 * f), 0.4f, (y + f) / (2 * f), 0.7f };
-                Vortex::Renderer2D::DrawQuad({ x, y }, { 0.45f, 0.45f }, color);
-            }
-        }
+        m_scene.OnUpdate(ts);
 
         Vortex::Renderer2D::EndScene();
 
@@ -205,13 +198,6 @@ void EditorLayer::OnImGuiRender() {
         ImGui::Text("Vertices: %d", stats.GetVertexesCount());
         ImGui::Text("Indices: %d", stats.GetIndicesCount());
 
-        ImGui::End();
-    }
-    if (testOpen) {
-        Transform& t = m_ecs.GetComponent<TransformComponent>(m_entity)->transform;
-
-        ImGui::Begin("Transform Component");
-        ImGui::Text("X: %0.2f, Y: %0.2f, Z: %0.2f", t.x, t.y, t.z);
         ImGui::End();
     }
 
