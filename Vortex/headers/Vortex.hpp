@@ -10,7 +10,9 @@
 #include "Vortex/Core/Profiling/Profiler.hpp"
 #include "Vortex/Events/Event.hpp"
 #include "Vortex/ECS/ECS.hpp"
-#include "Vortex/Core/Scene.hpp"
+#include "Vortex/Scene/Scene.hpp"
+#include "Vortex/Scene/Components.hpp"
+#include "Vortex/Scene/Entity.hpp"
 //-------------------------------------
 
 

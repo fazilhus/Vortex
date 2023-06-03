@@ -1,6 +1,5 @@
 #include <vtpch.hpp>
-#include "Vortex/Core/Scene.hpp"
-#include "Vortex/Core/Components.hpp"
+#include "Vortex/Scene/Entity.hpp"
 
 namespace Vortex {
 
@@ -12,10 +11,12 @@ namespace Vortex {
 
 	}
 
-	entt::entity Scene::CreateEntity()
-	{
-		return m_registry.create();
-	}
+	Entity Scene::CreateEntity(const std::string& tag) {
+		Entity entity = { m_registry.create(), this };
+		entity.AddComponent<TagComponent>((tag.empty() ? "Entity" : tag));
+		entity.AddComponent<TransformComponent>();
+		return entity;
+	}	
 
 	void Scene::OnUpdate(Timestep ts) {
 		auto group = m_registry.group<TransformComponent>(entt::get<SpriteComponent>);

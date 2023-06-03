@@ -19,7 +19,7 @@ private:
 	Vortex::Vector<Vortex::Ref<Vortex::Scene>> m_scenes;
 	Vortex::Ref<Vortex::Scene> m_currentScene;
 
-	entt::entity m_square;
+	Vortex::Entity m_square;
 
 public:
 	EditorLayer();

@@ -1,6 +1,5 @@
 #include "EditorLayer.hpp"
 #include "Platforms/OpenGL/OpenGLShader.hpp"
-#include "Vortex/Core/Components.hpp"
 
 EditorLayer::EditorLayer()
 : Layer("EditorLayer"), m_cameraController(16.0f / 9.0f, true), m_viewportPanelSize({1600, 900}),
@@ -16,10 +15,8 @@ void EditorLayer::OnAttach() {
 
     m_currentScene = Vortex::CreateRef<Vortex::Scene>();
 
-    auto square = m_currentScene->CreateEntity();
-    m_currentScene->GetRegistry().emplace<Vortex::TagComponent>(square, "Example entity");
-    m_currentScene->GetRegistry().emplace<Vortex::TransformComponent>(square, glm::mat4(1.0f));
-    m_currentScene->GetRegistry().emplace<Vortex::SpriteComponent>(square, glm::vec4(0.2f, 0.3f, 0.8f, 1.0f));
+    auto square = m_currentScene->CreateEntity("Square");
+    square.AddComponent<Vortex::SpriteComponent>(glm::vec4{1.0f, 1.0f, 1.0f, 1.0f});
 
     m_square = square;
 
@@ -199,11 +196,11 @@ void EditorLayer::OnImGuiRender() {
     if (testOpen) {
         ImGui::Begin("ECS Test");
 
-        auto tag = m_currentScene->GetRegistry().get<Vortex::TagComponent>(m_square);
+        auto& tag = m_square.GetComponent<Vortex::TagComponent>();
         ImGui::Text("Entity tag: %s", &tag.Tag[0]);
 
-        auto sprite = m_currentScene->GetRegistry().get<Vortex::SpriteComponent>(m_square);
-        ImGui::Text("Entity sprite color %0.2f, %0.2f, %0.2f, %0.2f", sprite.Color.r, sprite.Color.g, sprite.Color.b, sprite.Color.a);
+        auto& sprite = m_square.GetComponent<Vortex::SpriteComponent>();
+        ImGui::ColorPicker4("Square Color", glm::value_ptr(sprite.Color));
 
         ImGui::End();
     }

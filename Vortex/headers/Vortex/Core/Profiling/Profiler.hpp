@@ -52,6 +52,36 @@ namespace Vortex {
 		void Stop();
 	};
 
+	namespace Utils {
+
+		template <size_t N>
+		struct ChangeResult
+		{
+			char Data[N];
+		};
+
+		template <size_t N, size_t K>
+		constexpr auto CleanupOutputString(const char(&expr)[N], const char(&remove)[K])
+		{
+			ChangeResult<N> result = {};
+
+			size_t srcIndex = 0;
+			size_t dstIndex = 0;
+			while (srcIndex < N)
+			{
+				size_t matchIndex = 0;
+				while (matchIndex < K - 1 && srcIndex + matchIndex < N - 1 && expr[srcIndex + matchIndex] == remove[matchIndex])
+					matchIndex++;
+				if (matchIndex == K - 1)
+					srcIndex += matchIndex;
+				result.Data[dstIndex++] = expr[srcIndex] == '"' ? '\'' : expr[srcIndex];
+				srcIndex++;
+			}
+			return result;
+		}
+
+	}
+
 }
 
 #ifdef VT_PROFILE
@@ -75,7 +105,10 @@ namespace Vortex {
 
 	#define VT_PROFILE_BEGIN_SESSION(name, filepath) ::Vortex::Profiler::Get().BeginSession(name, filepath)
 	#define VT_PROFILE_END_SESSION()                 ::Vortex::Profiler::Get().EndSession()
-	#define VT_PROFILE_SCOPE(name)                   ::Vortex::Timer timer##__LINE__(name)
+	#define VT_PROFILE_SCOPE_LINE2(name, line)       constexpr auto fixedName##line = ::Vortex::Utils::CleanupOutputString(name, "__cdecl ");\
+												     ::Vortex::Timer timer##line(fixedName##line.Data)
+	#define VT_PROFILE_SCOPE_LINE(name, line)        VT_PROFILE_SCOPE_LINE2(name, line)
+	#define VT_PROFILE_SCOPE(name)                   VT_PROFILE_SCOPE_LINE(name, __LINE__)
 	#define VT_PROFILE_FUNC()                        VT_PROFILE_SCOPE(VT_FUNC_SIG)
 #else
 	#define VT_PROFILE_BEGIN_SESSION(name, filepath)
