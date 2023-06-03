@@ -11,7 +11,7 @@ void EditorLayer::OnAttach() {
 	m_texture1 = Vortex::Texture2D::Create("res/textures/img3.png");
 	m_texture2 = Vortex::Texture2D::Create("res/textures/img2.png");
 
-    m_frameBuffer = Vortex::FrameBuffer::Create({1600, 900, 1, false});
+    m_frameBuffer = Vortex::FrameBuffer::Create({1600, 900, 1, true});
     m_trcomp.transform.SetTranslation(0.0f, 0.0f, 1.0f);
     m_entity = m_ecs.CreateEntity(m_trcomp);
 
@@ -163,10 +163,16 @@ void EditorLayer::OnImGuiRender() {
         }
         if (ImGui::BeginMenu("Stats")) {
             if (ImGui::MenuItem("BatchRender stats", nullptr, &statsOpen));
+            if (ImGui::MenuItem("Close", nullptr, false)) {
+                statsOpen = false;
+            }
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Test")) {
             if (ImGui::MenuItem("ECS test", nullptr, &testOpen));
+            if (ImGui::MenuItem("Close", nullptr, false)) {
+                testOpen = false;
+            }
             ImGui::EndMenu();
         }
 

@@ -13,7 +13,7 @@ namespace Vortex {
 
 		m_window = Window::Create({ "Vortex Engine", 1600, 900 });
 		m_running = true;
-		m_window->SetVSync(false);
+		m_window->SetVSync(true);
 		m_window->SetEventCallback(VT_BIND_EVENT_FN(Application::OnEvent));
 
 		Renderer::Init({true, true});

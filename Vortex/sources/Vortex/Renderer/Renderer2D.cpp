@@ -38,7 +38,7 @@ namespace Vortex {
 		Ref<IndexBuffer> ibo = IndexBuffer::Create(ind, s_data.maxInd);
 		s_data.quadVao->AddIndexBuffer(ibo);
 
-		delete ind;
+		//delete ind;
 
 		s_data.texture = Texture2D::Create(1, 1);
 		uint32 texData = 0xffffffff;
