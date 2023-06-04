@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include "Vortex/Scene/SceneCamera.hpp"
+#include "Vortex/Scene/ScriptableEntity.hpp"
 
 namespace Vortex {
 
@@ -35,6 +36,22 @@ namespace Vortex {
 
 		CameraComponent() = default;
 		CameraComponent(const CameraComponent&) = default;
+	};
+
+	struct NativeScriptComponent {
+		ScriptableEntity* instance = nullptr;
+
+		ScriptableEntity* (*InstantiateFunction)();
+		void (*DestroyInstanceFunction)(NativeScriptComponent*);
+
+		template <typename T>
+		void Bind() {
+			InstantiateFunction = []() { return static_cast<ScriptableEntity*>(new T()); };
+			DestroyInstanceFunction = [](NativeScriptComponent* nsc) { 
+				delete nsc->instance;
+				nsc->instance = nullptr;
+			};
+		}
 	};
 
 }

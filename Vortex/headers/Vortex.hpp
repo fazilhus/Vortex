@@ -13,6 +13,7 @@
 #include "Vortex/Scene/Scene.hpp"
 #include "Vortex/Scene/Components.hpp"
 #include "Vortex/Scene/Entity.hpp"
+#include "Vortex/Scene/ScriptableEntity.hpp"
 //-------------------------------------
 
 

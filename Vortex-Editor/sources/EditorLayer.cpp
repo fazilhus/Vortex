@@ -1,5 +1,6 @@
 #include "EditorLayer.hpp"
 #include "Platforms/OpenGL/OpenGLShader.hpp"
+#include "Vortex/Controllers/CameraController.hpp"
 
 EditorLayer::EditorLayer()
 : Layer("EditorLayer"), m_cameraController(16.0f / 9.0f, true), m_viewportPanelSize({1600, 900}),
@@ -24,9 +25,11 @@ void EditorLayer::OnAttach() {
 
     m_primaryCamera = m_currentScene->CreateEntity("Primary camera");
     m_primaryCamera.AddComponent<Vortex::CameraComponent>();
+    m_primaryCamera.AddComponent<Vortex::NativeScriptComponent>().Bind<Vortex::CameraController>();
 
     m_secondaryCamera = m_currentScene->CreateEntity("Clip-space entity");
     auto& cc = m_secondaryCamera.AddComponent<Vortex::CameraComponent>();
+    m_secondaryCamera.AddComponent<Vortex::NativeScriptComponent>().Bind<Vortex::CameraController>();
     cc.Primary = false;
 }
 

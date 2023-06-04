@@ -1,3 +1,4 @@
+#pragma once
 #include <entt/entt.hpp>
 #include "Vortex/Scene/Scene.hpp"
 
