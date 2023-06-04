@@ -23,10 +23,11 @@ void EditorLayer::OnAttach() {
     m_scenes.push_back(m_currentScene);
 
     m_primaryCamera = m_currentScene->CreateEntity("Primary camera");
-    m_primaryCamera.AddComponent<Vortex::CameraComponent>(glm::ortho(-16.0f, 16.0f, -9.0f, 9.0f, -1.0f, 1.0f), true);
+    m_primaryCamera.AddComponent<Vortex::CameraComponent>();
 
     m_secondaryCamera = m_currentScene->CreateEntity("Clip-space entity");
-    m_secondaryCamera.AddComponent<Vortex::CameraComponent>(glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f), false);
+    auto& cc = m_secondaryCamera.AddComponent<Vortex::CameraComponent>();
+    cc.Primary = false;
 }
 
 void EditorLayer::OnDetach() {
@@ -42,6 +43,7 @@ void EditorLayer::OnUpdate(Vortex::Timestep ts) {
     {
         m_frameBuffer->Resize(static_cast<uint32>(m_viewportPanelSize.x), static_cast<uint32>(m_viewportPanelSize.y));
         m_cameraController.OnResize(m_viewportPanelSize.x, m_viewportPanelSize.y);
+        m_currentScene->OnViewportResize((uint32)m_viewportPanelSize.x, (uint32)m_viewportPanelSize.y);
     }
 
 	Vortex::Renderer2D::ResetStats();
@@ -214,6 +216,12 @@ void EditorLayer::OnImGuiRender() {
         if (ImGui::Checkbox("Camera A", &m_isPrimaryCamera)) {
             m_primaryCamera.GetComponent<Vortex::CameraComponent>().Primary = m_isPrimaryCamera;
             m_secondaryCamera.GetComponent<Vortex::CameraComponent>().Primary = !m_isPrimaryCamera;
+        }
+
+        auto& camera = m_secondaryCamera.GetComponent<Vortex::CameraComponent>();
+        float orthoSize = camera.Camera.GetOrthoSize();
+        if (ImGui::DragFloat("Secondary camera ortho size", &orthoSize)) {
+            camera.Camera.SetOrthoSize(orthoSize);
         }
 
         ImGui::End();

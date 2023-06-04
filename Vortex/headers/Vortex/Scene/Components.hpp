@@ -1,6 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
-#include "Vortex/Renderer/Cameras/Camera.hpp"
+#include "Vortex/Scene/SceneCamera.hpp"
 
 namespace Vortex {
 
@@ -29,11 +29,11 @@ namespace Vortex {
 	};
 
 	struct CameraComponent {
-		Camera Camera;
+		SceneCamera Camera;
 		bool Primary = true;
+		bool FixedAspectRatio = false;
 
 		CameraComponent() = default;
-		CameraComponent(const glm::mat4 proj, bool primary) : Camera(proj), Primary(primary) {}
 		CameraComponent(const CameraComponent&) = default;
 	};
 

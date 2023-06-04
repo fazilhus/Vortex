@@ -3,14 +3,6 @@
 
 namespace Vortex {
 
-	Scene::Scene() {
-		
-	}
-
-	Scene::~Scene() {
-
-	}
-
 	Entity Scene::CreateEntity(const std::string& tag) {
 		Entity entity = { m_registry.create(), this };
 		entity.AddComponent<TagComponent>((tag.empty() ? "Entity" : tag));
@@ -22,9 +14,9 @@ namespace Vortex {
 		Scope<Camera> mainCamera = nullptr;
 		Scope<glm::mat4> cameraTransform = nullptr;
 
-		auto group = m_registry.view<TransformComponent, CameraComponent>();
-		for (auto entity : group) {
-			auto [transform, camera] = group.get<TransformComponent, CameraComponent>(entity);
+		auto view = m_registry.view<TransformComponent, CameraComponent>();
+		for (auto entity : view) {
+			auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
 
 			if (camera.Primary) {
 				mainCamera.reset(&camera.Camera);
@@ -46,6 +38,19 @@ namespace Vortex {
 		}
 		mainCamera.release();
 		cameraTransform.release();
+	}
+
+	void Scene::OnViewportResize(uint32 width, uint32 height) {
+		m_viewportWidth = width;
+		m_viewportHeight = height;
+
+		auto view = m_registry.view<CameraComponent>();
+		for (auto entity : view) {
+			auto& cameraComp = view.get<CameraComponent>(entity);
+			if (!cameraComp.FixedAspectRatio) {
+				cameraComp.Camera.SetViewportSize(width, height);
+			}
+		}
 	}
 
 }
