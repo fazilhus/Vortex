@@ -42,6 +42,7 @@ namespace Vortex {
 
     void EditorLayer::OnUpdate(Timestep ts) {
         VT_PROFILE_FUNC();
+        m_frametime = ts;
 
         if (FrameBufferSpec spec = m_frameBuffer->GetSpec();
             m_viewportPanelSize.x > 0.0f && m_viewportPanelSize.y > 0.0f &&
@@ -181,13 +182,17 @@ namespace Vortex {
         if (statsOpen) {
             auto stats = Renderer2D::GetStats();
 
-            ImGui::Begin("Settings");
+            ImGui::Begin("Stats");
 
             ImGui::Text("Renderer2D stats:");
             ImGui::Text("Draw Calls: %d", stats.drawcallsCount);
             ImGui::Text("Quads: %d", stats.quadCount);
             ImGui::Text("Vertices: %d", stats.GetVertexesCount());
             ImGui::Text("Indices: %d", stats.GetIndicesCount());
+            
+            ImGui::Separator();
+            
+            ImGui::Text("Frame time: %0.2f", m_frametime.GetMilliSeconds());
 
             ImGui::End();
         }

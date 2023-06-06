@@ -1,10 +1,5 @@
 #pragma once
 
-//#include "Vortex/Core/Core.hpp"
-//#include "Vortex/Core/Log.hpp"
-//#include "Vortex/Scene/Scene.hpp"
-//#include "Vortex/Scene/Entity.hpp"
-
 #include <Vortex.hpp>
 
 namespace Vortex {
@@ -25,6 +20,7 @@ namespace Vortex {
 
 	private:
 		void DrawEntityMode(Entity entity);
+		void DrawEntityComponents(Entity entity);
 	};
 
 }

@@ -30,6 +30,7 @@ namespace Vortex {
 
 		// Panels
 		SceneHierarchyPanel m_sceneHierarchyPanel;
+		Timestep m_frametime;
 
 	public:
 		EditorLayer();

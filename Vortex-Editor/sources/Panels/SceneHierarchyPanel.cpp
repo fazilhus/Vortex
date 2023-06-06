@@ -22,6 +22,18 @@ namespace Vortex {
 			DrawEntityMode(entity);
 		});
 
+		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {
+			m_selectionContext = {};
+		}
+
+		ImGui::End();
+
+		ImGui::Begin("Properties");
+
+		if (m_selectionContext) {
+			DrawEntityComponents(m_selectionContext);
+		}
+
 		ImGui::End();
 	}
 
@@ -35,12 +47,40 @@ namespace Vortex {
 		}
 
 		if (opened) {
-			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
-			bool opened = ImGui::TreeNodeEx((void*)9817239, flags, tag.c_str());
-			if (opened) {
+			ImGui::TreePop();
+		}
+	}
+
+	void SceneHierarchyPanel::DrawEntityComponents(Entity entity) {
+		if (entity.HasComponent<TagComponent>()) {
+			auto& tag = entity.GetComponent<TagComponent>().Tag;
+
+			char buffer[256];
+			memset(buffer, 0, sizeof(buffer));
+			strcpy_s(buffer, sizeof(buffer), tag.c_str());
+			if (ImGui::InputTextWithHint("Tag", "Entity name", buffer, sizeof(buffer))) {
+				tag = std::string(buffer);
+			}
+		}
+
+		if (entity.HasComponent<TransformComponent>()) {
+			auto flags = ImGuiTreeNodeFlags_DefaultOpen;
+			if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), flags, "Transform")) {
+				auto& transform = entity.GetComponent<TransformComponent>().Transform;
+
+				ImGui::DragFloat3("Position", glm::value_ptr(transform[3]), 0.1f);
 				ImGui::TreePop();
 			}
-			ImGui::TreePop();
+		}
+
+		if (entity.HasComponent<SpriteComponent>()) {
+			auto flags = ImGuiTreeNodeFlags_DefaultOpen;
+			if (ImGui::TreeNodeEx((void*)typeid(SpriteComponent).hash_code(), flags, "Sprite")) {
+				auto& color = entity.GetComponent<SpriteComponent>().Color;
+
+				ImGui::ColorPicker4("Color", glm::value_ptr(color));
+				ImGui::TreePop();
+			}
 		}
 	}
 
