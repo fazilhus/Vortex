@@ -77,6 +77,7 @@ project "Vortex-Editor"
     filter "configurations:Debug"
         defines {
             "VT_DEBUG",
+            "VT_ENABLE_ASSERTS",
             "VT_PROFILE"
         }
         runtime "Debug"

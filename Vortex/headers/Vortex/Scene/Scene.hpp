@@ -1,5 +1,6 @@
 #pragma once
 #include <entt/entt.hpp>
+#include "Vortex/Core/Timestep.hpp"
 
 namespace Vortex {
 
@@ -11,6 +12,7 @@ namespace Vortex {
 		uint32 m_viewportWidth, m_viewportHeight;
 
 		friend class Entity;
+		friend class SceneHierarchyPanel;
 
 	public:
 		Scene() : m_viewportWidth(0), m_viewportHeight(0) {}
