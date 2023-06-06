@@ -135,7 +135,7 @@ namespace Vortex {
 							ShaderDataTypeToOpenGLType(item.type),
 							item.normalized ? GL_TRUE : GL_FALSE,
 							layout.GetStride(),
-							reinterpret_cast<const void*>(sizeof(float) * count * i));
+							reinterpret_cast<const void*>(item.offset + sizeof(float) * count * i));
 						glVertexAttribDivisor(m_vertexBufferInd, 1);
 						m_vertexBufferInd++;
 					}

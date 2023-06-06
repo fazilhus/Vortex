@@ -7,7 +7,7 @@ namespace Vortex {
 	// Abstract event for any key events
 	class KeyEvent : public Event {
 	protected:
-		KeyEvent(KeyCode keycode)
+		KeyEvent(const KeyCode keycode)
 			: m_keycode(keycode) {}
 
 		KeyCode m_keycode;
@@ -20,13 +20,13 @@ namespace Vortex {
 
 	class KeyPressedEvent : public KeyEvent {
 	private:
-		int m_repeatCount;
+		uint16 m_repeatCount;
 
 	public:
-		KeyPressedEvent(KeyCode keycode, int repeatCount)
+		KeyPressedEvent(const KeyCode keycode, const uint16 repeatCount)
 			: KeyEvent(keycode), m_repeatCount(repeatCount) {}
 
-		inline int GetRepeatCount() const { return m_repeatCount; }
+		inline uint16 GetRepeatCount() const { return m_repeatCount; }
 
 #ifdef VT_DEBUG
 		std::string ToStr() const override {
@@ -41,7 +41,7 @@ namespace Vortex {
 
 	class KeyReleasedEvent : public KeyEvent {
 	public:
-		KeyReleasedEvent(KeyCode keycode)
+		KeyReleasedEvent(const KeyCode keycode)
 			: KeyEvent(keycode) {}
 
 #ifdef VT_DEBUG
@@ -57,7 +57,7 @@ namespace Vortex {
 
 	class KeyTypedEvent : public KeyEvent {
 	public:
-		KeyTypedEvent(KeyCode keycode)
+		KeyTypedEvent(const KeyCode keycode)
 			: KeyEvent(keycode) {}
 
 #ifdef VT_DEBUG

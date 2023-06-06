@@ -142,7 +142,7 @@ namespace Vortex {
 	};
 
 	struct FrameBufferSpec {
-		uint32 width, height;
+		uint32 width = 0, height = 0;
 		uint32 samples = 1;
 
 		bool swapChainTarget = false;
