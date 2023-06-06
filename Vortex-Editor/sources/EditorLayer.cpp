@@ -19,8 +19,11 @@ namespace Vortex {
         m_currentScene = CreateRef<Scene>();
         m_sceneHierarchyPanel.SetContext(m_currentScene);
 
-        auto square = m_currentScene->CreateEntity("Square");
+        auto square = m_currentScene->CreateEntity("White Square");
         square.AddComponent<SpriteComponent>(glm::vec4{1.0f, 1.0f, 1.0f, 1.0f});
+
+        auto rsquare = m_currentScene->CreateEntity("Red Square");
+        rsquare.AddComponent<SpriteComponent>(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 
         m_square = square;
 
@@ -29,11 +32,6 @@ namespace Vortex {
         m_primaryCamera = m_currentScene->CreateEntity("Primary camera");
         m_primaryCamera.AddComponent<CameraComponent>();
         m_primaryCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-
-        m_secondaryCamera = m_currentScene->CreateEntity("Clip-space entity");
-        auto& cc = m_secondaryCamera.AddComponent<CameraComponent>();
-        m_secondaryCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-        cc.Primary = false;
     }
 
     void EditorLayer::OnDetach() {
@@ -197,29 +195,7 @@ namespace Vortex {
             ImGui::End();
         }
         if (testOpen) {
-            ImGui::Begin("ECS Test");
-
-            auto& tag = m_square.GetComponent<TagComponent>();
-            ImGui::Text("Entity tag: %s", &tag.Tag[0]);
-
-            auto& sprite = m_square.GetComponent<SpriteComponent>();
-            ImGui::ColorPicker4("Square Color", glm::value_ptr(sprite.Color));
-
-            auto& transform = m_primaryCamera.GetComponent<TransformComponent>().Transform;
-            ImGui::DragFloat3("Camera Transform", glm::value_ptr(transform[3]));
-
-            if (ImGui::Checkbox("Camera A", &m_isPrimaryCamera)) {
-                m_primaryCamera.GetComponent<CameraComponent>().Primary = m_isPrimaryCamera;
-                m_secondaryCamera.GetComponent<CameraComponent>().Primary = !m_isPrimaryCamera;
-            }
-
-            auto& camera = m_secondaryCamera.GetComponent<CameraComponent>();
-            float orthoSize = camera.Camera.GetOrthoSize();
-            if (ImGui::DragFloat("Secondary camera ortho size", &orthoSize)) {
-                camera.Camera.SetOrthoSize(orthoSize);
-            }
-
-            ImGui::End();
+            
         }
 
         ImGui::PopStyleVar();
