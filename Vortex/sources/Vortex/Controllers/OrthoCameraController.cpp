@@ -1,4 +1,4 @@
-#include "vtpch.hpp"
+#include <vtpch.hpp>
 #include "Vortex/Controllers/OrthoCameraController.hpp"
 
 namespace Vortex {
@@ -10,19 +10,19 @@ namespace Vortex {
 	}
 
 	void OrthoCameraController::OnUpdate(Timestep ts) {
-		if (Vortex::Input::IsKeyPressed(VT_KEY_LEFT)) {
+		if (Vortex::Input::IsKeyPressed(Key::D) || Vortex::Input::IsKeyPressed(Key::Right)) {
 			m_cameraPos.x -= cos(glm::radians(m_cameraRot)) * m_cameraPosSpeed * ts;
 			m_cameraPos.y -= sin(glm::radians(m_cameraRot)) * m_cameraPosSpeed * ts;
 		}
-		else if (Vortex::Input::IsKeyPressed(VT_KEY_RIGHT)) {
+		else if (Vortex::Input::IsKeyPressed(Key::A) || Vortex::Input::IsKeyPressed(Key::Left)) {
 			m_cameraPos.x += cos(glm::radians(m_cameraRot)) * m_cameraPosSpeed * ts;
 			m_cameraPos.y += sin(glm::radians(m_cameraRot)) * m_cameraPosSpeed * ts;
 		}
-		if (Vortex::Input::IsKeyPressed(VT_KEY_UP)) {
+		if (Vortex::Input::IsKeyPressed(Key::W) || Vortex::Input::IsKeyPressed(Key::Up)) {
 			m_cameraPos.x += -sin(glm::radians(m_cameraRot)) * m_cameraPosSpeed * ts;
 			m_cameraPos.y += cos(glm::radians(m_cameraRot)) * m_cameraPosSpeed * ts;
 		}
-		else if (Vortex::Input::IsKeyPressed(VT_KEY_DOWN)) {
+		else if (Vortex::Input::IsKeyPressed(Key::S) || Vortex::Input::IsKeyPressed(Key::Down)) {
 			m_cameraPos.x -= -sin(glm::radians(m_cameraRot)) * m_cameraPosSpeed * ts;
 			m_cameraPos.y -= cos(glm::radians(m_cameraRot)) * m_cameraPosSpeed * ts;
 		}
@@ -30,10 +30,10 @@ namespace Vortex {
 		m_camera.SetPos(m_cameraPos);
 
 		if (m_rot) {
-			if (Vortex::Input::IsKeyPressed(VT_KEY_Q)) {
+			if (Vortex::Input::IsKeyPressed(Key::Q)) {
 				m_cameraRot -= m_cameraRotSpeed * ts;
 			}
-			else if (Vortex::Input::IsKeyPressed(VT_KEY_E)) {
+			else if (Vortex::Input::IsKeyPressed(Key::E)) {
 				m_cameraRot += m_cameraRotSpeed * ts;
 			}
 

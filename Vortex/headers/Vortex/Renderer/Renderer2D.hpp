@@ -1,7 +1,8 @@
 #pragma once
-#include "vtpch.hpp"
+#include <vtpch.hpp>
 
 #include "Vortex/Renderer/Texture.hpp"
+#include "Vortex/Renderer/Cameras/Camera.hpp"
 
 namespace Vortex {
 
@@ -36,7 +37,7 @@ namespace Vortex {
 		QuadVertex* quadVertexBufferBase = nullptr;
 		QuadVertex* quadVertexBufferPtr = nullptr;
 
-		std::array<Ref<Texture2D>, maxTextureSLots> texSlots;
+		Array<Ref<Texture2D>, maxTextureSLots> texSlots;
 		uint32 texSlotInd = 1;
 
 		glm::vec4 quadVertexPos[4];
@@ -49,31 +50,30 @@ namespace Vortex {
 		static void Init();
 		static void Shutdown();
 
+		static void BeginScene(const Camera& camera, const glm::mat4 projection);
 		static void BeginScene(const OrthoCamera& camera);
 		static void EndScene();
 
 		static void Flush();
 
+		static void DrawQuad(const glm::mat4& transform, const glm::vec4& color);
+		static void DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f));
+
 		static void DrawQuad(const glm::vec2& pos, const glm::vec2& size, const glm::vec4& color);
 		static void DrawQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color);
-		static void DrawQuad(const glm::vec2& pos, const glm::vec2& size, const Ref<Vortex::Texture2D>& texture, 
-			float tilingFactor = 1.0f, const glm::vec4 tintColor = glm::vec4(1.0f));
-		static void DrawQuad(const glm::vec3& pos, const glm::vec2& size, const Ref<Vortex::Texture2D>& texture,
-			float tilingFactor = 1.0f, const glm::vec4 tintColor = glm::vec4(1.0f));
+		static void DrawQuad(const glm::vec2& pos, const glm::vec2& size, const Ref<Texture2D>& texture,  float tilingFactor = 1.0f, const glm::vec4 tintColor = glm::vec4(1.0f));
+		static void DrawQuad(const glm::vec3& pos, const glm::vec2& size, const Ref<Texture2D>& texture, float tilingFactor = 1.0f, const glm::vec4 tintColor = glm::vec4(1.0f));
 
 		static void DrawRotatedQuad(const glm::vec2& pos, const glm::vec2& size, const glm::vec4& color, float rot = 0.0f);
 		static void DrawRotatedQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color, float rot = 0.0f);
-		static void DrawRotatedQuad(const glm::vec2& pos, const glm::vec2& size, const Ref<Vortex::Texture2D>& texture,
-			float rot = 0.0f, float tilingFactor = 1.0f, const glm::vec4 tintColor = glm::vec4(1.0f));
-		static void DrawRotatedQuad(const glm::vec3& pos, const glm::vec2& size, const Ref<Vortex::Texture2D>& texture,
-			float rot = 0.0f, float tilingFactor = 1.0f, const glm::vec4 tintColor = glm::vec4(1.0f));
+		static void DrawRotatedQuad(const glm::vec2& pos, const glm::vec2& size, const Ref<Texture2D>& texture, float rot = 0.0f, float tilingFactor = 1.0f, const glm::vec4 tintColor = glm::vec4(1.0f));
+		static void DrawRotatedQuad(const glm::vec3& pos, const glm::vec2& size, const Ref<Texture2D>& texture, float rot = 0.0f, float tilingFactor = 1.0f, const glm::vec4 tintColor = glm::vec4(1.0f));
 
 		static void ResetStats();
 		static RendererStatisics GetStats();
 
 	private:
-		static void SetQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color,
-			float texIndex, float tilingFactor, float rot);
+		//static void SetQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color, float texIndex, float tilingFactor, float rot);
 
 		static void FlushAndReset();
 	};

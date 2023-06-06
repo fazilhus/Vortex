@@ -26,6 +26,7 @@ includedir["glad"] = "Vortex/vendor/glad/include"
 includedir["imgui"] = "Vortex/vendor/imgui"
 includedir["glm"] = "Vortex/vendor/glm"
 includedir["stb"] = "Vortex/vendor/stb"
+includedir["entt"] = "Vortex/vendor/entt/single_include"
 
 group "Dependencies"
     include "Vortex/vendor/glfw"
@@ -47,7 +48,7 @@ project "Vortex-Editor"
         "%{prj.name}/headers/**.hpp",
         "%{prj.name}/sources/**.cpp",
         "Vortex/vendor/stb/**.h",
-        "Vortex/vendor/stb/**.cpp"
+        "Vortex/vendor/stb/**.cpp",
     }
 
     includedirs {
@@ -58,7 +59,8 @@ project "Vortex-Editor"
         "%{includedir.glad}",
         "%{includedir.imgui}",
         "%{includedir.glm}",
-        "%{includedir.stb}"
+        "%{includedir.stb}",
+        "%{includedir.entt}"
     }
 
     links {
@@ -130,14 +132,15 @@ project "Vortex"
         "%{includedir.glad}",
         "%{includedir.imgui}",
         "%{includedir.glm}",
-        "%{includedir.stb}"
+        "%{includedir.stb}",
+        "%{includedir.entt}"
     }
 
     links {
         "GLFW",
         "opengl32.lib",
         "GLAD",
-        "ImGui"
+        "ImGui",
     }
 
     filter "system:windows"

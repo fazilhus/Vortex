@@ -6,17 +6,13 @@
 #include <algorithm>
 #include <utility>
 #include <functional>
-#include <array>
-#include <vector>
-#include <set>
-#include <unordered_set>
-#include <map>
-#include <unordered_map>
+#include <tuple>
 #include <memory>
 #include <string>
 #include <sstream>
 #include <chrono>
 #include <thread>
+#include <climits>
 
 // SPDLOG
 #include "spdlog/spdlog.h"
@@ -30,6 +26,8 @@
 #include "Vortex/Core/Platform.hpp"
 #include "Vortex/Core/PlatformAPI.hpp"
 #include "Vortex/Core/Timestep.hpp"
+
+#include "Vortex/Core/Containers/ContainerWrappers.hpp"
 
 #include "Vortex/Core/Profiling/Profiler.hpp"
 
@@ -46,6 +44,12 @@
 #include "Vortex/Renderer/Renderer2D.hpp"
 #include "Vortex/Renderer/RendererAPI.hpp"
 #include "Vortex/Renderer/Texture.hpp"
+
+#include "Vortex/Renderer/Cameras/Camera.hpp"
+#include "Vortex/Renderer/Cameras/OrthoCamera.hpp"
+
+#include "Vortex/Scene/Scene.hpp"
+#include "Vortex/Scene/Components.hpp"
 
 // GLFW
 #include <GLFW/glfw3.h>
@@ -65,3 +69,6 @@
 
 // STB
 #include <stb_image.h>
+
+// ENTT
+#include <entt/entt.hpp>

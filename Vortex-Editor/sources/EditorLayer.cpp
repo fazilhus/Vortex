@@ -1,5 +1,6 @@
 #include "EditorLayer.hpp"
 #include "Platforms/OpenGL/OpenGLShader.hpp"
+#include "Vortex/Controllers/CameraController.hpp"
 
 EditorLayer::EditorLayer()
 : Layer("EditorLayer"), m_cameraController(16.0f / 9.0f, true), m_viewportPanelSize({1600, 900}),
@@ -11,7 +12,25 @@ void EditorLayer::OnAttach() {
 	m_texture1 = Vortex::Texture2D::Create("res/textures/img3.png");
 	m_texture2 = Vortex::Texture2D::Create("res/textures/img2.png");
 
-    m_frameBuffer = Vortex::FrameBuffer::Create({1600, 900, 1, false});
+    m_frameBuffer = Vortex::FrameBuffer::Create({ 1600, 900, 1, false });
+
+    m_currentScene = Vortex::CreateRef<Vortex::Scene>();
+
+    auto square = m_currentScene->CreateEntity("Square");
+    square.AddComponent<Vortex::SpriteComponent>(glm::vec4{1.0f, 1.0f, 1.0f, 1.0f});
+
+    m_square = square;
+
+    m_scenes.push_back(m_currentScene);
+
+    m_primaryCamera = m_currentScene->CreateEntity("Primary camera");
+    m_primaryCamera.AddComponent<Vortex::CameraComponent>();
+    m_primaryCamera.AddComponent<Vortex::NativeScriptComponent>().Bind<Vortex::CameraController>();
+
+    m_secondaryCamera = m_currentScene->CreateEntity("Clip-space entity");
+    auto& cc = m_secondaryCamera.AddComponent<Vortex::CameraComponent>();
+    m_secondaryCamera.AddComponent<Vortex::NativeScriptComponent>().Bind<Vortex::CameraController>();
+    cc.Primary = false;
 }
 
 void EditorLayer::OnDetach() {
@@ -27,6 +46,7 @@ void EditorLayer::OnUpdate(Vortex::Timestep ts) {
     {
         m_frameBuffer->Resize(static_cast<uint32>(m_viewportPanelSize.x), static_cast<uint32>(m_viewportPanelSize.y));
         m_cameraController.OnResize(m_viewportPanelSize.x, m_viewportPanelSize.y);
+        m_currentScene->OnViewportResize((uint32)m_viewportPanelSize.x, (uint32)m_viewportPanelSize.y);
     }
 
 	Vortex::Renderer2D::ResetStats();
@@ -47,29 +67,9 @@ void EditorLayer::OnUpdate(Vortex::Timestep ts) {
 
 	{
 		VT_PROFILE_SCOPE("Draw all");
-		static float rot = 0.0f;
-		rot += ts * 50.0f;
-		if (rot > 360.0f) { rot -= 360.0f; }
-
-		Vortex::Renderer2D::BeginScene(m_cameraController.GetCamera());
-
-		Vortex::Renderer2D::DrawQuad({ -0.5f, 0.0f}, { 1.0f, 1.0f }, m_texture2, 1.0f, {0.8f, 0.2f, 0.3f, 1.0f});
-		Vortex::Renderer2D::DrawRotatedQuad({ 0.5f, 0.0f }, { 1.0f, 1.0f }, m_texture1, rot);
-		Vortex::Renderer2D::DrawQuad({ 0.5f, -0.5f }, { 0.5f, 0.75f }, { 0.2f, 0.3f, 0.8f, 1.0f });
-		Vortex::Renderer2D::DrawQuad({ -1.0f, 0.0f }, { 0.8f, 0.8f }, { 0.8f, 0.2f, 0.3f, 1.0f });
-		Vortex::Renderer2D::DrawRotatedQuad({ 0.0f, 0.0f }, { 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, -45.0f);
-
-		Vortex::Renderer2D::EndScene();
-
         Vortex::Renderer2D::BeginScene(m_cameraController.GetCamera());
 
-        float f = 5.0f;
-        for (float y = -f; y < f; y += 0.5f) {
-            for (float x = -f; x < f; x += 0.5f) {
-                glm::vec4 color = { (x + f) / (2 * f), 0.4f, (y + f) / (2 * f), 0.7f };
-                Vortex::Renderer2D::DrawQuad({ x, y }, { 0.45f, 0.45f }, color);
-            }
-        }
+        m_currentScene->OnUpdate(ts);
 
         Vortex::Renderer2D::EndScene();
 
@@ -88,6 +88,7 @@ void EditorLayer::OnImGuiRender() {
     static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
     static bool statsOpen = false;
+    static bool testOpen = false;
 
     // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
     // because it would be confusing to have two docking targets within each others.
@@ -158,7 +159,17 @@ void EditorLayer::OnImGuiRender() {
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Stats")) {
-            if (ImGui::MenuItem("BatchRender stats", nullptr, &statsOpen));
+            if (ImGui::MenuItem("BatchRender stats", nullptr, &statsOpen)) {}
+            if (ImGui::MenuItem("Close", nullptr, false)) {
+                statsOpen = false;
+            }
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("Test")) {
+            if (ImGui::MenuItem("ECS test", nullptr, &testOpen)) {}
+            if (ImGui::MenuItem("Close", nullptr, false)) {
+                testOpen = false;
+            }
             ImGui::EndMenu();
         }
 
@@ -179,7 +190,6 @@ void EditorLayer::OnImGuiRender() {
     ImGui::Image(reinterpret_cast<void*>(texID), ImVec2{ m_viewportPanelSize.x, m_viewportPanelSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
     ImGui::End();
-    ImGui::PopStyleVar();
 
     if (statsOpen) {
         auto stats = Vortex::Renderer2D::GetStats();
@@ -194,7 +204,33 @@ void EditorLayer::OnImGuiRender() {
 
         ImGui::End();
     }
+    if (testOpen) {
+        ImGui::Begin("ECS Test");
 
+        auto& tag = m_square.GetComponent<Vortex::TagComponent>();
+        ImGui::Text("Entity tag: %s", &tag.Tag[0]);
+
+        auto& sprite = m_square.GetComponent<Vortex::SpriteComponent>();
+        ImGui::ColorPicker4("Square Color", glm::value_ptr(sprite.Color));
+
+        auto& transform = m_primaryCamera.GetComponent<Vortex::TransformComponent>().Transform;
+        ImGui::DragFloat3("Camera Transform", glm::value_ptr(transform[3]));
+
+        if (ImGui::Checkbox("Camera A", &m_isPrimaryCamera)) {
+            m_primaryCamera.GetComponent<Vortex::CameraComponent>().Primary = m_isPrimaryCamera;
+            m_secondaryCamera.GetComponent<Vortex::CameraComponent>().Primary = !m_isPrimaryCamera;
+        }
+
+        auto& camera = m_secondaryCamera.GetComponent<Vortex::CameraComponent>();
+        float orthoSize = camera.Camera.GetOrthoSize();
+        if (ImGui::DragFloat("Secondary camera ortho size", &orthoSize)) {
+            camera.Camera.SetOrthoSize(orthoSize);
+        }
+
+        ImGui::End();
+    }
+
+    ImGui::PopStyleVar();
     ImGui::End();
 }
 

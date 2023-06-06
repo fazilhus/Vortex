@@ -1,4 +1,4 @@
-#include "vtpch.hpp"
+#include <vtpch.hpp>
 #include "Vortex/Renderer/Renderer2D.hpp"
 
 namespace Vortex {
@@ -69,6 +69,20 @@ namespace Vortex {
 		VT_CORE_INFO("Renderer2D is terminated");
 	}
 
+	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4 transform) {
+		VT_PROFILE_FUNC();
+
+		glm::mat4 viewproj = camera.GetProjection() * glm::inverse(transform);
+
+		s_data.shader->Bind();
+		s_data.shader->SetMat4("u_viewproj", viewproj);
+
+		s_data.quadIndCount = 0;
+		s_data.quadVertexBufferPtr = s_data.quadVertexBufferBase;
+
+		s_data.texSlotInd = 1;
+	}
+
 	void Renderer2D::BeginScene(const OrthoCamera& camera) {
 		VT_PROFILE_FUNC();
 		s_data.shader->Bind();
@@ -101,6 +115,37 @@ namespace Vortex {
 		s_data.stats.drawcallsCount++;
 	}
 
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color) {
+		VT_PROFILE_FUNC();
+
+		constexpr std::size_t vertcount{ 4 };
+		constexpr float texInd{ 0.0f };
+		constexpr glm::vec2 texCoord[] = { {0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f} };
+		constexpr float tiling = 1.0f;
+
+		if (s_data.quadIndCount >= Renderer2DStorage::maxInd) {
+			FlushAndReset();
+		}
+
+		for (size_t i = 0; i < vertcount; ++i) {
+			auto pos = transform * s_data.quadVertexPos[i];
+			s_data.quadVertexBufferPtr->pos = pos;
+			s_data.quadVertexBufferPtr->color = color;
+			s_data.quadVertexBufferPtr->texPos = texCoord[i];
+			s_data.quadVertexBufferPtr->texInd = texInd;
+			s_data.quadVertexBufferPtr->tilingFactor = tiling;
+			s_data.quadVertexBufferPtr++;
+		}
+
+		s_data.quadIndCount += 6;
+
+		s_data.stats.quadCount++;
+	}
+
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
+	{
+	}
+
 	void Renderer2D::DrawQuad(const glm::vec2& pos, const glm::vec2& size, const glm::vec4& color) {
 		DrawQuad({pos.x, pos.y, 0.0f}, size, color);
 	}
@@ -112,28 +157,24 @@ namespace Vortex {
 			FlushAndReset();
 		}
 
-		constexpr float texIndex = 0.0f;
-		constexpr float tilingFactor = 1.0f;
-		constexpr float rot = 0.0f;
+		const glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos)
+			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
-
-		SetQuad(pos, size, color, texIndex, tilingFactor, rot);
+		DrawQuad(transform, color);
 	}
 
-	void Renderer2D::DrawQuad(const glm::vec2& pos, const glm::vec2& size, const Ref<Vortex::Texture2D>& texture,
+	void Renderer2D::DrawQuad(const glm::vec2& pos, const glm::vec2& size, const Ref<Texture2D>& texture,
 		float tilingFactor, const glm::vec4 tintColor) {
 		DrawQuad({ pos.x, pos.y, 0.0f }, size, texture, tilingFactor, tintColor);
 	}
 
-	void Renderer2D::DrawQuad(const glm::vec3& pos, const glm::vec2& size, const Ref<Vortex::Texture2D>& texture,
+	void Renderer2D::DrawQuad(const glm::vec3& pos, const glm::vec2& size, const Ref<Texture2D>& texture,
 		float tilingFactor, const glm::vec4 tintColor) {
 		VT_PROFILE_FUNC();
 
 		if (s_data.quadIndCount >= Renderer2DStorage::maxInd) {
 			FlushAndReset();
 		}
-
-		constexpr float rot = 0.0f;
 
 		float texIndex = 0.0f;
 		for (uint32 i = 1; i < s_data.texSlotInd; ++i) {
@@ -143,9 +184,8 @@ namespace Vortex {
 				break;
 			}
 		}
-
 		if (texIndex == 0.0f) {
-			if (s_data.quadIndCount >= Renderer2DStorage::maxInd) {
+			if (s_data.texSlotInd >= Renderer2DStorage::maxTextureSLots) {
 				FlushAndReset();
 			}
 
@@ -155,8 +195,10 @@ namespace Vortex {
 			s_data.texSlotInd++;
 		}
 
-		VT_CORE_TRACE("SetQuad texture {0} in index {1}", texture->GetPath(), texIndex);
-		SetQuad(pos, size, tintColor, texIndex, tilingFactor, rot);
+		const glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos)
+			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+
+		DrawQuad(transform, texture, tilingFactor, tintColor);
 	}
 
 	void Renderer2D::DrawRotatedQuad(const glm::vec2& pos, const glm::vec2& size, const glm::vec4& color, float rot) {
@@ -170,18 +212,19 @@ namespace Vortex {
 			FlushAndReset();
 		}
 
-		constexpr float texIndex = 0.0f;
-		constexpr float tilingFactor = 1.0f;
+		const glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos)
+			* glm::rotate(glm::mat4(1.0f), glm::radians(rot), { 0.0f, 0.0f, 1.0f })
+			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
 
-		SetQuad(pos, size, color, texIndex, tilingFactor, rot);
+		DrawQuad(transform, color);
 	}
 
-	void Renderer2D::DrawRotatedQuad(const glm::vec2& pos, const glm::vec2& size, const Ref<Vortex::Texture2D>& texture,
+	void Renderer2D::DrawRotatedQuad(const glm::vec2& pos, const glm::vec2& size, const Ref<Texture2D>& texture,
 		float rot, float tilingFactor, const glm::vec4 tintColor) {
 		DrawRotatedQuad({ pos.x, pos.y, 0.0f }, size, texture, rot, tilingFactor, tintColor);
 	}
 
-	void Renderer2D::DrawRotatedQuad(const glm::vec3& pos, const glm::vec2& size, const Ref<Vortex::Texture2D>& texture,
+	void Renderer2D::DrawRotatedQuad(const glm::vec3& pos, const glm::vec2& size, const Ref<Texture2D>& texture,
 		float rot, float tilingFactor, const glm::vec4 tintColor) {
 		VT_PROFILE_FUNC();
 
@@ -199,7 +242,7 @@ namespace Vortex {
 		}
 
 		if (texIndex == 0.0f) {
-			if (s_data.quadIndCount >= Renderer2DStorage::maxInd) {
+			if (s_data.texSlotInd >= Renderer2DStorage::maxTextureSLots) {
 				FlushAndReset();
 			}
 
@@ -209,8 +252,11 @@ namespace Vortex {
 			s_data.texSlotInd++;
 		}
 
-		VT_CORE_TRACE("SetQuad texture {0} in index {1}", texture->GetPath(), texIndex);
-		SetQuad(pos, size, tintColor, texIndex, tilingFactor, rot);
+		const glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos)
+			* glm::rotate(glm::mat4(1.0f), glm::radians(rot), { 0.0f, 0.0f, 1.0f })
+			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+
+		DrawQuad(transform, texture, tilingFactor, tintColor);
 	}
 
 	void Renderer2D::ResetStats() {
@@ -230,7 +276,7 @@ namespace Vortex {
 		s_data.texSlotInd = 1;
 	}
 
-	void Renderer2D::SetQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color,
+	/*void Renderer2D::SetQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color,
 	                         float texIndex, float tilingFactor, float rot) {
 
 		constexpr glm::vec2 texPos[] = { {0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f} };
@@ -251,5 +297,5 @@ namespace Vortex {
 		s_data.quadIndCount += 6;
 
 		s_data.stats.quadCount++;
-	}
+	}*/
 }

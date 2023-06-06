@@ -16,6 +16,15 @@ private:
 
 	bool m_viewportFocused, m_viewportHovered;
 
+	Vortex::Vector<Vortex::Ref<Vortex::Scene>> m_scenes;
+	Vortex::Ref<Vortex::Scene> m_currentScene;
+
+	Vortex::Entity m_primaryCamera;
+	Vortex::Entity m_secondaryCamera;
+	bool m_isPrimaryCamera = true;
+
+	Vortex::Entity m_square;
+
 public:
 	EditorLayer();
 	virtual ~EditorLayer() override = default;

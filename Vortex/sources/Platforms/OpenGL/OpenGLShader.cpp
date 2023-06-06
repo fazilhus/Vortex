@@ -1,4 +1,4 @@
-#include "vtpch.hpp"
+#include <vtpch.hpp>
 #include "Platforms/OpenGL/OpenGLShader.hpp"
 
 #include <glad/glad.h>
@@ -23,7 +23,7 @@ namespace Vortex {
 	OpenGLShader::OpenGLShader(const std::string& filepath)
 		: m_rendererID(0) {
 		std::string src = ReadShaderFile(filepath);
-		std::unordered_map<GLenum, std::string> shaderSrcs;
+		HashMap<GLenum, std::string> shaderSrcs;
 		PreProcess(src, shaderSrcs);
 		CompileShader(shaderSrcs);
 
@@ -36,7 +36,7 @@ namespace Vortex {
 
 	OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc)
 		: m_rendererID(0), m_name(name) {
-		std::unordered_map<GLenum, std::string> shaderSrcs;
+		HashMap<GLenum, std::string> shaderSrcs;
 		shaderSrcs[GL_VERTEX_SHADER] = vertexSrc;
 		shaderSrcs[GL_FRAGMENT_SHADER] = fragmentSrc;
 		CompileShader(shaderSrcs);
@@ -167,7 +167,7 @@ namespace Vortex {
 		return res;
 	}
 
-	void OpenGLShader::PreProcess(const std::string& src, std::unordered_map<GLenum, std::string>& shaderSrcs) {
+	void OpenGLShader::PreProcess(const std::string& src, HashMap<GLenum, std::string>& shaderSrcs) {
 		const char* token = "#type";
 		std::size_t tokenLen = strlen(token);
 		std::size_t pos = src.find(token, 0);
@@ -189,12 +189,12 @@ namespace Vortex {
 		VT_CORE_INFO("{0} shaders was preprocessed", shaderSrcs.size());
 	}
 
-	void OpenGLShader::CompileShader(const std::unordered_map<GLenum, std::string>& shaderSrcs) {
+	void OpenGLShader::CompileShader(const HashMap<GLenum, std::string>& shaderSrcs) {
 		GLuint program = glCreateProgram();
 
 		VT_CORE_ASSERT(shaderSrcs.size() <= 2, "Only two types of shaders are supported for now");
 
-		std::array<GLenum, 2> shaderIDs;
+		Array<GLenum, 2> shaderIDs;
 		int shaderIdIndex = 0;
 
 		for (const auto& item : shaderSrcs) {
@@ -215,7 +215,7 @@ namespace Vortex {
 				glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
 
 				// The maxLength includes the NULL character
-				std::vector<GLchar> infoLog(maxLength);
+				Vector<GLchar> infoLog(maxLength);
 				glGetShaderInfoLog(shader, maxLength, &maxLength, &infoLog[0]);
 
 				VT_CORE_ERROR("{0}", infoLog.data());
@@ -239,7 +239,7 @@ namespace Vortex {
 			glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
 
 			// The maxLength includes the NULL character
-			std::vector<GLchar> infoLog(maxLength);
+			Vector<GLchar> infoLog(maxLength);
 			glGetProgramInfoLog(program, maxLength, &maxLength, &infoLog[0]);
 
 			VT_CORE_ERROR("{0}", infoLog.data());

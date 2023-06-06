@@ -1,10 +1,13 @@
-#include "vtpch.hpp"
+//#include <vtpch.hpp>
 
+#include "Vortex/Core/Input.hpp"
+
+#include <glm/glm.hpp>
 #include "Vortex/Core/Application.hpp"
 
 namespace Vortex {
 
-    bool Input::IsKeyPressed(KeyCode keycode) {
+    bool Input::IsKeyPressed(const KeyCode keycode) {
         const auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
         if (!window) return false;
 
@@ -12,7 +15,7 @@ namespace Vortex {
         return state == GLFW_PRESS || state == GLFW_REPEAT;
     }
 
-    bool Input::IsMouseButtonPressed(MouseCode button) {
+    bool Input::IsMouseButtonPressed(const MouseCode button) {
         const auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
         if (!window) return false;
 
@@ -20,7 +23,7 @@ namespace Vortex {
         return state == GLFW_PRESS;
     }
 
-    std::pair<float, float> Input::GetMousePos() {
+    glm::vec2 Input::GetMousePos() {
         const auto window = static_cast<GLFWwindow*>(Application::Get().GetWindow().GetNativeWindow());
         if (!window) return {0.0f, 0.0f};
 
@@ -31,13 +34,13 @@ namespace Vortex {
     }
 
     float Input::GetMouseX() {
-        auto [x, y] = GetMousePos();
-        return x;
+        auto pos = GetMousePos();
+        return pos.x;
     }
 
     float Input::GetMouseY() {
-        auto [x, y] = GetMousePos();
-        return y;
+        auto pos = GetMousePos();
+        return pos.y;
     }
 
 }

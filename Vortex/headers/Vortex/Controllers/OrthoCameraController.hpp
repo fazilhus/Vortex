@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vtpch.hpp"
+#include <vtpch.hpp>
 #include "Vortex/Events/MouseEvent.hpp"
 #include "Vortex/Events/AppEvent.hpp"
 

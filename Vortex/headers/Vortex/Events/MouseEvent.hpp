@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vtpch.hpp"
+#include <vtpch.hpp>
 
 namespace Vortex {
 	
@@ -9,7 +9,7 @@ namespace Vortex {
 		float m_mousex, m_mousey;
 
 	public:
-		MouseMovedEvent(float x, float y) 
+		MouseMovedEvent(const float x, const float y) 
 			: m_mousex(x), m_mousey(y) {}
 
 		inline float GetX() const { return m_mousex; }
@@ -32,7 +32,7 @@ namespace Vortex {
 		float m_offsetx, m_offsety;
 
 	public:
-		MouseScrolledEvent(float offsetx, float offsety)
+		MouseScrolledEvent(const float offsetx, const float offsety)
 			: m_offsetx(offsetx), m_offsety(offsety) {}
 
 		inline float GetOffsetX() const { return m_offsetx; }
@@ -54,7 +54,7 @@ namespace Vortex {
 	// abstract class for any mousebutton events
 	class MouseButtonEvent : public Event {
 	protected:
-		MouseButtonEvent(MouseCode button)
+		MouseButtonEvent(const MouseCode button)
 			: m_button(button) {}
 
 		MouseCode m_button;
@@ -67,7 +67,7 @@ namespace Vortex {
 
 	class MouseButtonPressedEvent : public MouseButtonEvent {
 	public:
-		MouseButtonPressedEvent(MouseCode button)
+		MouseButtonPressedEvent(const MouseCode button)
 			: MouseButtonEvent(button) {}
 
 #ifdef VT_DEBUG
@@ -84,7 +84,7 @@ namespace Vortex {
 
 	class MouseButtonReleasedEvent : public MouseButtonEvent {
 	public:
-		MouseButtonReleasedEvent(MouseCode button)
+		MouseButtonReleasedEvent(const MouseCode button)
 			: MouseButtonEvent(button) {}
 
 #ifdef VT_DEBUG
