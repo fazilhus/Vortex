@@ -73,9 +73,8 @@ namespace Vortex {
 		static RendererStatisics GetStats();
 
 	private:
-		//static void SetQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color, float texIndex, float tilingFactor, float rot);
-
-		static void FlushAndReset();
+		static void StartBatch();
+		static void NextBatch();
 	};
 
 }

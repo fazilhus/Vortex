@@ -25,7 +25,7 @@ namespace Vortex {
 
 
 		Scope<Camera> mainCamera = nullptr;
-		Scope<glm::mat4> cameraTransform = nullptr;
+		glm::mat4 cameraTransform;
 
 		auto view = m_registry.view<TransformComponent, CameraComponent>();
 		for (auto entity : view) {
@@ -33,25 +33,24 @@ namespace Vortex {
 
 			if (camera.Primary) {
 				mainCamera.reset(&camera.Camera);
-				cameraTransform.reset(&transform.Transform);
+				cameraTransform = transform.GetTransform();
 				break;
 			}
 		}
 
 		if (mainCamera) {
-			Renderer2D::BeginScene(*mainCamera, *cameraTransform);
+			Renderer2D::BeginScene(*mainCamera, cameraTransform);
 
 			auto group = m_registry.group<TransformComponent>(entt::get<SpriteComponent>);
 			for (auto entity : group) {
 				auto [transform, sprite] = m_registry.get<TransformComponent, SpriteComponent>(entity);
-				VT_CORE_TRACE("Scene::OnUpdate drawquad call pos {0} {1} {2} {3}", transform.Transform[3][0], transform.Transform[3][1], transform.Transform[3][2], transform.Transform[3][3]);
-				Renderer2D::DrawQuad(transform.Transform, sprite.Color);
+				VT_CORE_TRACE("Scene::OnUpdate drawquad call pos {0} {1} {2}", transform.Translation.x, transform.Translation.y, transform.Translation.z);
+				Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
 			}
 
 			Renderer2D::EndScene();
 		}
 		mainCamera.release();
-		cameraTransform.release();
 	}
 
 	void Scene::OnViewportResize(uint32 width, uint32 height) {
