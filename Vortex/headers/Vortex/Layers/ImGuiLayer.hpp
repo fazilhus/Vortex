@@ -22,6 +22,7 @@ namespace Vortex {
 		virtual void End();
 
 		void BlockEvents(bool block) { m_blockEvents = block; }
+		void SetDarkTheme();
 	};
 
 }
