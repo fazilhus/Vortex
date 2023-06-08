@@ -18,6 +18,8 @@ namespace Vortex {
 	void SceneHierarchyPanel::OnImGuiRender() {
 		ImGui::Begin("Scene Hierarchy");
 
+		ImGui::ShowDemoWindow();
+
 		m_context->m_registry.each([&](auto entityID) {
 			Entity entity{ entityID, m_context.get() };
 			DrawEntityMode(entity);
@@ -27,12 +29,40 @@ namespace Vortex {
 			m_selectionContext = {};
 		}
 
+		if (ImGui::BeginPopupContextWindow("Create entity", 1 | ImGuiPopupFlags_NoOpenOverItems)) {
+			if (ImGui::MenuItem("Create empty entity")) {
+				m_context->CreateEntity("Empty entity");
+			}
+
+			ImGui::EndPopup();
+		}
+
 		ImGui::End();
 
 		ImGui::Begin("Properties");
 
 		if (m_selectionContext) {
 			DrawEntityComponents(m_selectionContext);
+
+			if (ImGui::BeginPopupContextWindow("Entity Properties", 1 | ImGuiPopupFlags_NoOpenOverItems)) {
+				if (ImGui::BeginMenu("Add Component")) {
+					if (ImGui::MenuItem("Transform Component")) {
+						VT_CORE_TRACE("Added transform component to entity {0}", (uint32)m_selectionContext);
+						m_selectionContext.AddComponent<TransformComponent>();
+					}
+					if (ImGui::MenuItem("Sprite Component")) {
+						VT_CORE_TRACE("Added sprite component to entity {0}", (uint32)m_selectionContext);
+						m_selectionContext.AddComponent<SpriteComponent>();
+					}
+					if (ImGui::MenuItem("Camera Component")) {
+						VT_CORE_TRACE("Added camera component to entity {0}", (uint32)m_selectionContext);
+						m_selectionContext.AddComponent<CameraComponent>();
+					}
+
+					ImGui::EndMenu();
+				}
+				ImGui::EndPopup();
+			}
 		}
 
 		ImGui::End();
@@ -47,8 +77,25 @@ namespace Vortex {
 			m_selectionContext = entity;
 		}
 
+		bool deleted = false;
+		// std::to_string((uint32)entity).c_str()) is needed to generate an unique id for imgui to use
+		if (ImGui::BeginPopupContextItem(std::to_string((uint32)entity).c_str())) {
+			if (ImGui::MenuItem("Delete entity")) {
+				deleted = true;
+			}
+
+			ImGui::EndPopup();
+		}
+
 		if (opened) {
 			ImGui::TreePop();
+		}
+
+		if (deleted) {
+			m_context->DestroyEntity(entity);
+			if (m_selectionContext == entity) {
+				m_selectionContext = {};
+			}
 		}
 	}
 
@@ -64,9 +111,12 @@ namespace Vortex {
 			}
 		}
 
+		const auto flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap;
+
 		if (entity.HasComponent<TransformComponent>()) {
-			auto flags = ImGuiTreeNodeFlags_DefaultOpen;
 			if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), flags, "Transform")) {
+				auto removed = DrawDeleteComponentPopup();
+
 				auto& tc = entity.GetComponent<TransformComponent>();
 				DrawVec3Control("Translation", tc.Translation);
 				auto rot = glm::degrees(tc.Rotation);
@@ -74,24 +124,33 @@ namespace Vortex {
 				tc.Rotation = glm::radians(rot);
 				DrawVec3Control("Scale", tc.Scale, 1.0f);
 
+				if (removed) {
+					entity.RemoveComponent<TransformComponent>();
+				}
+
 				ImGui::TreePop();
 			}
 		}
 
 		if (entity.HasComponent<SpriteComponent>()) {
-			auto flags = ImGuiTreeNodeFlags_DefaultOpen;
 			if (ImGui::TreeNodeEx((void*)typeid(SpriteComponent).hash_code(), flags, "Sprite")) {
-				auto& color = entity.GetComponent<SpriteComponent>().Color;
+				auto removed = DrawDeleteComponentPopup();
 
+				auto& color = entity.GetComponent<SpriteComponent>().Color;
 				ImGui::ColorEdit4("Color", glm::value_ptr(color));
+
+				if (removed) {
+					entity.RemoveComponent<SpriteComponent>();
+				}
 
 				ImGui::TreePop();
 			}
 		}
 
 		if (entity.HasComponent<CameraComponent>()) {
-			auto flags = ImGuiTreeNodeFlags_DefaultOpen;
 			if (ImGui::TreeNodeEx((void*)typeid(CameraComponent).hash_code(), flags, "Camera")) {
+				auto removed = DrawDeleteComponentPopup();
+
 				auto& cameraComponent = entity.GetComponent<CameraComponent>();
 				auto& camera = cameraComponent.Camera;
 
@@ -153,6 +212,10 @@ namespace Vortex {
 					}
 				}
 
+				if (removed) {
+					entity.RemoveComponent<CameraComponent>();
+				}
+
 				ImGui::TreePop();
 			}
 		}
@@ -212,6 +275,19 @@ namespace Vortex {
 		ImGui::Columns(1);
 
 		ImGui::PopID();
+	}
+
+	bool SceneHierarchyPanel::DrawDeleteComponentPopup() {
+		bool removed = false;
+		if (ImGui::BeginPopupContextWindow("Delete Component", 1)) {
+			if (ImGui::MenuItem("Delete Component") ||
+				Input::IsKeyPressed(Key::Delete)) {
+				removed = true;
+			}
+
+			ImGui::EndPopup();
+		}
+		return removed;
 	}
 
 }

@@ -21,7 +21,9 @@ namespace Vortex {
 		T& AddComponent(Args&& ...args) {
 			VT_CORE_INFO("Added {0} to entity {1}", typeid(T).name(), (uint32)m_entityHandle);
 			VT_CORE_ASSERT(!HasComponent<T>(), "Entity already has such component");
-			return m_scene->m_registry.emplace<T>(m_entityHandle, std::forward<Args>(args)...);
+			T& component = m_scene->m_registry.emplace<T>(m_entityHandle, std::forward<Args>(args)...);
+			m_scene->OnComponentAdded<T>(*this, component);
+			return component;
 		}
 
 		template <typename T>
@@ -41,6 +43,7 @@ namespace Vortex {
 
 		operator bool() const { return m_entityHandle != entt::null; }
 		operator uint32() const { return static_cast<uint32>(m_entityHandle); }
+		operator entt::entity() const { return m_entityHandle; }
 
 		bool operator==(const Entity& other) { return m_entityHandle == other.m_entityHandle && m_scene == other.m_scene; }
 		bool operator!=(const Entity& other) { return !(*this == other); }

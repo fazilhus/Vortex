@@ -19,12 +19,17 @@ namespace Vortex {
 		~Scene() = default;
 
 		Entity CreateEntity(const std::string& tag);
+		void DestroyEntity(Entity entity);
 
 		// temporary
 		entt::registry& GetRegistry() { return m_registry; }
 
 		void OnUpdate(Timestep ts);
 		void OnViewportResize(uint32 width, uint32 height);
+
+	private:
+		template <typename T>
+		void OnComponentAdded(Entity entity, T& component);
 	};
 
 }

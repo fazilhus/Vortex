@@ -9,7 +9,11 @@ namespace Vortex {
 		entity.AddComponent<TagComponent>((tag.empty() ? "Entity" : tag));
 		entity.AddComponent<TransformComponent>();
 		return entity;
-	}	
+	}
+
+	void Scene::DestroyEntity(Entity entity) {
+		m_registry.destroy(entity);
+	}
 
 	void Scene::OnUpdate(Timestep ts) {
 
@@ -64,6 +68,36 @@ namespace Vortex {
 				cameraComp.Camera.SetViewportSize(width, height);
 			}
 		}
+	}
+
+	template<typename T>
+	void Scene::OnComponentAdded(Entity entity, T& component) {
+		//static_assert(false);
+	}
+
+	template <>
+	void Scene::OnComponentAdded<TagComponent>(Entity entity, TagComponent& component) {
+
+	}
+
+	template <>
+	void Scene::OnComponentAdded<TransformComponent>(Entity entity, TransformComponent& component) {
+
+	}
+
+	template <>
+	void Scene::OnComponentAdded<SpriteComponent>(Entity entity, SpriteComponent& component) {
+
+	}
+
+	template <>
+	void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component) {
+		component.Camera.SetViewportSize(m_viewportWidth, m_viewportHeight);
+	}
+
+	template <>
+	void Scene::OnComponentAdded<NativeScriptComponent>(Entity entity, NativeScriptComponent& component) {
+
 	}
 
 }
