@@ -11,7 +11,7 @@ uniform mat4 u_viewproj;
 
 out vec4 v_color;
 out vec2 v_texPos;
-out float v_texInd;
+out flat float v_texInd;
 out float v_tilingFactor;
 
 void main() {
@@ -27,7 +27,7 @@ void main() {
 
 in vec4 v_color;
 in vec2 v_texPos;
-in float v_texInd;
+in flat float v_texInd;
 in float v_tilingFactor;
 
 out vec4 color;
