@@ -10,7 +10,7 @@
 
 namespace Vortex {
 
-	std::string FileIO::OpenFile(const char* filter) {
+	std::optional<std::string> FileIO::OpenFile(const char* filter) {
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
 		ZeroMemory(&ofn, sizeof(OPENFILENAME));
@@ -25,10 +25,10 @@ namespace Vortex {
 		{
 			return ofn.lpstrFile;
 		}
-		return std::string();
+		return std::nullopt;
 	}
 
-	std::string FileIO::SaveFile(const char* filter) {
+	std::optional<std::string> FileIO::SaveFile(const char* filter) {
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
 		ZeroMemory(&ofn, sizeof(OPENFILENAME));
@@ -38,12 +38,13 @@ namespace Vortex {
 		ofn.nMaxFile = sizeof(szFile);
 		ofn.lpstrFilter = filter;
 		ofn.nFilterIndex = 1;
+		ofn.lpstrDefExt = strchr(filter, '\0') + 1;
 		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
 		if (GetSaveFileNameA(&ofn) == TRUE)
 		{
 			return ofn.lpstrFile;
 		}
-		return std::string();
+		return std::nullopt;
 	}
 
 }

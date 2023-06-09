@@ -4,6 +4,8 @@
 #include <imgui_internal.h>
 #include "Vortex/Scene/Components.hpp"
 
+#include <cstring>
+
 namespace Vortex {
 
 	SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& scene) {
@@ -45,16 +47,31 @@ namespace Vortex {
 			if (ImGui::BeginPopupContextWindow("Entity Properties", 1 | ImGuiPopupFlags_NoOpenOverItems)) {
 				if (ImGui::BeginMenu("Add Component")) {
 					if (ImGui::MenuItem("Transform Component")) {
-						VT_CORE_TRACE("Added transform component to entity {0}", (uint32)m_selectionContext);
-						m_selectionContext.AddComponent<TransformComponent>();
+						if (!m_selectionContext.HasComponent<TransformComponent>()) {
+							VT_CORE_TRACE("Added Transform Component to entity {0}", (uint32)m_selectionContext);
+							m_selectionContext.AddComponent<TransformComponent>();
+						}
+						else {
+							VT_CORE_WARN("Entity {0} already has Transform Component", (uint32)m_selectionContext);
+						}
 					}
 					if (ImGui::MenuItem("Sprite Component")) {
-						VT_CORE_TRACE("Added sprite component to entity {0}", (uint32)m_selectionContext);
-						m_selectionContext.AddComponent<SpriteComponent>();
+						if (!m_selectionContext.HasComponent<SpriteComponent>()) {
+							VT_CORE_TRACE("Added Sprite Component to entity {0}", (uint32)m_selectionContext);
+							m_selectionContext.AddComponent<SpriteComponent>();
+						}
+						else {
+							VT_CORE_WARN("Entity {0} already has Sprite Component", (uint32)m_selectionContext);
+						}
 					}
 					if (ImGui::MenuItem("Camera Component")) {
-						VT_CORE_TRACE("Added camera component to entity {0}", (uint32)m_selectionContext);
-						m_selectionContext.AddComponent<CameraComponent>();
+						if (!m_selectionContext.HasComponent<CameraComponent>()) {
+							VT_CORE_TRACE("Added Camera Component to entity {0}", (uint32)m_selectionContext);
+							m_selectionContext.AddComponent<CameraComponent>();
+						}
+						else {
+							VT_CORE_WARN("Entity {0} already has Camera Component", (uint32)m_selectionContext);
+						}
 					}
 
 					ImGui::EndMenu();
@@ -137,7 +154,7 @@ namespace Vortex {
 
 			char buffer[256];
 			memset(buffer, 0, sizeof(buffer));
-			strcpy_s(buffer, sizeof(buffer), tag.c_str());
+			std::strncpy(buffer, tag.c_str(), sizeof(buffer));
 			if (ImGui::InputTextWithHint("##Tag", "Entity name", buffer, sizeof(buffer))) {
 				tag = std::string(buffer);
 			}
