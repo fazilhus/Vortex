@@ -28,6 +28,7 @@ includedir["glm"] = "Vortex/vendor/glm"
 includedir["stb"] = "Vortex/vendor/stb"
 includedir["entt"] = "Vortex/vendor/entt/single_include"
 includedir["yaml"] = "Vortex/vendor/yaml-cpp/include"
+includedir["imguizmo"] = "Vortex/vendor/ImGuizmo"
 
 group "Dependencies"
     include "Vortex/vendor/glfw"
@@ -63,7 +64,8 @@ project "Vortex-Editor"
         "%{includedir.glm}",
         "%{includedir.stb}",
         "%{includedir.entt}",
-        "%{includedir.yaml}"
+        "%{includedir.yaml}",
+        "%{includedir.imguizmo}"
     }
 
     links {
@@ -127,7 +129,9 @@ project "Vortex"
         "%{prj.name}/vendor/glm/glm/**.hpp",
         "%{prj.name}/vendor/glm/glm/**.inl",
         "%{prj.name}/vendor/stb/**.h",
-        "%{prj.name}/vendor/stb/**.cpp"
+        "%{prj.name}/vendor/stb/**.cpp",
+        "%{prj.name}/vendor/ImGuizmo/ImGuizmo.h",
+        "%{prj.name}/vendor/ImGuizmo/ImGuizmo.cpp"
     }
 
     includedirs {
@@ -139,7 +143,8 @@ project "Vortex"
         "%{includedir.glm}",
         "%{includedir.stb}",
         "%{includedir.entt}",
-        "%{includedir.yaml}"
+        "%{includedir.yaml}",
+        "%{includedir.imguizmo}"
     }
 
     links {
@@ -149,6 +154,11 @@ project "Vortex"
         "ImGui",
         "yaml-cpp"
     }
+
+    filter "files:Vortex/vendor/ImGuizmo/**.cpp"
+        flags {
+            "NoPCH"
+        }
 
     filter "system:windows"
         systemversion "latest"

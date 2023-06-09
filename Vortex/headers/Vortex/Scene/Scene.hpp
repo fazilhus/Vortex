@@ -22,11 +22,10 @@ namespace Vortex {
 		Entity CreateEntity(const std::string& tag);
 		void DestroyEntity(Entity entity);
 
-		// temporary
-		entt::registry& GetRegistry() { return m_registry; }
-
 		void OnUpdate(Timestep ts);
 		void OnViewportResize(uint32 width, uint32 height);
+
+		Entity GetPrimaryCamera();
 
 	private:
 		template <typename T>

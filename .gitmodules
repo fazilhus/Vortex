@@ -21,3 +21,6 @@
 [submodule "yaml-cpp"]
 	path = Vortex/vendor/yaml-cpp
 	url = https://github.com/fazilhus/yaml-cpp
+[submodule "Vortex/vendor/ImGuizmo"]
+	path = Vortex/vendor/ImGuizmo
+	url = https://github.com/fazilhus/ImGuizmo

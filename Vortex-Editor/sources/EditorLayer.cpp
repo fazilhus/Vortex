@@ -3,12 +3,14 @@
 #include "Vortex/Controllers/CameraController.hpp"
 #include "Vortex/Scene/SceneSerializer.hpp"
 #include "Vortex/Utils/FileIO.hpp"
+#include "ImGuizmo.h"
+#include "Vortex/Math/Math.hpp"
 
 namespace Vortex {
 
     EditorLayer::EditorLayer()
         : Layer("EditorLayer"), m_viewportPanelSize({ 1600, 900 }),
-        m_viewportFocused(false), m_viewportHovered(false) {}
+        m_viewportFocused(false), m_viewportHovered(false), m_gizmoType(-1) {}
 
     void EditorLayer::OnAttach() {
         Layer::OnAttach();
@@ -176,13 +178,54 @@ namespace Vortex {
 
         m_viewportFocused = ImGui::IsWindowFocused();
         m_viewportHovered = ImGui::IsWindowHovered();
-        Application::Get().GetImGuiLayer()->BlockEvents(!m_viewportFocused || !m_viewportHovered);
+        Application::Get().GetImGuiLayer()->BlockEvents(!m_viewportFocused && !m_viewportHovered);
 
         ImVec2 size = ImGui::GetContentRegionAvail();
         m_viewportPanelSize = { size.x, size.y };
 
         uint32 texID = m_frameBuffer->GetColorAttachmentID();
         ImGui::Image(reinterpret_cast<void*>(texID), ImVec2{ m_viewportPanelSize.x, m_viewportPanelSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+
+        Entity selectedEntity = m_sceneHierarchyPanel.GetSelectedEntity();
+        if (selectedEntity && m_gizmoType != -1) {
+            ImGuizmo::SetOrthographic(false);
+            ImGuizmo::SetDrawlist();
+
+            float windowWidth = (float)ImGui::GetWindowWidth();
+            float windowHeight = (float)ImGui::GetWindowHeight();
+            ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+
+            auto cameraEntity = m_currentScene->GetPrimaryCamera();
+            const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
+            const glm::mat4& cameraProjection = camera.GetProjection();
+            glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+
+            auto& transformComponent = selectedEntity.GetComponent<TransformComponent>();
+            glm::mat4 transform = transformComponent.GetTransform();
+
+            bool snap = Input::IsKeyPressed(Key::LeftControl);
+            float snapVal = 0.5f;
+
+            if (m_gizmoType == ImGuizmo::OPERATION::ROTATE) {
+                snapVal = 45.0f;
+            }
+
+            float snapVals[3] = {snapVal, snapVal, snapVal};
+
+            ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), 
+                (ImGuizmo::OPERATION)m_gizmoType, ImGuizmo::LOCAL, glm::value_ptr(transform), 
+                nullptr, snap ? snapVals : nullptr);
+
+            if (ImGuizmo::IsUsing()) {
+                glm::vec3 translation, rotation, scale;
+                Math::DecomposeTransform(transform, translation, rotation, scale);
+
+                glm::vec3 deltaRotation = rotation - transformComponent.Rotation;
+                transformComponent.Translation = translation;
+                transformComponent.Rotation += deltaRotation;
+                transformComponent.Scale = scale;
+            }
+        }
 
         ImGui::End();
 
@@ -240,6 +283,23 @@ namespace Vortex {
             }
             case Key::S: {
                 if (control && shift) SaveSceneAs();
+                break;
+            }
+            // Gizmos controls
+            case Key::Q: {
+                m_gizmoType = -1;
+                break;
+            }
+            case Key::W: {
+                m_gizmoType = ImGuizmo::OPERATION::TRANSLATE;
+                break;
+            }
+            case Key::E: {
+                m_gizmoType = ImGuizmo::OPERATION::ROTATE;
+                break;
+            }
+            case Key::R: {
+                m_gizmoType = ImGuizmo::OPERATION::SCALE;
                 break;
             }
         }

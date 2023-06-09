@@ -32,6 +32,8 @@ namespace Vortex {
 		SceneHierarchyPanel m_sceneHierarchyPanel;
 		Timestep m_frametime;
 
+		int m_gizmoType;
+
 	public:
 		EditorLayer();
 		virtual ~EditorLayer() override = default;

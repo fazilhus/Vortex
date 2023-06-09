@@ -70,6 +70,17 @@ namespace Vortex {
 		}
 	}
 
+	Entity Scene::GetPrimaryCamera() {
+		auto view = m_registry.view<CameraComponent>();
+		for (auto entity : view) {
+			const auto& camera = view.get<CameraComponent>(entity);
+			if (camera.Primary) {
+				return Entity{ entity, this };
+			}
+		}
+		return {entt::null, nullptr};
+	}
+
 	template<typename T>
 	void Scene::OnComponentAdded(Entity entity, T& component) {
 		//static_assert(false);
