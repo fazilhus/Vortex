@@ -1,6 +1,7 @@
 #pragma once
 #include <entt/entt.hpp>
 #include "Vortex/Core/Timestep.hpp"
+#include "Vortex/Renderer/Cameras/EditorCamera.hpp"
 
 namespace Vortex {
 
@@ -23,6 +24,7 @@ namespace Vortex {
 		void DestroyEntity(Entity entity);
 
 		void OnUpdate(Timestep ts);
+		void OnUpdateEditor(Timestep ts, EditorCamera& camera);
 		void OnViewportResize(uint32 width, uint32 height);
 
 		Entity GetPrimaryCamera();

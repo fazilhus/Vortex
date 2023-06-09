@@ -3,6 +3,7 @@
 
 #include "Vortex/Renderer/Texture.hpp"
 #include "Vortex/Renderer/Cameras/Camera.hpp"
+#include "Vortex/Renderer/Cameras/EditorCamera.hpp"
 
 namespace Vortex {
 
@@ -52,6 +53,7 @@ namespace Vortex {
 
 		static void BeginScene(const Camera& camera, const glm::mat4 projection);
 		static void BeginScene(const OrthoCamera& camera);
+		static void BeginScene(const EditorCamera& camera);
 		static void EndScene();
 
 		static void Flush();

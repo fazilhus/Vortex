@@ -2,17 +2,12 @@
 
 #include "Vortex.hpp"
 #include "Panels/SceneHierarchyPanel.hpp"
+#include "Vortex/Renderer/Cameras/EditorCamera.hpp"
 
 namespace Vortex {
 
 	class EditorLayer : public Layer {
 	private:
-		/*OrthoCameraController m_cameraController;
-
-		Ref<VertexArray> m_vao;
-		Ref<Shader> m_shader;
-		Ref<Texture2D> m_texture1;
-		Ref<Texture2D> m_texture2;*/
 		Ref<FrameBuffer> m_frameBuffer;
 
 		glm::vec2 m_viewportPanelSize;
@@ -22,11 +17,7 @@ namespace Vortex {
 		Vector<Ref<Scene>> m_scenes;
 		Ref<Scene> m_currentScene;
 
-		Entity m_primaryCamera;
-		Entity m_secondaryCamera;
-		bool m_isPrimaryCamera = true;
-
-		Entity m_square;
+		EditorCamera m_editorCamera;
 
 		// Panels
 		SceneHierarchyPanel m_sceneHierarchyPanel;

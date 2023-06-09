@@ -82,8 +82,20 @@ namespace Vortex {
 
 	void Renderer2D::BeginScene(const OrthoCamera& camera) {
 		VT_PROFILE_FUNC();
+
 		s_data.shader->Bind();
 		s_data.shader->SetMat4("u_viewproj", camera.GetViewProjMat());
+
+		StartBatch();
+	}
+
+	void Renderer2D::BeginScene(const EditorCamera& camera) {
+		VT_PROFILE_FUNC();
+
+		glm::mat4 viewProj = camera.GetViewProjection();
+
+		s_data.shader->Bind();
+		s_data.shader->SetMat4("u_viewproj", viewProj);
 
 		StartBatch();
 	}

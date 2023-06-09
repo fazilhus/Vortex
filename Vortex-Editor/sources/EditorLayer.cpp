@@ -23,6 +23,8 @@ namespace Vortex {
         m_currentScene = CreateRef<Scene>();
         m_sceneHierarchyPanel.SetContext(m_currentScene);
 
+        m_editorCamera = EditorCamera(30.0f, 1.778f, 0.01f, 1000.0f);
+
         m_scenes.push_back(m_currentScene);
     }
 
@@ -39,17 +41,15 @@ namespace Vortex {
             (spec.width != m_viewportPanelSize.x || spec.height != m_viewportPanelSize.y))
         {
             m_frameBuffer->Resize(static_cast<uint32>(m_viewportPanelSize.x), static_cast<uint32>(m_viewportPanelSize.y));
-            //m_cameraController.OnResize(m_viewportPanelSize.x, m_viewportPanelSize.y);
+            m_editorCamera.SetViewportSize(m_viewportPanelSize.x, m_viewportPanelSize.y);
             m_currentScene->OnViewportResize((uint32)m_viewportPanelSize.x, (uint32)m_viewportPanelSize.y);
         }
 
         Renderer2D::ResetStats();
 
         {
-            VT_PROFILE_SCOPE("CameraController::OnUpdate");
-            /*if (m_viewportFocused) {
-                m_cameraController.OnUpdate(ts);
-            }*/
+            VT_PROFILE_SCOPE("EditorCamera::OnUpdate");
+            m_editorCamera.OnUpdate(ts);
         }
 
         {
@@ -61,11 +61,8 @@ namespace Vortex {
 
         {
             VT_PROFILE_SCOPE("Draw all");
-            //Renderer2D::BeginScene(m_cameraController.GetCamera());
 
-            m_currentScene->OnUpdate(ts);
-
-            //Renderer2D::EndScene();
+            m_currentScene->OnUpdateEditor(ts, m_editorCamera);
 
             m_frameBuffer->Unbind();
         }
@@ -195,10 +192,8 @@ namespace Vortex {
             float windowHeight = (float)ImGui::GetWindowHeight();
             ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
 
-            auto cameraEntity = m_currentScene->GetPrimaryCamera();
-            const auto& camera = cameraEntity.GetComponent<CameraComponent>().Camera;
-            const glm::mat4& cameraProjection = camera.GetProjection();
-            glm::mat4 cameraView = glm::inverse(cameraEntity.GetComponent<TransformComponent>().GetTransform());
+            const glm::mat4& cameraProjection = m_editorCamera.GetProjection();
+            glm::mat4 cameraView = m_editorCamera.GetViewMatrix();
 
             auto& transformComponent = selectedEntity.GetComponent<TransformComponent>();
             glm::mat4 transform = transformComponent.GetTransform();
@@ -257,6 +252,8 @@ namespace Vortex {
     void EditorLayer::OnEvent(Event& e) {
         VT_PROFILE_FUNC();
         VT_CORE_TRACE("EditorLayer::OnEvent {0}", e.GetName());
+
+        m_editorCamera.OnEvent(e);
 
         ImGuiIO& io = ImGui::GetIO();
         e.m_handled |= e.IsInCat(EventCatMouse) & io.WantCaptureMouse;

@@ -57,6 +57,20 @@ namespace Vortex {
 		mainCamera.release();
 	}
 
+	void Scene::OnUpdateEditor(Timestep ts, EditorCamera& camera) {
+		Renderer2D::BeginScene(camera);
+
+		auto group = m_registry.group<TransformComponent>(entt::get<SpriteComponent>);
+		for (auto entity : group)
+		{
+			auto [transform, sprite] = group.get<TransformComponent, SpriteComponent>(entity);
+
+			Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
+		}
+
+		Renderer2D::EndScene();
+	}
+
 	void Scene::OnViewportResize(uint32 width, uint32 height) {
 		m_viewportWidth = width;
 		m_viewportHeight = height;
