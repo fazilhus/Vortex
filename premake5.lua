@@ -13,8 +13,8 @@ workspace "Vortex"
 
     startproject "Vortex-Editor"
 
-cpp = "C++"
-cppdlct = "C++20"
+cpp = "c++"
+cppdlct = "c++20"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
@@ -27,11 +27,13 @@ includedir["imgui"] = "Vortex/vendor/imgui"
 includedir["glm"] = "Vortex/vendor/glm"
 includedir["stb"] = "Vortex/vendor/stb"
 includedir["entt"] = "Vortex/vendor/entt/single_include"
+includedir["yaml"] = "Vortex/vendor/yaml-cpp/include"
 
 group "Dependencies"
     include "Vortex/vendor/glfw"
     include "Vortex/vendor/glad"
     include "Vortex/vendor/ImGui"
+    include "Vortex/vendor/yaml-cpp"
 
 group "Tools"
 project "Vortex-Editor"
@@ -60,7 +62,8 @@ project "Vortex-Editor"
         "%{includedir.imgui}",
         "%{includedir.glm}",
         "%{includedir.stb}",
-        "%{includedir.entt}"
+        "%{includedir.entt}",
+        "%{includedir.yaml}"
     }
 
     links {
@@ -108,7 +111,8 @@ project "Vortex"
 
     defines {
         "_CRT_SECURE_NO_WARNINGS",
-        "GLFW_INCLUDE_NONE"
+        "GLFW_INCLUDE_NONE",
+        "YAML_CPP_STATIC_DEFINE"
     }
 
     targetdir ("bin/" .. outputdir .. "/%{prj.name}")
@@ -134,7 +138,8 @@ project "Vortex"
         "%{includedir.imgui}",
         "%{includedir.glm}",
         "%{includedir.stb}",
-        "%{includedir.entt}"
+        "%{includedir.entt}",
+        "%{includedir.yaml}"
     }
 
     links {
@@ -142,6 +147,7 @@ project "Vortex"
         "opengl32.lib",
         "GLAD",
         "ImGui",
+        "yaml-cpp"
     }
 
     filter "system:windows"
@@ -155,8 +161,7 @@ project "Vortex"
     filter "configurations:Debug"
         defines {
             "VT_DEBUG",
-            "VT_ENABLE_ASSERTS",
-            "VT_PROFILE"
+            "VT_ENABLE_ASSERTS"
         }
         runtime "Debug"
         symbols "on"

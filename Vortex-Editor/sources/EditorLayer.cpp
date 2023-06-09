@@ -1,24 +1,26 @@
 #include "EditorLayer.hpp"
 #include "Platforms/OpenGL/OpenGLShader.hpp"
 #include "Vortex/Controllers/CameraController.hpp"
+#include "Vortex/Scene/SceneSerializer.hpp"
 
 namespace Vortex {
 
     EditorLayer::EditorLayer()
-        : Layer("EditorLayer"), m_cameraController(16.0f / 9.0f, true), m_viewportPanelSize({ 1600, 900 }),
+        : Layer("EditorLayer"), m_viewportPanelSize({ 1600, 900 }),
         m_viewportFocused(false), m_viewportHovered(false) {}
 
     void EditorLayer::OnAttach() {
         Layer::OnAttach();
 
-        m_texture1 = Texture2D::Create("res/textures/img3.png");
-        m_texture2 = Texture2D::Create("res/textures/img2.png");
+        /*m_texture1 = Texture2D::Create("res/textures/img3.png");
+        m_texture2 = Texture2D::Create("res/textures/img2.png");*/
 
         m_frameBuffer = FrameBuffer::Create({ 1600, 900, 1, false });
 
         m_currentScene = CreateRef<Scene>();
         m_sceneHierarchyPanel.SetContext(m_currentScene);
 
+#if 0
         auto square = m_currentScene->CreateEntity("White Square");
         square.AddComponent<SpriteComponent>(glm::vec4{1.0f, 1.0f, 1.0f, 1.0f});
 
@@ -27,11 +29,12 @@ namespace Vortex {
 
         m_square = square;
 
-        m_scenes.push_back(m_currentScene);
-
         m_primaryCamera = m_currentScene->CreateEntity("Primary camera");
         m_primaryCamera.AddComponent<CameraComponent>();
         m_primaryCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+#endif
+
+        m_scenes.push_back(m_currentScene);
     }
 
     void EditorLayer::OnDetach() {
@@ -47,7 +50,7 @@ namespace Vortex {
             (spec.width != m_viewportPanelSize.x || spec.height != m_viewportPanelSize.y))
         {
             m_frameBuffer->Resize(static_cast<uint32>(m_viewportPanelSize.x), static_cast<uint32>(m_viewportPanelSize.y));
-            m_cameraController.OnResize(m_viewportPanelSize.x, m_viewportPanelSize.y);
+            //m_cameraController.OnResize(m_viewportPanelSize.x, m_viewportPanelSize.y);
             m_currentScene->OnViewportResize((uint32)m_viewportPanelSize.x, (uint32)m_viewportPanelSize.y);
         }
 
@@ -55,9 +58,9 @@ namespace Vortex {
 
         {
             VT_PROFILE_SCOPE("CameraController::OnUpdate");
-            if (m_viewportFocused) {
+            /*if (m_viewportFocused) {
                 m_cameraController.OnUpdate(ts);
-            }
+            }*/
         }
 
         {
@@ -69,11 +72,11 @@ namespace Vortex {
 
         {
             VT_PROFILE_SCOPE("Draw all");
-            Renderer2D::BeginScene(m_cameraController.GetCamera());
+            //Renderer2D::BeginScene(m_cameraController.GetCamera());
 
             m_currentScene->OnUpdate(ts);
 
-            Renderer2D::EndScene();
+            //Renderer2D::EndScene();
 
             m_frameBuffer->Unbind();
         }
@@ -143,9 +146,20 @@ namespace Vortex {
 
         if (ImGui::BeginMenuBar()) {
             if (ImGui::BeginMenu("File")) {
+                if (ImGui::MenuItem("Serialize")) {
+                    SceneSerializer serializer{ m_currentScene };
+                    serializer.Serialize("res/scenes/Example.vortex");
+                }
+
+                if (ImGui::MenuItem("Deserialize")) {
+                    SceneSerializer serializer{ m_currentScene };
+                    serializer.Deserialize("res/scenes/Example.vortex");
+                }
+
                 if (ImGui::MenuItem("Exit")) {
                     Application::Get().Close();
                 }
+
                 ImGui::EndMenu();
             }
             if (ImGui::BeginMenu("Stats")) {
@@ -216,7 +230,7 @@ namespace Vortex {
         e.m_handled |= e.IsInCat(EventCatMouse) & io.WantCaptureMouse;
         e.m_handled |= e.IsInCat(EventCatKeyboard) & io.WantCaptureKeyboard;
 
-        m_cameraController.OnEvent(e);
+        //m_cameraController.OnEvent(e);
     }
 
 }

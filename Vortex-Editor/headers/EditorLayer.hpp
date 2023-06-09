@@ -7,12 +7,12 @@ namespace Vortex {
 
 	class EditorLayer : public Layer {
 	private:
-		OrthoCameraController m_cameraController;
+		/*OrthoCameraController m_cameraController;
 
 		Ref<VertexArray> m_vao;
 		Ref<Shader> m_shader;
 		Ref<Texture2D> m_texture1;
-		Ref<Texture2D> m_texture2;
+		Ref<Texture2D> m_texture2;*/
 		Ref<FrameBuffer> m_frameBuffer;
 
 		glm::vec2 m_viewportPanelSize;

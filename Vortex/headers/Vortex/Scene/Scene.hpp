@@ -13,6 +13,7 @@ namespace Vortex {
 
 		friend class Entity;
 		friend class SceneHierarchyPanel;
+		friend class SceneSerializer;
 
 	public:
 		Scene() : m_viewportWidth(0), m_viewportHeight(0) {}

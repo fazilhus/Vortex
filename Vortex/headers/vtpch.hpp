@@ -72,3 +72,6 @@
 
 // ENTT
 #include <entt/entt.hpp>
+
+// YAML-CPP
+#include <yaml-cpp/yaml.h>
