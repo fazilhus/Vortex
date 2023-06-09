@@ -35,6 +35,9 @@
 #include "Vortex/Layers/LayerStack.hpp"
 
 #include "Vortex/Events/Event.hpp"
+#include "Vortex/Events/AppEvent.hpp"
+#include "Vortex/Events/KeyEvent.hpp"
+#include "Vortex/Events/MouseEvent.hpp"
 
 #include "Vortex/Renderer/GraphicsContext.hpp"
 #include "Vortex/Renderer/Shader.hpp"
