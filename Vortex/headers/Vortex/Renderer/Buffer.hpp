@@ -141,9 +141,33 @@ namespace Vortex {
 		static Ref<VertexArray> Create();
 	};
 
+	enum class FramebufferTextureFormat {
+		None = 0,
+		RGBA8,
+		DEPTH24STENCIL8,
+		Depth = DEPTH24STENCIL8
+	};
+
+	struct FramebufferTextureSpec {
+		FramebufferTextureFormat TextureFormat;
+
+		FramebufferTextureSpec() = default;
+		FramebufferTextureSpec(FramebufferTextureFormat format) : TextureFormat(format) {}
+		~FramebufferTextureSpec() = default;
+	};
+
+	struct FramebufferAttachmentSpec {
+		Vector<FramebufferTextureSpec> Attachments;
+
+		FramebufferAttachmentSpec() = default;
+		FramebufferAttachmentSpec(std::initializer_list<FramebufferTextureSpec> attachments) : Attachments(attachments) {}
+		~FramebufferAttachmentSpec() = default;
+	};
+
 	struct FrameBufferSpec {
 		uint32 width = 0, height = 0;
 		uint32 samples = 1;
+		FramebufferAttachmentSpec attachments;
 
 		bool swapChainTarget = false;
 	};
@@ -157,8 +181,8 @@ namespace Vortex {
 
 		virtual void Resize(uint32 x, uint32 y) = 0;
 
-		virtual uint32 GetColorAttachmentID() const = 0;
 		virtual const FrameBufferSpec& GetSpec() const = 0;
+		virtual uint32 GetColorAttachmentRendererID(uint32 index) const = 0;
 
 		static Ref<FrameBuffer> Create(const FrameBufferSpec& spec);
 	};

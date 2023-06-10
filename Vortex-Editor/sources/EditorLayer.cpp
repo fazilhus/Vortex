@@ -18,7 +18,7 @@ namespace Vortex {
         /*m_texture1 = Texture2D::Create("res/textures/img3.png");
         m_texture2 = Texture2D::Create("res/textures/img2.png");*/
 
-        m_frameBuffer = FrameBuffer::Create({ 1600, 900, 1, false });
+        m_frameBuffer = FrameBuffer::Create({ 1600, 900, 1, { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth }, false });
 
         m_currentScene = CreateRef<Scene>();
         m_sceneHierarchyPanel.SetContext(m_currentScene);
@@ -180,7 +180,7 @@ namespace Vortex {
         ImVec2 size = ImGui::GetContentRegionAvail();
         m_viewportPanelSize = { size.x, size.y };
 
-        uint32 texID = m_frameBuffer->GetColorAttachmentID();
+        uint32 texID = m_frameBuffer->GetColorAttachmentRendererID(0);
         ImGui::Image(reinterpret_cast<void*>(texID), ImVec2{ m_viewportPanelSize.x, m_viewportPanelSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
         Entity selectedEntity = m_sceneHierarchyPanel.GetSelectedEntity();

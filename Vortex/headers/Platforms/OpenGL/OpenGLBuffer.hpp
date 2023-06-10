@@ -61,8 +61,13 @@ namespace Vortex {
 	class OpenGLFrameBuffer : public FrameBuffer {
 	private:
 		uint32 m_rendererID;
-		uint32 m_colorAttachment, m_depthAttachment;
 		FrameBufferSpec m_spec;
+
+		Vector<FramebufferTextureSpec> m_colorAttachmentSpecifications;
+		FramebufferTextureSpec m_depthAttachmentSpecification;
+
+		Vector<uint32> m_colorAttachments;
+		uint32 m_depthAttachment = 0;
 
 	public:
 		OpenGLFrameBuffer(const FrameBufferSpec& spec);
@@ -75,7 +80,10 @@ namespace Vortex {
 
 		virtual void Resize(uint32 x, uint32 y) override;
 
-		virtual uint32 GetColorAttachmentID() const override { return m_colorAttachment; }
+		virtual uint32 GetColorAttachmentRendererID(uint32 index = 0) const override {
+			VT_CORE_ASSERT(index < m_colorAttachments.size(), "OpenGLFramebuffer::GetColorAttachmentRendererID index out of bounds");
+			return m_colorAttachments[index];
+		}
 		virtual const FrameBufferSpec& GetSpec() const override { return m_spec; }
 	};
 
