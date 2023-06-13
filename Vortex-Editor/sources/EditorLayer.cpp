@@ -313,19 +313,27 @@ namespace Vortex {
             }
             // Gizmos controls
             case Key::Q: {
-                m_gizmoType = -1;
+                if (!ImGuizmo::IsUsing()) {
+                    m_gizmoType = -1;
+                }
                 break;
             }
             case Key::W: {
-                m_gizmoType = ImGuizmo::OPERATION::TRANSLATE;
+                if (!ImGuizmo::IsUsing()) {
+                    m_gizmoType = ImGuizmo::OPERATION::TRANSLATE;
+                }
                 break;
             }
             case Key::E: {
-                m_gizmoType = ImGuizmo::OPERATION::ROTATE;
+                if (!ImGuizmo::IsUsing()) {
+                    m_gizmoType = ImGuizmo::OPERATION::ROTATE;
+                }
                 break;
             }
             case Key::R: {
-                m_gizmoType = ImGuizmo::OPERATION::SCALE;
+                if (!ImGuizmo::IsUsing()) {
+                    m_gizmoType = ImGuizmo::OPERATION::SCALE;
+                }
                 break;
             }
         }
