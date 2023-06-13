@@ -1,26 +1,26 @@
 	
 [submodule "Vortex/vendor/glfw"]
 	path = Vortex/vendor/glfw
-	url = https://github.com/fazilhus/glfw
+	url = ../../fazilhus/glfw.git
 	branch = master
 [submodule "Vortex/vendor/spdlog"]
 	path = Vortex/vendor/spdlog
-	url = https://github.com/fazilhus/spdlog
+	url = ../../fazilhus/spdlog.git
 	branch = v1.x
 [submodule "Vortex/vendor/imgui"]
 	path = Vortex/vendor/imgui
-	url = https://github.com/fazilhus/imgui
+	url = ../../fazilhus/imgui.git
 	branch = docking
 [submodule "Vortex/vendor/glm"]
 	path = Vortex/vendor/glm
-	url = https://github.com/fazilhus/glm
+	url = ../../fazilhus/glm.git
 	branch = master
 [submodule "entt"]
 	path = Vortex/vendor/entt
-	url = https://github.com/fazilhus/entt
+	url = ../../fazilhus/entt.git
 [submodule "yaml-cpp"]
 	path = Vortex/vendor/yaml-cpp
-	url = https://github.com/fazilhus/yaml-cpp
+	url = ../../fazilhus/yaml-cpp.git
 [submodule "Vortex/vendor/ImGuizmo"]
 	path = Vortex/vendor/ImGuizmo
-	url = https://github.com/fazilhus/ImGuizmo
+	url = ../../fazilhus/ImGuizmo.git
