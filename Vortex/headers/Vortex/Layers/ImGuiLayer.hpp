@@ -6,7 +6,6 @@ namespace Vortex {
 
 	class ImGuiLayer : public Layer {
 	private:
-		float m_time;
 		bool m_blockEvents;
 
 	public:

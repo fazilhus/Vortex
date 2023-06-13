@@ -5,6 +5,7 @@
 #include "Vortex/Scene/ScriptableEntity.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
+#define GLM_FORCE_QUAT_DATA_WXYZ
 #include <glm/gtx/quaternion.hpp>
 
 namespace Vortex {

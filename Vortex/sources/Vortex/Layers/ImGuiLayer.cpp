@@ -11,7 +11,7 @@
 namespace Vortex {
 
 	ImGuiLayer::ImGuiLayer() 
-		: Layer("ImGui layer"), m_time(0.0f), m_blockEvents(true) {
+		: Layer("ImGui layer"), m_blockEvents(true) {
 	}
 
 	void ImGuiLayer::OnAttach() {

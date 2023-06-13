@@ -18,7 +18,7 @@ project "Vortex"
     objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
 
     pchheader "vtpch.hpp"
-    pchsource "Vortex/sources/vtpch.cpp"
+    pchsource "sources/vtpch.cpp"
 
     files {
         "headers/**.hpp",
@@ -41,7 +41,8 @@ project "Vortex"
         "%{includedir.stb}",
         "%{includedir.entt}",
         "%{includedir.yaml}",
-        "%{includedir.imguizmo}"
+        "%{includedir.imguizmo}",
+        "%{includedir.VulkanSDK}"
     }
 
     links {
@@ -52,7 +53,7 @@ project "Vortex"
         "yaml-cpp"
     }
 
-    filter "files:Vortex/vendor/ImGuizmo/**.cpp"
+    filter "files:vendor/ImGuizmo/**.cpp"
         flags {
             "NoPCH"
         }
