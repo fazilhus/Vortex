@@ -13,6 +13,9 @@ namespace Vortex {
 		glm::vec2 texPos;
 		float texInd;
 		float tilingFactor;
+
+		// Editor only
+		int entityID;
 	};
 
 	struct RendererStatisics {
@@ -58,8 +61,8 @@ namespace Vortex {
 
 		static void Flush();
 
-		static void DrawQuad(const glm::mat4& transform, const glm::vec4& color);
-		static void DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f));
+		static void DrawQuad(const glm::mat4& transform, const glm::vec4& color, int entityID = -1);
+		static void DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor = 1.0f, const glm::vec4& tintColor = glm::vec4(1.0f), int entityID = -1);
 
 		static void DrawQuad(const glm::vec2& pos, const glm::vec2& size, const glm::vec4& color);
 		static void DrawQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color);
@@ -70,6 +73,8 @@ namespace Vortex {
 		static void DrawRotatedQuad(const glm::vec3& pos, const glm::vec2& size, const glm::vec4& color, float rot = 0.0f);
 		static void DrawRotatedQuad(const glm::vec2& pos, const glm::vec2& size, const Ref<Texture2D>& texture, float rot = 0.0f, float tilingFactor = 1.0f, const glm::vec4 tintColor = glm::vec4(1.0f));
 		static void DrawRotatedQuad(const glm::vec3& pos, const glm::vec2& size, const Ref<Texture2D>& texture, float rot = 0.0f, float tilingFactor = 1.0f, const glm::vec4 tintColor = glm::vec4(1.0f));
+
+		//static void DrawSprite(const glm::mat4& transform, SpriteComponent& sprite, int entityID);
 
 		static void ResetStats();
 		static RendererStatisics GetStats();

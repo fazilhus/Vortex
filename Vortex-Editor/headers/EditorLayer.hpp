@@ -20,6 +20,8 @@ namespace Vortex {
 
 		EditorCamera m_editorCamera;
 
+		Entity m_hoveredEntity;
+
 		// Panels
 		SceneHierarchyPanel m_sceneHierarchyPanel;
 		Timestep m_frametime;

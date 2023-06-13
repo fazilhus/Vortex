@@ -14,7 +14,8 @@ namespace Vortex {
 			{"a_color", ShaderDataType::Float4},
 			{"a_texPos", ShaderDataType::Float2},
 			{"a_texInd", ShaderDataType::Float},
-			{"a_tilingFactor", ShaderDataType::Float}
+			{"a_tilingFactor", ShaderDataType::Float},
+			{"a_entityID", ShaderDataType::Int }
 		});
 		s_data.quadVao->AddVertexBuffer(s_data.quadVbo);
 
@@ -121,7 +122,7 @@ namespace Vortex {
 		s_data.stats.drawcallsCount++;
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color) {
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, int entityID) {
 		VT_PROFILE_FUNC();
 
 		constexpr std::size_t vertcount{ 4 };
@@ -140,6 +141,7 @@ namespace Vortex {
 			s_data.quadVertexBufferPtr->texPos = texCoord[i];
 			s_data.quadVertexBufferPtr->texInd = texInd;
 			s_data.quadVertexBufferPtr->tilingFactor = tiling;
+			s_data.quadVertexBufferPtr->entityID = entityID;
 			s_data.quadVertexBufferPtr++;
 		}
 
@@ -148,8 +150,7 @@ namespace Vortex {
 		s_data.stats.quadCount++;
 	}
 
-	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor)
-	{
+	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor, int entityID) {
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& pos, const glm::vec2& size, const glm::vec4& color) {
@@ -264,6 +265,10 @@ namespace Vortex {
 
 		DrawQuad(transform, texture, tilingFactor, tintColor);
 	}
+
+	/*void Renderer2D::DrawSprite(const glm::mat4& transform, SpriteComponent& sprite, int entityID) {
+		DrawQuad(transform, sprite.Color, entityID);
+	}*/
 
 	void Renderer2D::ResetStats() {
 		memset(&s_data.stats, 0, sizeof(RendererStatisics));

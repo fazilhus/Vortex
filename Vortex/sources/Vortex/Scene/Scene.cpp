@@ -49,7 +49,7 @@ namespace Vortex {
 			for (auto entity : group) {
 				auto [transform, sprite] = m_registry.get<TransformComponent, SpriteComponent>(entity);
 				VT_CORE_TRACE("Scene::OnUpdate drawquad call pos {0} {1} {2}", transform.Translation.x, transform.Translation.y, transform.Translation.z);
-				Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
+				Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color, (int)entity);
 			}
 
 			Renderer2D::EndScene();
@@ -65,7 +65,7 @@ namespace Vortex {
 		{
 			auto [transform, sprite] = group.get<TransformComponent, SpriteComponent>(entity);
 
-			Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color);
+			Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color, (int)entity);
 		}
 
 		Renderer2D::EndScene();

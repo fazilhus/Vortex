@@ -80,6 +80,7 @@ namespace Vortex {
 
             if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y) {
                 int pixelData = m_frameBuffer->ReadPixel(1, mouseX, mouseY);
+                m_hoveredEntity = pixelData == -1 ? Entity{} : Entity{ (entt::entity)pixelData, m_currentScene.get() };
                 VT_CORE_INFO("EditorLayer::OnUpdate pixel data : {0}", pixelData);
             }
 
@@ -263,6 +264,14 @@ namespace Vortex {
             ImGui::Text("Quads: %d", stats.quadCount);
             ImGui::Text("Vertices: %d", stats.GetVertexesCount());
             ImGui::Text("Indices: %d", stats.GetIndicesCount());
+
+            ImGui::Separator();
+
+            std::string entityName{ "None" };
+            if (m_hoveredEntity) {
+                entityName = m_hoveredEntity.GetComponent<TagComponent>().Tag;
+            }
+            ImGui::Text("Hovered entity: %s", entityName.c_str());
             
             ImGui::Separator();
             

@@ -2,6 +2,7 @@
 
 #include <imgui.h>
 #include <imgui_internal.h>
+
 #include "Vortex/Scene/Components.hpp"
 
 #include <cstring>

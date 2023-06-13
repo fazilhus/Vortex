@@ -6,6 +6,7 @@ layout(location = 1) in vec4 a_color;
 layout(location = 2) in vec2 a_texPos;
 layout(location = 3) in float a_texInd;
 layout(location = 4) in float a_tilingFactor;
+layout(location = 5) in int a_entityID;
 
 uniform mat4 u_viewproj;
 
@@ -13,6 +14,7 @@ out vec4 v_color;
 out vec2 v_texPos;
 out flat float v_texInd;
 out float v_tilingFactor;
+out flat int v_entityID;
 
 void main() {
 	gl_Position = u_viewproj * vec4(a_position, 1.0);	
@@ -20,6 +22,7 @@ void main() {
 	v_texPos = a_texPos;
 	v_texInd = a_texInd;
 	v_tilingFactor = a_tilingFactor;
+	v_entityID = a_entityID;
 }
 
 #type fragment
@@ -29,8 +32,10 @@ in vec4 v_color;
 in vec2 v_texPos;
 in flat float v_texInd;
 in float v_tilingFactor;
+in flat int v_entityID;
 
-out vec4 color;
+layout(location = 0) out vec4 color;
+layout(location = 1) out int color2;
 
 uniform sampler2D u_textures[32];
 
@@ -73,4 +78,5 @@ void main() {
 	}
 
 	color = texColor;
+	color2 = v_entityID;
 }
