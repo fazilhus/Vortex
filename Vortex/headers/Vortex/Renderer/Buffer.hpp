@@ -144,6 +144,7 @@ namespace Vortex {
 	enum class FramebufferTextureFormat {
 		None = 0,
 		RGBA8,
+		RED_INTEGER,
 		DEPTH24STENCIL8,
 		Depth = DEPTH24STENCIL8
 	};
@@ -180,9 +181,12 @@ namespace Vortex {
 		virtual void Unbind() const = 0;
 
 		virtual void Resize(uint32 x, uint32 y) = 0;
+		virtual int ReadPixel(uint32 attachmentIndex, int x, int y) const = 0;
+
+		virtual void ClearAttachment(uint32 attachmentIndex, int v) = 0;
 
 		virtual const FrameBufferSpec& GetSpec() const = 0;
-		virtual uint32 GetColorAttachmentRendererID(uint32 index) const = 0;
+		virtual uint32 GetColorAttachmentRendererID(uint32 index = 0) const = 0;
 
 		static Ref<FrameBuffer> Create(const FrameBufferSpec& spec);
 	};

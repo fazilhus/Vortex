@@ -170,13 +170,13 @@ namespace Vortex {
 			glBindTexture(TextureTarget(multisampled), id);
 		}
 
-		static void AttachColorTexture(uint32 id, int samples, GLenum format, uint32 width, uint32 height, int index) {
+		static void AttachColorTexture(uint32 id, int samples, GLenum internalFormat, GLenum format, uint32 width, uint32 height, int index) {
 			bool multisampled = samples > 1;
 			if (multisampled) {
-				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, width, height, GL_FALSE);
+				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, internalFormat, width, height, GL_FALSE);
 			}
 			else {
-				glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+				glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, nullptr);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
@@ -214,6 +214,15 @@ namespace Vortex {
 			}
 
 			return false;
+		}
+
+		static GLenum FramebufferTextureFormatToGL(FramebufferTextureFormat format) {
+			switch (format) {
+			case FramebufferTextureFormat::RGBA8:
+				return GL_RGBA8;
+			case FramebufferTextureFormat::RED_INTEGER:
+				return GL_RED_INTEGER;
+			}
 		}
 
 	}
@@ -262,7 +271,10 @@ namespace Vortex {
 
 				switch (m_colorAttachmentSpecifications[i].TextureFormat) {
 				case FramebufferTextureFormat::RGBA8:
-					Utils::AttachColorTexture(m_colorAttachments[i], m_spec.samples, GL_RGBA8, m_spec.width, m_spec.height, i);
+					Utils::AttachColorTexture(m_colorAttachments[i], m_spec.samples, GL_RGBA8, GL_RGBA, m_spec.width, m_spec.height, i);
+					break;
+				case FramebufferTextureFormat::RED_INTEGER:
+					Utils::AttachColorTexture(m_colorAttachments[i], m_spec.samples, GL_R32I, GL_RED_INTEGER, m_spec.width, m_spec.height, i);
 					break;
 				}
 			}
@@ -312,5 +324,19 @@ namespace Vortex {
 		m_spec.height = height;
 
 		Invalidate();
+	}
+	int OpenGLFrameBuffer::ReadPixel(uint32 attachmentIndex, int x, int y) const {
+		VT_CORE_ASSERT(attachmentIndex < m_colorAttachments.size(), "OpenGLFrameBuffer::ReadPixel attachmentIndex out of bounds");
+
+		glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
+		int pixelData;
+		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
+		return pixelData;
+	}
+	void OpenGLFrameBuffer::ClearAttachment(uint32 attachmentIndex, int v) {
+		VT_CORE_ASSERT(attachmentIndex < m_colorAttachments.size(), "OpenGLFrameBuffer::ClearAttachment attachmentIndex out of bounds");
+
+		auto& spec = m_colorAttachmentSpecifications[attachmentIndex];
+		glClearTexImage(m_colorAttachments[attachmentIndex], 0, Utils::FramebufferTextureFormatToGL(spec.TextureFormat), GL_INT, &v);
 	}
 }

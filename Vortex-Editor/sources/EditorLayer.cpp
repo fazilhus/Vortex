@@ -18,7 +18,11 @@ namespace Vortex {
         /*m_texture1 = Texture2D::Create("res/textures/img3.png");
         m_texture2 = Texture2D::Create("res/textures/img2.png");*/
 
-        m_frameBuffer = FrameBuffer::Create({ 1600, 900, 1, { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth }, false });
+        m_frameBuffer = FrameBuffer::Create(
+            { 1600, 900, 1, 
+            { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth }, 
+            false }
+        );
 
         m_currentScene = CreateRef<Scene>();
         m_sceneHierarchyPanel.SetContext(m_currentScene);
@@ -57,12 +61,27 @@ namespace Vortex {
             m_frameBuffer->Bind();
             Render::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
             Render::Clear();
+
+            m_frameBuffer->ClearAttachment(1, -1);
         }
 
         {
             VT_PROFILE_SCOPE("Draw all");
 
             m_currentScene->OnUpdateEditor(ts, m_editorCamera);
+
+            auto [mx, my] = ImGui::GetMousePos();
+            mx -= m_viewportBounds[0].x;
+            my -= m_viewportBounds[0].y;
+            glm::vec2 viewportSize = m_viewportBounds[1] - m_viewportBounds[0];
+            my = viewportSize.y - my;
+            int mouseX = (int)mx;
+            int mouseY = (int)my;
+
+            if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y) {
+                int pixelData = m_frameBuffer->ReadPixel(1, mouseX, mouseY);
+                VT_CORE_INFO("EditorLayer::OnUpdate pixel data : {0}", pixelData);
+            }
 
             m_frameBuffer->Unbind();
         }
@@ -172,6 +191,7 @@ namespace Vortex {
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
         ImGui::Begin("Viewport");
+        auto viewportOffset = ImGui::GetCursorPos();
 
         m_viewportFocused = ImGui::IsWindowFocused();
         m_viewportHovered = ImGui::IsWindowHovered();
@@ -180,8 +200,17 @@ namespace Vortex {
         ImVec2 size = ImGui::GetContentRegionAvail();
         m_viewportPanelSize = { size.x, size.y };
 
-        uint32 texID = m_frameBuffer->GetColorAttachmentRendererID(0);
+        uint32 texID = m_frameBuffer->GetColorAttachmentRendererID();
         ImGui::Image(reinterpret_cast<void*>(texID), ImVec2{ m_viewportPanelSize.x, m_viewportPanelSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+
+        auto windowSize = ImGui::GetWindowSize();
+        auto minBound = ImGui::GetWindowPos();
+        minBound.x += viewportOffset.x;
+        minBound.y += viewportOffset.y;
+
+        ImVec2 maxBound = { minBound.x + m_viewportPanelSize.x, minBound.y + m_viewportPanelSize.y };
+        m_viewportBounds[0] = { minBound.x, minBound.y };
+        m_viewportBounds[1] = { maxBound.x, maxBound.y };
 
         Entity selectedEntity = m_sceneHierarchyPanel.GetSelectedEntity();
         if (selectedEntity && m_gizmoType != -1) {

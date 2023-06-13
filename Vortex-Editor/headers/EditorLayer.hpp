@@ -11,6 +11,7 @@ namespace Vortex {
 		Ref<FrameBuffer> m_frameBuffer;
 
 		glm::vec2 m_viewportPanelSize;
+		glm::vec2 m_viewportBounds[2];
 
 		bool m_viewportFocused, m_viewportHovered;
 
