@@ -17,6 +17,7 @@ namespace Vortex {
 		void SetContext(const Ref<Scene>& scene);
 
 		Entity GetSelectedEntity() const { return m_selectionContext; }
+		void SetSelectedEntity(Entity entity) { m_selectionContext = entity; }
 
 		void OnImGuiRender();
 

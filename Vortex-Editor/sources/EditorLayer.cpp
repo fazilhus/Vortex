@@ -192,7 +192,11 @@ namespace Vortex {
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
         ImGui::Begin("Viewport");
-        auto viewportOffset = ImGui::GetCursorPos();
+        auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
+        auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+        auto viewportOffset = ImGui::GetWindowPos();
+        m_viewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
+        m_viewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
 
         m_viewportFocused = ImGui::IsWindowFocused();
         m_viewportHovered = ImGui::IsWindowHovered();
@@ -204,23 +208,14 @@ namespace Vortex {
         uint32 texID = m_frameBuffer->GetColorAttachmentRendererID();
         ImGui::Image(reinterpret_cast<void*>(texID), ImVec2{ m_viewportPanelSize.x, m_viewportPanelSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
-        auto windowSize = ImGui::GetWindowSize();
-        auto minBound = ImGui::GetWindowPos();
-        minBound.x += viewportOffset.x;
-        minBound.y += viewportOffset.y;
-
-        ImVec2 maxBound = { minBound.x + m_viewportPanelSize.x, minBound.y + m_viewportPanelSize.y };
-        m_viewportBounds[0] = { minBound.x, minBound.y };
-        m_viewportBounds[1] = { maxBound.x, maxBound.y };
-
         Entity selectedEntity = m_sceneHierarchyPanel.GetSelectedEntity();
         if (selectedEntity && m_gizmoType != -1) {
             ImGuizmo::SetOrthographic(false);
             ImGuizmo::SetDrawlist();
 
-            float windowWidth = (float)ImGui::GetWindowWidth();
-            float windowHeight = (float)ImGui::GetWindowHeight();
-            ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+            ImGuizmo::SetRect(m_viewportBounds[0].x, m_viewportBounds[0].y,
+                m_viewportBounds[1].x - m_viewportBounds[0].x,
+                m_viewportBounds[1].y - m_viewportBounds[0].y);
 
             const glm::mat4& cameraProjection = m_editorCamera.GetProjection();
             glm::mat4 cameraView = m_editorCamera.GetViewMatrix();
@@ -299,6 +294,7 @@ namespace Vortex {
 
         EventDispatcher dispatcher{ e };
         dispatcher.Dispatch<KeyPressedEvent>(VT_BIND_EVENT_FN(EditorLayer::OnKeyPressed));
+        dispatcher.Dispatch<MouseButtonPressedEvent>(VT_BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
     }
 
     bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
@@ -346,6 +342,15 @@ namespace Vortex {
                 break;
             }
         }
+    }
+
+    bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
+        if (e.GetMouseButton() == Mouse::ButtonLeft) {
+            if (m_viewportHovered && !ImGuizmo::IsOver() && !Input::IsKeyPressed(Key::LeftAlt)) {
+                m_sceneHierarchyPanel.SetSelectedEntity(m_hoveredEntity);
+            }
+        }
+        return false;
     }
 
     void EditorLayer::NewScene() {
