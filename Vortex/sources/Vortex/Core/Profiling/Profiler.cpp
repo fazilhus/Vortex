@@ -86,18 +86,18 @@ namespace Vortex {
 		}
 	}
 
-	Timer::Timer(const char* name)
+	ProfilerTimer::ProfilerTimer(const char* name)
 	: m_name(name), m_stopped(false) {
 		m_startPoint = std::chrono::high_resolution_clock::now();
 	}
 
-	Timer::~Timer() {
+	ProfilerTimer::~ProfilerTimer() {
 		if (!m_stopped) {
 			Stop();
 		}
 	}
 
-	void Timer::Stop() {
+	void ProfilerTimer::Stop() {
 		auto endPoint = std::chrono::high_resolution_clock::now();
 
 		long long start = std::chrono::time_point_cast<std::chrono::microseconds>(m_startPoint).time_since_epoch().count();

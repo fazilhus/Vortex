@@ -27,6 +27,14 @@ namespace Vortex {
         m_currentScene = CreateRef<Scene>();
         m_sceneHierarchyPanel.SetContext(m_currentScene);
 
+		auto commandLineArgs = Application::Get().GetCommandlineArgs();
+		if (commandLineArgs.Count > 1)
+		{
+			auto sceneFilePath = commandLineArgs[1];
+			SceneSerializer serializer(m_currentScene);
+			serializer.Deserialize(sceneFilePath);
+		}
+
         m_editorCamera = EditorCamera(30.0f, 1.778f, 0.01f, 1000.0f);
 
         m_scenes.push_back(m_currentScene);
@@ -361,21 +369,21 @@ namespace Vortex {
 
     void EditorLayer::OpenScene() {
         auto filepath = FileIO::OpenFile("Vortex Scene (*.vortex)\0*.vortex\0");
-        if (filepath) {
+        if (!filepath.empty()) {
             m_currentScene = CreateRef<Scene>();
             m_currentScene->OnViewportResize((uint32)m_viewportPanelSize.x, (uint32)m_viewportPanelSize.y);
             m_sceneHierarchyPanel.SetContext(m_currentScene);
 
             SceneSerializer serializer{ m_currentScene };
-            serializer.Deserialize(*filepath);
+            serializer.Deserialize(filepath);
         }
     }
 
     void EditorLayer::SaveSceneAs() {
         auto filepath = FileIO::SaveFile("Vortex Scene (*.vortex)\0*.vortex\0");
-        if (filepath) {
+        if (!filepath.empty()) {
             SceneSerializer serializer{ m_currentScene };
-            serializer.Serialize(*filepath);
+            serializer.Serialize(filepath);
         }
     }
 

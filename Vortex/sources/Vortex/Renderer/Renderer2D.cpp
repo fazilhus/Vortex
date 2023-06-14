@@ -61,6 +61,8 @@ namespace Vortex {
 		s_data.quadVertexPos[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
 		s_data.quadVertexPos[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
 
+		s_data.CameraUniformBuffer = UniformBuffer::Create(sizeof(Renderer2DStorage::CameraData), 0);
+
 		VT_CORE_INFO("Renderer2D is initialized");
 	}
 
@@ -73,10 +75,8 @@ namespace Vortex {
 	void Renderer2D::BeginScene(const Camera& camera, const glm::mat4 transform) {
 		VT_PROFILE_FUNC();
 
-		glm::mat4 viewproj = camera.GetProjection() * glm::inverse(transform);
-
-		s_data.shader->Bind();
-		s_data.shader->SetMat4("u_viewproj", viewproj);
+		s_data.CameraBuffer.viewproj = camera.GetProjection() * glm::inverse(transform);
+		s_data.CameraUniformBuffer->SetData(&s_data.CameraBuffer, sizeof(Renderer2DStorage::CameraData));
 
 		StartBatch();
 	}
@@ -93,10 +93,8 @@ namespace Vortex {
 	void Renderer2D::BeginScene(const EditorCamera& camera) {
 		VT_PROFILE_FUNC();
 
-		glm::mat4 viewProj = camera.GetViewProjection();
-
-		s_data.shader->Bind();
-		s_data.shader->SetMat4("u_viewproj", viewProj);
+		s_data.CameraBuffer.viewproj = camera.GetViewProjection();
+		s_data.CameraUniformBuffer->SetData(&s_data.CameraBuffer, sizeof(Renderer2DStorage::CameraData));
 
 		StartBatch();
 	}
@@ -118,6 +116,7 @@ namespace Vortex {
 			VT_CORE_TRACE("Bind texture {0} in slot {1}", s_data.texSlots[i]->GetPath(), i);
 			s_data.texSlots[i]->Bind(i);
 		}
+		s_data.shader->Bind();
 		Render::DrawIndexed(s_data.quadVao, s_data.quadIndCount);
 		s_data.stats.drawcallsCount++;
 	}

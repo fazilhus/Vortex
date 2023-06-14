@@ -2,6 +2,7 @@
 
 // STL
 #include <iostream>
+#include <filesystem>
 #include <fstream>
 #include <algorithm>
 #include <utility>
@@ -26,6 +27,7 @@
 #include "Vortex/Core/Platform.hpp"
 #include "Vortex/Core/PlatformAPI.hpp"
 #include "Vortex/Core/Timestep.hpp"
+#include "Vortex/Core/Timer.hpp"
 
 #include "Vortex/Core/Containers/ContainerWrappers.hpp"
 

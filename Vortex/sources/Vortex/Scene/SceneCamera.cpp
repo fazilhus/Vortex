@@ -30,6 +30,7 @@ namespace Vortex {
 	}
 
 	void SceneCamera::SetViewportSize(uint32 width, uint32 height) {
+		VT_CORE_ASSERT(width > 0 && height > 0, "SceneCamera::SetViewportSize negative viewport dimesions");
 		m_aspectRatio = (float)width / (float)height;
 		RecalculateProjection();
 	}

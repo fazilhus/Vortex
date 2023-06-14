@@ -117,7 +117,9 @@ namespace Vortex {
 
 	template <>
 	void Scene::OnComponentAdded<CameraComponent>(Entity entity, CameraComponent& component) {
-		component.Camera.SetViewportSize(m_viewportWidth, m_viewportHeight);
+		if (m_viewportWidth > 0 && m_viewportHeight > 0) {
+			component.Camera.SetViewportSize(m_viewportWidth, m_viewportHeight);
+		}
 	}
 
 	template <>

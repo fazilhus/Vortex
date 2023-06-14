@@ -90,4 +90,15 @@ namespace Vortex {
 		virtual const FrameBufferSpec& GetSpec() const override { return m_spec; }
 	};
 
+	class OpenGLUniformBuffer : public UniformBuffer {
+	private:
+		uint32 m_rendererID;
+
+	public:
+		OpenGLUniformBuffer(uint32 size, uint32 binding);
+		virtual ~OpenGLUniformBuffer();
+
+		virtual void SetData(const void* data, uint32 size, uint32 offset = 0) override;
+	};
+
 }

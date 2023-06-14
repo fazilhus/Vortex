@@ -2,7 +2,7 @@ project "Vortex"
     kind "StaticLib"
     language "c++"
     cppdialect "c++20"
-    staticruntime "on"
+    staticruntime "off"
 
     ignoredefaultlibraries {
         "libcmtd"
@@ -42,6 +42,8 @@ project "Vortex"
         "%{includedir.entt}",
         "%{includedir.yaml}",
         "%{includedir.imguizmo}",
+        "%{includedir.shaderc}",
+        "%{includedir.SPIRV_Cross}",
         "%{includedir.VulkanSDK}"
     }
 
@@ -71,15 +73,39 @@ project "Vortex"
             "VT_DEBUG",
             "VT_ENABLE_ASSERTS"
         }
+
+        links {
+			"%{library.ShaderC_Debug}",
+			"%{library.SPIRV_Cross_Debug}",
+			"%{library.SPIRV_Cross_GLSL_Debug}"
+		}
+
         runtime "Debug"
         symbols "on"
 
     filter "configurations:Release"
-        defines "VT_RELEASE"
+        defines {
+            "VT_RELEASE",
+            "VT_PROFILE"
+        }
+
+        links {
+			"%{library.ShaderC_Release}",
+			"%{library.SPIRV_Cross_Release}",
+			"%{library.SPIRV_Cross_GLSL_Release}"
+		}
+
         runtime "Release"
         optimize "on"
 
     filter "configurations:Dist"
         defines "VT_DIST"
+
+        links {
+			"%{library.ShaderC_Release}",
+			"%{library.SPIRV_Cross_Release}",
+			"%{library.SPIRV_Cross_GLSL_Release}"
+		}
+
         runtime "Release"
         optimize "on"

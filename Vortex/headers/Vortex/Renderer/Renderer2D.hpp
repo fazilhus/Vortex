@@ -47,6 +47,13 @@ namespace Vortex {
 		glm::vec4 quadVertexPos[4];
 
 		RendererStatisics stats;
+
+		struct CameraData {
+			glm::mat4 viewproj;
+		};
+
+		CameraData CameraBuffer;
+		Ref<UniformBuffer> CameraUniformBuffer;
 	};
 
 	class Renderer2D {

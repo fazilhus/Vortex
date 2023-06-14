@@ -346,4 +346,18 @@ namespace Vortex {
 		auto& spec = m_colorAttachmentSpecifications[attachmentIndex];
 		glClearTexImage(m_colorAttachments[attachmentIndex], 0, Utils::FramebufferTextureFormatToGL(spec.TextureFormat), GL_INT, &v);
 	}
+
+	OpenGLUniformBuffer::OpenGLUniformBuffer(uint32 size, uint32 binding) : m_rendererID(0) {
+		glCreateBuffers(1, &m_rendererID);
+		glNamedBufferData(m_rendererID, size, nullptr, GL_DYNAMIC_DRAW);
+		glBindBufferBase(GL_UNIFORM_BUFFER, binding, m_rendererID);
+	}
+
+	OpenGLUniformBuffer::~OpenGLUniformBuffer() {
+		glDeleteBuffers(1, &m_rendererID);
+	}
+
+	void OpenGLUniformBuffer::SetData(const void* data, uint32 size, uint32 offset) {
+		glNamedBufferSubData(m_rendererID, offset, size, data);
+	}
 }

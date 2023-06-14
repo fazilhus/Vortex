@@ -10,7 +10,7 @@
 
 namespace Vortex {
 
-	std::optional<std::string> FileIO::OpenFile(const char* filter) {
+	std::string FileIO::OpenFile(const char* filter) {
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
 		CHAR currentDir[256] = { 0 };
@@ -29,10 +29,10 @@ namespace Vortex {
 		{
 			return ofn.lpstrFile;
 		}
-		return std::nullopt;
+		return std::string{};
 	}
 
-	std::optional<std::string> FileIO::SaveFile(const char* filter) {
+	std::string FileIO::SaveFile(const char* filter) {
 		OPENFILENAMEA ofn;
 		CHAR szFile[260] = { 0 };
 		CHAR currentDir[256] = { 0 };
@@ -52,7 +52,7 @@ namespace Vortex {
 		{
 			return ofn.lpstrFile;
 		}
-		return std::nullopt;
+		return std::string{};
 	}
 
 }

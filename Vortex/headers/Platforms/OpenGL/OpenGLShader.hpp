@@ -8,8 +8,14 @@ namespace Vortex {
 	class OpenGLShader : public Shader {
 	private:
 		uint4 m_rendererID;
+		std::string m_filepath;
 		std::string m_name;
 		HashMap<std::string, uint4> m_uniformLoc;
+
+		HashMap<GLenum, Vector<uint32>> m_vulkanSPIRV;
+		HashMap<GLenum, Vector<uint32>> m_openglSPIRV;
+
+		HashMap<GLenum, std::string> m_openglSourceCode;
 
 	public:
 		OpenGLShader(const std::string& filepath);
@@ -41,8 +47,13 @@ namespace Vortex {
 
 	private:
 		std::string ReadShaderFile(const std::string& filepath);
-		void PreProcess(const std::string& src, HashMap<GLenum, std::string>&);
-		void CompileShader(const HashMap<GLenum, std::string>& shaderSrcs);
+		void PreProcess(const std::string& src, HashMap<GLenum, std::string>& shaderSrcs);
+		
+		void CompileOrGetVulkanBinaries(const HashMap<GLenum, std::string>& shaderSources);
+		void CompileOrGetOpenGLBinaries();
+		void CreateProgram();
+		void Reflect(GLenum stage, const Vector<uint32>& shaderData);
+
 	};
 
 };
