@@ -50,7 +50,7 @@ namespace Vortex {
 			samplers[i] = i;
 		}
 
-		s_data.shader = Shader::Create("res/shaders/shader.glsl");
+		s_data.shader = Shader::Create("assets/shaders/shader.glsl");
 		s_data.shader->Bind();
 		s_data.shader->SetIntArray("u_textures", samplers, s_data.maxTextureSLots);
 

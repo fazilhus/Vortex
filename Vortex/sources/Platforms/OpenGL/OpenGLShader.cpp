@@ -9,7 +9,7 @@
 
 namespace Vortex {
 
-	static std::string ShaderCacheDir { "res/cache/shader/opengl" };
+	static std::string ShaderCacheDir { "assets/cache/shader/opengl" };
 
 	namespace Utils {
 
