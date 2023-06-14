@@ -197,6 +197,7 @@ namespace Vortex {
         }
 
         m_sceneHierarchyPanel.OnImGuiRender();
+		m_contentBrowserPanel.OnImGuiRender();
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
         ImGui::Begin("Viewport");

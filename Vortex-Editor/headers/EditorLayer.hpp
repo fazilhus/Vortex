@@ -1,7 +1,11 @@
 #pragma once
 
 #include "Vortex.hpp"
+
+//Panels
 #include "Panels/SceneHierarchyPanel.hpp"
+#include "Panels/ContentBrowserPanel.hpp"
+
 #include "Vortex/Renderer/Cameras/EditorCamera.hpp"
 
 namespace Vortex {
@@ -24,6 +28,8 @@ namespace Vortex {
 
 		// Panels
 		SceneHierarchyPanel m_sceneHierarchyPanel;
+		ContentBrowserPanel m_contentBrowserPanel;
+
 		Timestep m_frametime;
 
 		int m_gizmoType;
