@@ -357,3 +357,6 @@ bin-int/
 Vortex/vendor/imgui/examples
 /Sandbox/imgui.ini
 *.json
+Vulkan*.exe
+premake*.exe
+Vortex-Editor/res/cache

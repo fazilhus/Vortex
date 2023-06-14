@@ -39,15 +39,15 @@ namespace Vortex {
 		void InternalEndSession();
 	};
 
-	class Timer {
+	class ProfilerTimer {
 	private:
 		const char* m_name;
 		std::chrono::time_point<std::chrono::high_resolution_clock> m_startPoint;
 		bool m_stopped;
 
 	public:
-		Timer(const char* name);
-		~Timer();
+		ProfilerTimer(const char* name);
+		~ProfilerTimer();
 
 		void Stop();
 	};
@@ -106,7 +106,7 @@ namespace Vortex {
 	#define VT_PROFILE_BEGIN_SESSION(name, filepath) ::Vortex::Profiler::Get().BeginSession(name, filepath)
 	#define VT_PROFILE_END_SESSION()                 ::Vortex::Profiler::Get().EndSession()
 	#define VT_PROFILE_SCOPE_LINE2(name, line)       constexpr auto fixedName##line = ::Vortex::Utils::CleanupOutputString(name, "__cdecl ");\
-												     ::Vortex::Timer timer##line(fixedName##line.Data)
+												     ::Vortex::ProfilerTimer timer##line(fixedName##line.Data)
 	#define VT_PROFILE_SCOPE_LINE(name, line)        VT_PROFILE_SCOPE_LINE2(name, line)
 	#define VT_PROFILE_SCOPE(name)                   VT_PROFILE_SCOPE_LINE(name, __LINE__)
 	#define VT_PROFILE_FUNC()                        VT_PROFILE_SCOPE(VT_FUNC_SIG)

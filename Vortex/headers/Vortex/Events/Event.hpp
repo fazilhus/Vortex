@@ -65,7 +65,7 @@ namespace Vortex {
 		template <typename T, typename Fn >
 		bool Dispatch(const Fn& fn) {
 			if (m_event.GetEventType() == T::GetStaticType()) {
-				m_event.m_handled = fn(static_cast<T&>(m_event));
+				m_event.m_handled |= fn(static_cast<T&>(m_event));
 				return true;
 			}
 			return false;

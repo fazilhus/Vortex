@@ -2,6 +2,7 @@
 
 // STL
 #include <iostream>
+#include <filesystem>
 #include <fstream>
 #include <algorithm>
 #include <utility>
@@ -26,6 +27,7 @@
 #include "Vortex/Core/Platform.hpp"
 #include "Vortex/Core/PlatformAPI.hpp"
 #include "Vortex/Core/Timestep.hpp"
+#include "Vortex/Core/Timer.hpp"
 
 #include "Vortex/Core/Containers/ContainerWrappers.hpp"
 
@@ -35,6 +37,9 @@
 #include "Vortex/Layers/LayerStack.hpp"
 
 #include "Vortex/Events/Event.hpp"
+#include "Vortex/Events/AppEvent.hpp"
+#include "Vortex/Events/KeyEvent.hpp"
+#include "Vortex/Events/MouseEvent.hpp"
 
 #include "Vortex/Renderer/GraphicsContext.hpp"
 #include "Vortex/Renderer/Shader.hpp"
@@ -72,3 +77,6 @@
 
 // ENTT
 #include <entt/entt.hpp>
+
+// YAML-CPP
+#include <yaml-cpp/yaml.h>

@@ -7,13 +7,14 @@ namespace Vortex {
 
 	Application* Application::s_instance = nullptr;
 
-	Application::Application() : m_lastFrameTime(0.0f) {
+	Application::Application(const std::string& appName, AppCommandlineArgs args) 
+		: m_commandlineArgs(args), m_lastFrameTime(0.0f) {
 		VT_CORE_ASSERT(!s_instance, "Application already exists");
 		s_instance = this;
 
-		m_window = Window::Create({ "Vortex Engine", 1600, 900 });
+		m_window = Window::Create({ appName, 1600, 900 });
 		m_running = true;
-		m_window->SetVSync(true);
+		m_window->SetVSync(false);
 		m_window->SetEventCallback(VT_BIND_EVENT_FN(Application::OnEvent));
 
 		Renderer::Init({true, true});

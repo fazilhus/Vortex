@@ -8,17 +8,15 @@ namespace Vortex {
 
 	class EditorApp : public Application {
 	public:
-		EditorApp() {
-			//Ref<Layer> sl = CreateRef<SimpleLayer>();
-			//PushLayer(sl);
+		EditorApp(AppCommandlineArgs args) : Application("Vortex Editor", args) {
 			Ref<Layer> sl2d = CreateRef<EditorLayer>();
 			PushLayer(sl2d);
 		}
 		virtual ~EditorApp() override = default;
 	};
 
-	Application* CreateApplication() {
-		return new EditorApp();
+	Application* CreateApplication(AppCommandlineArgs args) {
+		return new EditorApp(args);
 	}
 
 }

@@ -1,38 +1,51 @@
 #pragma once
 
 #include "Vortex.hpp"
+#include "Panels/SceneHierarchyPanel.hpp"
+#include "Vortex/Renderer/Cameras/EditorCamera.hpp"
 
-class EditorLayer : public Vortex::Layer {
-private:
-	Vortex::OrthoCameraController m_cameraController;
+namespace Vortex {
 
-	Vortex::Ref<Vortex::VertexArray> m_vao;
-	Vortex::Ref<Vortex::Shader> m_shader;
-	Vortex::Ref<Vortex::Texture2D> m_texture1;
-	Vortex::Ref<Vortex::Texture2D> m_texture2;
-	Vortex::Ref<Vortex::FrameBuffer> m_frameBuffer;
+	class EditorLayer : public Layer {
+	private:
+		Ref<FrameBuffer> m_frameBuffer;
 
-	glm::vec2 m_viewportPanelSize;
+		glm::vec2 m_viewportPanelSize;
+		glm::vec2 m_viewportBounds[2];
 
-	bool m_viewportFocused, m_viewportHovered;
+		bool m_viewportFocused, m_viewportHovered;
 
-	Vortex::Vector<Vortex::Ref<Vortex::Scene>> m_scenes;
-	Vortex::Ref<Vortex::Scene> m_currentScene;
+		Vector<Ref<Scene>> m_scenes;
+		Ref<Scene> m_currentScene;
 
-	Vortex::Entity m_primaryCamera;
-	Vortex::Entity m_secondaryCamera;
-	bool m_isPrimaryCamera = true;
+		EditorCamera m_editorCamera;
 
-	Vortex::Entity m_square;
+		Entity m_hoveredEntity;
 
-public:
-	EditorLayer();
-	virtual ~EditorLayer() override = default;
+		// Panels
+		SceneHierarchyPanel m_sceneHierarchyPanel;
+		Timestep m_frametime;
 
-	virtual void OnAttach() override;
-	virtual void OnDetach() override;
+		int m_gizmoType;
 
-	virtual void OnUpdate(Vortex::Timestep ts) override;
-	virtual void OnImGuiRender() override;
-	virtual void OnEvent(Vortex::Event& e) override;
-};
+	public:
+		EditorLayer();
+		virtual ~EditorLayer() override = default;
+
+		virtual void OnAttach() override;
+		virtual void OnDetach() override;
+
+		virtual void OnUpdate(Timestep ts) override;
+		virtual void OnImGuiRender() override;
+		virtual void OnEvent(Event& e) override;
+
+	private:
+		bool OnKeyPressed(KeyPressedEvent& e);
+		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
+
+		void NewScene();
+		void OpenScene();
+		void SaveSceneAs();
+	};
+
+}

@@ -6,7 +6,6 @@ namespace Vortex {
 
 	class ImGuiLayer : public Layer {
 	private:
-		float m_time;
 		bool m_blockEvents;
 
 	public:
@@ -22,6 +21,7 @@ namespace Vortex {
 		virtual void End();
 
 		void BlockEvents(bool block) { m_blockEvents = block; }
+		void SetDarkTheme();
 	};
 
 }

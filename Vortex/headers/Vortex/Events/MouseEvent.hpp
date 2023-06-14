@@ -62,7 +62,7 @@ namespace Vortex {
 	public:
 		inline MouseCode GetMouseButton() const { return m_button; }
 
-		EVENT_CLASS_CAT(EventCatMouse | EventCatInput)
+		EVENT_CLASS_CAT(EventCatMouse | EventCatInput | EventCatMouseButton)
 	};
 
 	class MouseButtonPressedEvent : public MouseButtonEvent {
