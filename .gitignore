@@ -359,3 +359,4 @@ Vortex/vendor/imgui/examples
 *.json
 Vulkan*.exe
 premake*.exe
+Vortex-Editor/res/cache
