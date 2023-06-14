@@ -150,6 +150,49 @@ namespace Vortex {
 	}
 
 	void Renderer2D::DrawQuad(const glm::mat4& transform, const Ref<Texture2D>& texture, float tilingFactor, const glm::vec4& tintColor, int entityID) {
+		VT_PROFILE_FUNC();
+
+		constexpr std::size_t vertCount = 4;
+		constexpr glm::vec2 texCoord[] = { {0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f} };
+
+		if (s_data.quadIndCount >= Renderer2DStorage::maxInd) {
+			NextBatch();
+		}
+
+		float texIndex = 0.0f;
+		for (uint32 i = 1; i < s_data.texSlotInd; ++i) {
+			if (*s_data.texSlots[i].get() == *texture.get()) {
+				texIndex = static_cast<float>(i);
+				VT_CORE_TRACE("existing texture {0} in index {1}", texture->GetPath(), texIndex);
+				break;
+			}
+		}
+
+		if (texIndex == 0.0f) {
+			if (s_data.texSlotInd >= Renderer2DStorage::maxTextureSLots) {
+				NextBatch();
+			}
+
+			texIndex = static_cast<float>(s_data.texSlotInd);
+			s_data.texSlots[s_data.texSlotInd] = texture;
+			VT_CORE_TRACE("new texture {0} in index {1}", texture->GetPath(), texIndex);
+			s_data.texSlotInd++;
+		}
+
+		for (size_t i = 0; i < vertCount; ++i) {
+			auto pos = transform * s_data.quadVertexPos[i];
+			s_data.quadVertexBufferPtr->pos = pos;
+			s_data.quadVertexBufferPtr->color = tintColor;
+			s_data.quadVertexBufferPtr->texPos = texCoord[i];
+			s_data.quadVertexBufferPtr->texInd = texIndex;
+			s_data.quadVertexBufferPtr->tilingFactor = tilingFactor;
+			s_data.quadVertexBufferPtr->entityID = entityID;
+			s_data.quadVertexBufferPtr++;
+		}
+
+		s_data.quadIndCount += 6;
+
+		s_data.stats.quadCount++;
 	}
 
 	void Renderer2D::DrawQuad(const glm::vec2& pos, const glm::vec2& size, const glm::vec4& color) {
@@ -265,9 +308,16 @@ namespace Vortex {
 		DrawQuad(transform, texture, tilingFactor, tintColor);
 	}
 
-	/*void Renderer2D::DrawSprite(const glm::mat4& transform, SpriteComponent& sprite, int entityID) {
-		DrawQuad(transform, sprite.Color, entityID);
-	}*/
+	void Renderer2D::DrawSprite(const glm::mat4& transform, SpriteComponent& sprite, int entityID) {
+		if (sprite.Texture) {
+			DrawQuad(transform, sprite.Texture, sprite.TilingFactor, sprite.Color, entityID);
+			VT_CORE_INFO("Renderer2D::DrawSprite drawing texture");
+		}
+		else {
+			DrawQuad(transform, sprite.Color, entityID);
+			VT_CORE_INFO("Renderer2D::DrawSprite drawing colored quad");
+		}
+	}
 
 	void Renderer2D::ResetStats() {
 		memset(&s_data.stats, 0, sizeof(RendererStatisics));

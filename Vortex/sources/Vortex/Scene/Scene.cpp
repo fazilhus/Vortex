@@ -65,7 +65,7 @@ namespace Vortex {
 		{
 			auto [transform, sprite] = group.get<TransformComponent, SpriteComponent>(entity);
 
-			Renderer2D::DrawQuad(transform.GetTransform(), sprite.Color, (int)entity);
+			Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
 		}
 
 		Renderer2D::EndScene();

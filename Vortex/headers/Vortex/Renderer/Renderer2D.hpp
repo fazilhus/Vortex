@@ -4,6 +4,7 @@
 #include "Vortex/Renderer/Texture.hpp"
 #include "Vortex/Renderer/Cameras/Camera.hpp"
 #include "Vortex/Renderer/Cameras/EditorCamera.hpp"
+#include "Vortex/Scene/Components.hpp"
 
 namespace Vortex {
 
@@ -81,7 +82,7 @@ namespace Vortex {
 		static void DrawRotatedQuad(const glm::vec2& pos, const glm::vec2& size, const Ref<Texture2D>& texture, float rot = 0.0f, float tilingFactor = 1.0f, const glm::vec4 tintColor = glm::vec4(1.0f));
 		static void DrawRotatedQuad(const glm::vec3& pos, const glm::vec2& size, const Ref<Texture2D>& texture, float rot = 0.0f, float tilingFactor = 1.0f, const glm::vec4 tintColor = glm::vec4(1.0f));
 
-		//static void DrawSprite(const glm::mat4& transform, SpriteComponent& sprite, int entityID);
+		static void DrawSprite(const glm::mat4& transform, SpriteComponent& sprite, int entityID);
 
 		static void ResetStats();
 		static RendererStatisics GetStats();

@@ -9,6 +9,8 @@
 
 namespace Vortex {
 
+	extern const std::filesystem::path g_assetPath;
+
 	SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& scene) {
 		SetContext(scene);
 	}
@@ -169,43 +171,22 @@ namespace Vortex {
 			DrawVec3Control("Scale", component.Scale, 1.0f);
 		});
 
-		/*if (entity.HasComponent<TransformComponent>()) {
-			if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), flags, "Transform")) {
-				auto removed = DrawDeleteComponentPopup();
-
-				auto& tc = entity.GetComponent<TransformComponent>();
-				DrawVec3Control("Translation", tc.Translation);
-				auto rot = glm::degrees(tc.Rotation);
-				DrawVec3Control("Rotation", rot);
-				tc.Rotation = glm::radians(rot);
-				DrawVec3Control("Scale", tc.Scale, 1.0f);
-
-				if (removed) {
-					entity.RemoveComponent<TransformComponent>();
-				}
-
-				ImGui::TreePop();
-			}
-		}*/
-
 		DrawComponent<SpriteComponent>("Sprite Component", entity, [&](auto& component) {
 			ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
-		});
 
-		/*if (entity.HasComponent<SpriteComponent>()) {
-			if (ImGui::TreeNodeEx((void*)typeid(SpriteComponent).hash_code(), flags, "Sprite")) {
-				auto removed = DrawDeleteComponentPopup();
-
-				auto& color = entity.GetComponent<SpriteComponent>().Color;
-				ImGui::ColorEdit4("Color", glm::value_ptr(color));
-
-				if (removed) {
-					entity.RemoveComponent<SpriteComponent>();
+			ImGui::Button("Texture", ImVec2{ 100.0f, 0.0f });
+			if (ImGui::BeginDragDropTarget()) {
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+				{
+					const wchar_t* path = (const wchar_t*)payload->Data;
+					std::filesystem::path texturePath = std::filesystem::path(g_assetPath) / path;
+					component.Texture = Texture2D::Create(texturePath.string());
 				}
-
-				ImGui::TreePop();
+				ImGui::EndDragDropTarget();
 			}
-		}*/
+
+			ImGui::DragFloat("Tiling Factor", &component.TilingFactor, 0.1f, 0.0f, 100.0f);
+		});
 
 		DrawComponent<CameraComponent>("Camera Component", entity, [&](auto& component) {
 			auto& camera = component.Camera;
@@ -268,21 +249,6 @@ namespace Vortex {
 				}
 			}
 		});
-
-		/*if (entity.HasComponent<CameraComponent>()) {
-			if (ImGui::TreeNodeEx((void*)typeid(CameraComponent).hash_code(), flags, "Camera")) {
-				auto removed = DrawDeleteComponentPopup();
-
-				auto& cameraComponent = entity.GetComponent<CameraComponent>();
-				
-
-				if (removed) {
-					entity.RemoveComponent<CameraComponent>();
-				}
-
-				ImGui::TreePop();
-			}
-		}*/
 	}
 
 	void SceneHierarchyPanel::DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue, float columnWidth) {

@@ -38,9 +38,11 @@ namespace Vortex {
 
 	struct SpriteComponent {
 		glm::vec4 Color{1.0f, 1.0f, 1.0f, 1.0f};
+		Ref<Texture2D> Texture;
+		float TilingFactor = 1.0f;
 
 		SpriteComponent() = default;
-		SpriteComponent(const glm::vec4& color) : Color(color) {}
+		SpriteComponent(const glm::vec4& color) : Color(color), Texture(nullptr), TilingFactor(1.0f) {}
 		SpriteComponent(const SpriteComponent&) = default;
 	};
 
