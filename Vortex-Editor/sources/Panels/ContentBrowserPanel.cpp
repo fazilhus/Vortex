@@ -4,9 +4,9 @@
 
 namespace Vortex {
 
-	static const std::filesystem::path s_assetPath = "assets";
+	extern const std::filesystem::path g_assetPath = "assets";
 
-	ContentBrowserPanel::ContentBrowserPanel() : m_currentDir(s_assetPath) {
+	ContentBrowserPanel::ContentBrowserPanel() : m_currentDir(g_assetPath) {
 		m_fileIcon = Texture2D::Create("res/icons/ContentBrowser/file-icon.png");
 		m_dirIcon = Texture2D::Create("res/icons/ContentBrowser/folder-icon.png");
 	}
@@ -14,14 +14,14 @@ namespace Vortex {
 	void ContentBrowserPanel::OnImGuiRender() {
 		ImGui::Begin("Content Browser");
 
-		if (m_currentDir != std::filesystem::path(s_assetPath)) {
+		if (m_currentDir != std::filesystem::path(g_assetPath)) {
 			if (ImGui::Button("<-")) {
 				m_currentDir = m_currentDir.parent_path();
 			}
 		}
 
 		static float padding = 16.0f;
-		static float thumbnailSize = 128.0f;
+		static float thumbnailSize = 80.0f;
 		float cellSize = thumbnailSize + padding;
 
 		float panelWidth = ImGui::GetContentRegionAvail().x;
@@ -32,11 +32,22 @@ namespace Vortex {
 
 		for (auto& dirEntry : std::filesystem::directory_iterator(m_currentDir)) {
 			const auto& path = dirEntry.path();
-			auto relPath = std::filesystem::relative(path, s_assetPath);
+			auto relPath = std::filesystem::relative(path, g_assetPath);
 			std::string filename = relPath.filename().string();
 
+			ImGui::PushID(filename.c_str());
 			Ref<Texture2D> icon = dirEntry.is_directory() ? m_dirIcon : m_fileIcon;
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 			ImGui::ImageButton((ImTextureID)icon->GetID(), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
+
+			if (ImGui::BeginDragDropSource()) {
+				const wchar_t* itemPath = relPath.c_str();
+				ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath, (wcslen(itemPath) + 1) * sizeof(wchar_t));
+				ImGui::EndDragDropSource();
+			}
+
+			ImGui::PopStyleColor();
+
 			if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left)) {
 				if (dirEntry.is_directory()) {
 					m_currentDir /= path.filename();
@@ -45,6 +56,7 @@ namespace Vortex {
 
 			ImGui::TextWrapped(filename.c_str());
 			ImGui::NextColumn();
+			ImGui::PopID();
 		}
 
 		ImGui::Columns(1);

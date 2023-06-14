@@ -8,6 +8,8 @@
 
 namespace Vortex {
 
+	extern const std::filesystem::path g_assetPath;
+
     EditorLayer::EditorLayer()
         : Layer("EditorLayer"), m_viewportPanelSize({ 1600, 900 }),
         m_viewportFocused(false), m_viewportHovered(false), m_gizmoType(-1) {}
@@ -217,6 +219,14 @@ namespace Vortex {
         uint32 texID = m_frameBuffer->GetColorAttachmentRendererID();
         ImGui::Image(reinterpret_cast<void*>(texID), ImVec2{ m_viewportPanelSize.x, m_viewportPanelSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 
+		if (ImGui::BeginDragDropTarget()) {
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
+				const wchar_t* path = (const wchar_t*)payload->Data;
+				OpenScene(std::filesystem::path(g_assetPath) / path);
+			}
+			ImGui::EndDragDropTarget();
+		}
+
         Entity selectedEntity = m_sceneHierarchyPanel.GetSelectedEntity();
         if (selectedEntity && m_gizmoType != -1) {
             ImGuizmo::SetOrthographic(false);
@@ -371,14 +381,18 @@ namespace Vortex {
     void EditorLayer::OpenScene() {
         auto filepath = FileIO::OpenFile("Vortex Scene (*.vortex)\0*.vortex\0");
         if (!filepath.empty()) {
-            m_currentScene = CreateRef<Scene>();
-            m_currentScene->OnViewportResize((uint32)m_viewportPanelSize.x, (uint32)m_viewportPanelSize.y);
-            m_sceneHierarchyPanel.SetContext(m_currentScene);
-
-            SceneSerializer serializer{ m_currentScene };
-            serializer.Deserialize(filepath);
-        }
+			OpenScene(filepath);
+		}
     }
+
+	void EditorLayer::OpenScene(const std::filesystem::path& path) {
+		m_currentScene = CreateRef<Scene>();
+		m_currentScene->OnViewportResize((uint32)m_viewportPanelSize.x, (uint32)m_viewportPanelSize.y);
+		m_sceneHierarchyPanel.SetContext(m_currentScene);
+
+		SceneSerializer serializer{ m_currentScene };
+		serializer.Deserialize(path.string());
+	}
 
     void EditorLayer::SaveSceneAs() {
         auto filepath = FileIO::SaveFile("Vortex Scene (*.vortex)\0*.vortex\0");
