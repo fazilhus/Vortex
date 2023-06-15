@@ -29,10 +29,19 @@ namespace Vortex {
 		// Panels
 		SceneHierarchyPanel m_sceneHierarchyPanel;
 		ContentBrowserPanel m_contentBrowserPanel;
+		Ref<Texture2D> m_playIcon, m_stopIcon;
 
 		Timestep m_frametime;
 
 		int m_gizmoType;
+
+		enum class SceneState {
+			Edit = 0,
+			Play = 1
+		};
+
+		SceneState m_sceneState;
+
 
 	public:
 		EditorLayer();
@@ -48,6 +57,12 @@ namespace Vortex {
 	private:
 		bool OnKeyPressed(KeyPressedEvent& e);
 		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
+
+		void OnScenePlay();
+		void OnSceneStop();
+
+		// Toolbar panel
+		void UIToolbar();
 
 		void NewScene();
 		void OpenScene();

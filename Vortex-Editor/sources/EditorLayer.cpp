@@ -12,7 +12,7 @@ namespace Vortex {
 
     EditorLayer::EditorLayer()
         : Layer("EditorLayer"), m_viewportPanelSize({ 1600, 900 }),
-        m_viewportFocused(false), m_viewportHovered(false), m_gizmoType(-1) {}
+        m_viewportFocused(false), m_viewportHovered(false), m_gizmoType(-1), m_sceneState(SceneState::Edit) {}
 
     void EditorLayer::OnAttach() {
         Layer::OnAttach();
@@ -25,6 +25,9 @@ namespace Vortex {
             { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth }, 
             false }
         );
+
+		m_playIcon = Texture2D::Create("res/icons/play-button.png");
+		m_stopIcon = Texture2D::Create("res/icons/stop-button.png");
 
         m_currentScene = CreateRef<Scene>();
         m_sceneHierarchyPanel.SetContext(m_currentScene);
@@ -52,19 +55,13 @@ namespace Vortex {
 
         if (FrameBufferSpec spec = m_frameBuffer->GetSpec();
             m_viewportPanelSize.x > 0.0f && m_viewportPanelSize.y > 0.0f &&
-            (spec.width != m_viewportPanelSize.x || spec.height != m_viewportPanelSize.y))
-        {
+            (spec.width != m_viewportPanelSize.x || spec.height != m_viewportPanelSize.y)) {
             m_frameBuffer->Resize(static_cast<uint32>(m_viewportPanelSize.x), static_cast<uint32>(m_viewportPanelSize.y));
             m_editorCamera.SetViewportSize(m_viewportPanelSize.x, m_viewportPanelSize.y);
             m_currentScene->OnViewportResize((uint32)m_viewportPanelSize.x, (uint32)m_viewportPanelSize.y);
         }
 
         Renderer2D::ResetStats();
-
-        {
-            VT_PROFILE_SCOPE("EditorCamera::OnUpdate");
-            m_editorCamera.OnUpdate(ts);
-        }
 
         {
             VT_PROFILE_SCOPE("Screen Prep");
@@ -78,7 +75,17 @@ namespace Vortex {
         {
             VT_PROFILE_SCOPE("Draw all");
 
-            m_currentScene->OnUpdateEditor(ts, m_editorCamera);
+			switch (m_sceneState) {
+			case SceneState::Play:
+				m_currentScene->OnUpdate(ts);
+				break;
+			case SceneState::Edit:
+				m_editorCamera.OnUpdate(ts);
+				m_currentScene->OnUpdateEditor(ts, m_editorCamera);
+				break;
+			}
+
+            //m_currentScene->OnUpdateEditor(ts, m_editorCamera);
 
             auto [mx, my] = ImGui::GetMousePos();
             mx -= m_viewportBounds[0].x;
@@ -107,9 +114,6 @@ namespace Vortex {
         static bool opt_fullscreen = true;
         static bool opt_padding = false;
         static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
-
-        static bool statsOpen = false;
-        static bool testOpen = false;
 
         // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
         // because it would be confusing to have two docking targets within each others.
@@ -180,21 +184,6 @@ namespace Vortex {
 
                 ImGui::EndMenu();
             }
-            if (ImGui::BeginMenu("Stats")) {
-                if (ImGui::MenuItem("BatchRender stats", nullptr, &statsOpen)) {}
-                if (ImGui::MenuItem("Close", nullptr, false)) {
-                    statsOpen = false;
-                }
-                ImGui::EndMenu();
-            }
-            if (ImGui::BeginMenu("Test")) {
-                if (ImGui::MenuItem("ECS test", nullptr, &testOpen)) {}
-                if (ImGui::MenuItem("Close", nullptr, false)) {
-                    testOpen = false;
-                }
-                ImGui::EndMenu();
-            }
-
             ImGui::EndMenuBar();
         }
 
@@ -267,37 +256,10 @@ namespace Vortex {
         }
 
         ImGui::End();
-
-        if (statsOpen) {
-            auto stats = Renderer2D::GetStats();
-
-            ImGui::Begin("Stats");
-
-            ImGui::Text("Renderer2D stats:");
-            ImGui::Text("Draw Calls: %d", stats.drawcallsCount);
-            ImGui::Text("Quads: %d", stats.quadCount);
-            ImGui::Text("Vertices: %d", stats.GetVertexesCount());
-            ImGui::Text("Indices: %d", stats.GetIndicesCount());
-
-            ImGui::Separator();
-
-            std::string entityName{ "None" };
-            if (m_hoveredEntity) {
-                entityName = m_hoveredEntity.GetComponent<TagComponent>().Tag;
-            }
-            ImGui::Text("Hovered entity: %s", entityName.c_str());
-            
-            ImGui::Separator();
-            
-            ImGui::Text("Frame time: %0.2f", m_frametime.GetMilliSeconds());
-
-            ImGui::End();
-        }
-        if (testOpen) {
-            
-        }
-
         ImGui::PopStyleVar();
+
+		UIToolbar();
+
         ImGui::End();
     }
 
@@ -372,7 +334,43 @@ namespace Vortex {
         return false;
     }
 
-    void EditorLayer::NewScene() {
+	void EditorLayer::OnScenePlay() {
+		m_sceneState = SceneState::Play;
+	}
+
+	void EditorLayer::OnSceneStop() {
+		m_sceneState = SceneState::Edit;
+	}
+
+	void EditorLayer::UIToolbar() {
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+		auto& colors = ImGui::GetStyle().Colors;
+		const auto& buttonHovered = colors[ImGuiCol_ButtonHovered];
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(buttonHovered.x, buttonHovered.y, buttonHovered.z, 0.5f));
+		const auto& buttonActive = colors[ImGuiCol_ButtonActive];
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(buttonActive.x, buttonActive.y, buttonActive.z, 0.5f));
+
+		auto flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollWithMouse;
+		ImGui::Begin("##toolbar", nullptr, flags);
+
+		float size = ImGui::GetWindowHeight() - 4.0f;
+		Ref<Texture2D> icon = m_sceneState == SceneState::Edit ? m_playIcon : m_stopIcon;
+		ImGui::SetCursorPosX((ImGui::GetContentRegionMax().x * 0.5f) - (size * 0.5f));
+		if (ImGui::ImageButton((ImTextureID)icon->GetID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0))
+		{
+			if (m_sceneState == SceneState::Edit)
+				OnScenePlay();
+			else if (m_sceneState == SceneState::Play)
+				OnSceneStop();
+		}
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor(3);
+		ImGui::End();
+	}
+
+	void EditorLayer::NewScene() {
         m_currentScene = CreateRef<Scene>();
         m_currentScene->OnViewportResize((uint32)m_viewportPanelSize.x, (uint32)m_viewportPanelSize.y);
         m_sceneHierarchyPanel.SetContext(m_currentScene);
