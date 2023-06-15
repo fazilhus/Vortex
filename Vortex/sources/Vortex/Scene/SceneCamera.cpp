@@ -36,20 +36,17 @@ namespace Vortex {
 	}
 
 	void SceneCamera::RecalculateProjection() {
-		switch (m_projectionType) {
-			case ProjectionType::Orthographic: {
-				float orthoLeft = -m_orthographicSize * m_aspectRatio * 0.5f;
-				float orthoRight = m_orthographicSize * m_aspectRatio * 0.5f;
-				float orthoBottom = -m_orthographicSize * 0.5f;
-				float orthoTop = m_orthographicSize * 0.5f;
+		if (m_projectionType == ProjectionType::Perspective) {
+			m_projection = glm::perspective(m_perspectiveFOV, m_aspectRatio, m_perspectiveNear, m_perspectiveFar);
+		}
+		else if (m_projectionType == ProjectionType::Orthographic) {
+			float orthoLeft = -m_orthographicSize * m_aspectRatio * 0.5f;
+			float orthoRight = m_orthographicSize * m_aspectRatio * 0.5f;
+			float orthoBottom = -m_orthographicSize * 0.5f;
+			float orthoTop = m_orthographicSize * 0.5f;
 
-				m_projection = glm::ortho(orthoLeft, orthoRight, orthoBottom, orthoTop, m_orthographicNear, m_orthographicFar);
-				break;
-			}
-			case ProjectionType::Perspective: {
-				m_projection = glm::perspective(m_perspectiveFOV, m_aspectRatio, m_perspectiveNear, m_perspectiveFar);
-				break;
-			}
+			m_projection = glm::ortho(orthoLeft, orthoRight,
+				orthoBottom, orthoTop, m_orthographicNear, m_orthographicFar);
 		}
 		
 	}

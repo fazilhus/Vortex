@@ -336,10 +336,12 @@ namespace Vortex {
 
 	void EditorLayer::OnScenePlay() {
 		m_sceneState = SceneState::Play;
+		m_currentScene->OnRuntimStart();
 	}
 
 	void EditorLayer::OnSceneStop() {
 		m_sceneState = SceneState::Edit;
+		m_currentScene->OnRuntimeStop();
 	}
 
 	void EditorLayer::UIToolbar() {

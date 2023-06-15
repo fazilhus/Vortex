@@ -45,7 +45,7 @@ project "Vortex"
         "%{includedir.shaderc}",
         "%{includedir.SPIRV_Cross}",
         "%{includedir.VulkanSDK}",
-        "%{includedir.Box2D}"
+        "%{includedir.box2d}"
     }
 
     links {

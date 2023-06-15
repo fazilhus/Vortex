@@ -49,32 +49,59 @@ namespace Vortex {
 
 			if (ImGui::BeginPopupContextWindow("Entity Properties", 1 | ImGuiPopupFlags_NoOpenOverItems)) {
 				if (ImGui::BeginMenu("Add Component")) {
-					if (ImGui::MenuItem("Transform Component")) {
-						if (!m_selectionContext.HasComponent<TransformComponent>()) {
+					if (!m_selectionContext.HasComponent<TransformComponent>()) {
+						if (ImGui::MenuItem("Transform Component")) {
 							VT_CORE_TRACE("Added Transform Component to entity {0}", (uint32)m_selectionContext);
 							m_selectionContext.AddComponent<TransformComponent>();
-						}
-						else {
-							VT_CORE_WARN("Entity {0} already has Transform Component", (uint32)m_selectionContext);
+							ImGui::CloseCurrentPopup();
 						}
 					}
-					if (ImGui::MenuItem("Sprite Component")) {
-						if (!m_selectionContext.HasComponent<SpriteComponent>()) {
+					else {
+						VT_CORE_WARN("Entity {0} already has Transform Component", (uint32)m_selectionContext);
+					}
+
+					if (!m_selectionContext.HasComponent<SpriteComponent>()) {
+						if (ImGui::MenuItem("Sprite Component")) {
 							VT_CORE_TRACE("Added Sprite Component to entity {0}", (uint32)m_selectionContext);
 							m_selectionContext.AddComponent<SpriteComponent>();
-						}
-						else {
-							VT_CORE_WARN("Entity {0} already has Sprite Component", (uint32)m_selectionContext);
+							ImGui::CloseCurrentPopup();
 						}
 					}
-					if (ImGui::MenuItem("Camera Component")) {
-						if (!m_selectionContext.HasComponent<CameraComponent>()) {
+					else {
+						VT_CORE_WARN("Entity {0} already has Sprite Component", (uint32)m_selectionContext);
+					}
+
+					if (!m_selectionContext.HasComponent<CameraComponent>()) {
+						if (ImGui::MenuItem("Camera Component")) {
 							VT_CORE_TRACE("Added Camera Component to entity {0}", (uint32)m_selectionContext);
 							m_selectionContext.AddComponent<CameraComponent>();
+							ImGui::CloseCurrentPopup();
 						}
-						else {
-							VT_CORE_WARN("Entity {0} already has Camera Component", (uint32)m_selectionContext);
+					}
+					else {
+						VT_CORE_WARN("Entity {0} already has Camera Component", (uint32)m_selectionContext);
+					}
+
+					if (!m_selectionContext.HasComponent<Rigidbody2DComponent>()) {
+						if (ImGui::MenuItem("Rigidbody2D Component")) {
+							VT_CORE_TRACE("Added Rigidbody2D Component to entity {0}", (uint32)m_selectionContext);
+							m_selectionContext.AddComponent<Rigidbody2DComponent>();
+							ImGui::CloseCurrentPopup();
 						}
+					}
+					else {
+						VT_CORE_WARN("Entity {0} already has Rigidbody2D Component", (uint32)m_selectionContext);
+					}
+
+					if (!m_selectionContext.HasComponent<BoxCollider2DComponent>()) {
+						if (ImGui::MenuItem("Box Collider2D Component")) {
+							VT_CORE_TRACE("Added Box Collider2D Component to entity {0}", (uint32)m_selectionContext);
+							m_selectionContext.AddComponent<BoxCollider2DComponent>();
+							ImGui::CloseCurrentPopup();
+						}
+					}
+					else {
+						VT_CORE_WARN("Entity {0} already has Box Collider2D Component", (uint32)m_selectionContext);
 					}
 
 					ImGui::EndMenu();
@@ -254,6 +281,39 @@ namespace Vortex {
 					break;
 				}
 			}
+		});
+
+		DrawComponent<Rigidbody2DComponent>("Rigidbody 2D", entity, [](auto& component) {
+			const char* bodyTypeStrings[] = { "Static", "Dynamic", "Kinematic" };
+			const char* currentBodyTypeString = bodyTypeStrings[(int)component.Type];
+			if (ImGui::BeginCombo("Body Type", currentBodyTypeString))
+			{
+				for (int i = 0; i < 2; i++)
+				{
+					bool isSelected = currentBodyTypeString == bodyTypeStrings[i];
+					if (ImGui::Selectable(bodyTypeStrings[i], isSelected))
+					{
+						currentBodyTypeString = bodyTypeStrings[i];
+						component.Type = (Rigidbody2DComponent::BodyType)i;
+					}
+
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
+				}
+
+				ImGui::EndCombo();
+			}
+
+			ImGui::Checkbox("Fixed Rotation", &component.FixedRotation);
+		});
+
+		DrawComponent<BoxCollider2DComponent>("Box Collider 2D", entity, [](auto& component) {
+			ImGui::DragFloat2("Offset", glm::value_ptr(component.Offset));
+			ImGui::DragFloat2("Size", glm::value_ptr(component.Offset));
+			ImGui::DragFloat("Density", &component.Density, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat("Friction", &component.Friction, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat("Restitution", &component.Restitution, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat("Restitution Threshold", &component.RestitutionThreshold, 0.01f, 0.0f);
 		});
 	}
 
