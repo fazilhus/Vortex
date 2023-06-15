@@ -31,6 +31,8 @@ namespace Vortex {
 		void OnViewportResize(uint32 width, uint32 height);
 
 		void OnRuntimStart();
+		void OnRuntimeResume();
+		void OnRuntimePause();
 		void OnRuntimeStop();
 
 		Entity GetPrimaryCamera();

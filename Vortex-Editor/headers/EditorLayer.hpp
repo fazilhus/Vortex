@@ -13,6 +13,7 @@ namespace Vortex {
 	class EditorLayer : public Layer {
 	private:
 		Ref<FrameBuffer> m_frameBuffer;
+		Ref<FrameBuffer> m_freezeFrame;
 
 		glm::vec2 m_viewportPanelSize;
 		glm::vec2 m_viewportBounds[2];
@@ -21,6 +22,7 @@ namespace Vortex {
 
 		Vector<Ref<Scene>> m_scenes;
 		Ref<Scene> m_currentScene;
+		Entity m_cameraEntity;
 
 		EditorCamera m_editorCamera;
 
@@ -29,7 +31,7 @@ namespace Vortex {
 		// Panels
 		SceneHierarchyPanel m_sceneHierarchyPanel;
 		ContentBrowserPanel m_contentBrowserPanel;
-		Ref<Texture2D> m_playIcon, m_stopIcon;
+		Ref<Texture2D> m_playIcon, m_stopIcon, m_pauseIcon;
 
 		Timestep m_frametime;
 
@@ -40,7 +42,10 @@ namespace Vortex {
 			Play = 1
 		};
 
+		SceneState m_prevSceneState;
 		SceneState m_sceneState;
+
+		bool isPaused;
 
 
 	public:
@@ -59,6 +64,8 @@ namespace Vortex {
 		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 
 		void OnScenePlay();
+		void OnSceneResume();
+		void OnScenePause();
 		void OnSceneStop();
 
 		// Toolbar panel

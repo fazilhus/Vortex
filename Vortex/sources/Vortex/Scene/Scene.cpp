@@ -156,6 +156,19 @@ namespace Vortex {
 		}
 	}
 
+	void Scene::OnRuntimeResume() {
+		m_physicsWorld->SetAllowSleeping(false);
+	}
+
+	void Scene::OnRuntimePause() {
+		m_physicsWorld->SetAllowSleeping(true);
+
+		auto bodies = m_physicsWorld->GetBodyList();
+		for (b2Body* b = bodies; b; b = b->GetNext()) {
+			b->SetAwake(false);
+		}
+	}
+
 	void Scene::OnRuntimeStop() {
 		delete m_physicsWorld;
 		m_physicsWorld = nullptr;

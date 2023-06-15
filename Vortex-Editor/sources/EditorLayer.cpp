@@ -12,7 +12,8 @@ namespace Vortex {
 
     EditorLayer::EditorLayer()
         : Layer("EditorLayer"), m_viewportPanelSize({ 1600, 900 }),
-        m_viewportFocused(false), m_viewportHovered(false), m_gizmoType(-1), m_sceneState(SceneState::Edit) {}
+        m_viewportFocused(false), m_viewportHovered(false), m_gizmoType(-1), 
+		m_prevSceneState(SceneState::Edit), m_sceneState(SceneState::Edit), isPaused(false) {}
 
     void EditorLayer::OnAttach() {
         Layer::OnAttach();
@@ -28,6 +29,7 @@ namespace Vortex {
 
 		m_playIcon = Texture2D::Create("res/icons/play-button.png");
 		m_stopIcon = Texture2D::Create("res/icons/stop-button.png");
+		m_pauseIcon = Texture2D::Create("res/icons/pause-button.png");
 
         m_currentScene = CreateRef<Scene>();
         m_sceneHierarchyPanel.SetContext(m_currentScene);
@@ -51,58 +53,65 @@ namespace Vortex {
 
     void EditorLayer::OnUpdate(Timestep ts) {
         VT_PROFILE_FUNC();
-        m_frametime = ts;
+		m_frametime = ts;
 
-        if (FrameBufferSpec spec = m_frameBuffer->GetSpec();
-            m_viewportPanelSize.x > 0.0f && m_viewportPanelSize.y > 0.0f &&
-            (spec.width != m_viewportPanelSize.x || spec.height != m_viewportPanelSize.y)) {
-            m_frameBuffer->Resize(static_cast<uint32>(m_viewportPanelSize.x), static_cast<uint32>(m_viewportPanelSize.y));
-            m_editorCamera.SetViewportSize(m_viewportPanelSize.x, m_viewportPanelSize.y);
-            m_currentScene->OnViewportResize((uint32)m_viewportPanelSize.x, (uint32)m_viewportPanelSize.y);
-        }
+		if (FrameBufferSpec spec = m_frameBuffer->GetSpec();
+			m_viewportPanelSize.x > 0.0f && m_viewportPanelSize.y > 0.0f &&
+			(spec.width != m_viewportPanelSize.x || spec.height != m_viewportPanelSize.y)) {
+			m_frameBuffer->Resize(static_cast<uint32>(m_viewportPanelSize.x), static_cast<uint32>(m_viewportPanelSize.y));
+			m_editorCamera.SetViewportSize(m_viewportPanelSize.x, m_viewportPanelSize.y);
+			m_currentScene->OnViewportResize((uint32)m_viewportPanelSize.x, (uint32)m_viewportPanelSize.y);
+		}
 
-        Renderer2D::ResetStats();
+		Renderer2D::ResetStats();
 
-        {
-            VT_PROFILE_SCOPE("Screen Prep");
-            m_frameBuffer->Bind();
-            Render::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
-            Render::Clear();
+		{
+			VT_PROFILE_SCOPE("Screen Prep");
+			m_frameBuffer->Bind();
+			Render::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
+			Render::Clear();
 
-            m_frameBuffer->ClearAttachment(1, -1);
-        }
+			m_frameBuffer->ClearAttachment(1, -1);
+		}
 
-        {
-            VT_PROFILE_SCOPE("Draw all");
+		{
+			VT_PROFILE_SCOPE("Draw all");
 
-			switch (m_sceneState) {
-			case SceneState::Play:
-				m_currentScene->OnUpdate(ts);
-				break;
-			case SceneState::Edit:
+			if (!isPaused) {
+				switch (m_sceneState) {
+				case SceneState::Play:
+					if (!isPaused) {
+						m_currentScene->OnUpdate(ts);
+					}
+					break;
+				case SceneState::Edit:
+					m_editorCamera.OnUpdate(ts);
+					m_currentScene->OnUpdateEditor(ts, m_editorCamera);
+					break;
+				}
+			}
+			else {
 				m_editorCamera.OnUpdate(ts);
 				m_currentScene->OnUpdateEditor(ts, m_editorCamera);
-				break;
 			}
 
-            //m_currentScene->OnUpdateEditor(ts, m_editorCamera);
 
-            auto [mx, my] = ImGui::GetMousePos();
-            mx -= m_viewportBounds[0].x;
-            my -= m_viewportBounds[0].y;
-            glm::vec2 viewportSize = m_viewportBounds[1] - m_viewportBounds[0];
-            my = viewportSize.y - my;
-            int mouseX = (int)mx;
-            int mouseY = (int)my;
+			auto [mx, my] = ImGui::GetMousePos();
+			mx -= m_viewportBounds[0].x;
+			my -= m_viewportBounds[0].y;
+			glm::vec2 viewportSize = m_viewportBounds[1] - m_viewportBounds[0];
+			my = viewportSize.y - my;
+			int mouseX = (int)mx;
+			int mouseY = (int)my;
 
-            if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y) {
-                int pixelData = m_frameBuffer->ReadPixel(1, mouseX, mouseY);
-                m_hoveredEntity = pixelData == -1 ? Entity{} : Entity{ (entt::entity)pixelData, m_currentScene.get() };
-                VT_CORE_INFO("EditorLayer::OnUpdate pixel data : {0}", pixelData);
-            }
+			if (mouseX >= 0 && mouseY >= 0 && mouseX < (int)viewportSize.x && mouseY < (int)viewportSize.y) {
+				int pixelData = m_frameBuffer->ReadPixel(1, mouseX, mouseY);
+				m_hoveredEntity = pixelData == -1 ? Entity{} : Entity{ (entt::entity)pixelData, m_currentScene.get() };
+				VT_CORE_INFO("EditorLayer::OnUpdate pixel data : {0}", pixelData);
+			}
 
-            m_frameBuffer->Unbind();
-        }
+			m_frameBuffer->Unbind();
+		}
     }
 
     void EditorLayer::OnImGuiRender() {
@@ -335,17 +344,31 @@ namespace Vortex {
     }
 
 	void EditorLayer::OnScenePlay() {
+		m_prevSceneState = m_sceneState;
 		m_sceneState = SceneState::Play;
 		m_currentScene->OnRuntimStart();
 	}
 
+	void EditorLayer::OnSceneResume() {
+		m_prevSceneState = m_sceneState;
+		isPaused = false;
+		m_currentScene->OnRuntimeResume();
+	}
+
+	void EditorLayer::OnScenePause() {
+		m_prevSceneState = m_sceneState;
+		isPaused = true;
+		m_currentScene->OnRuntimePause();
+	}
+
 	void EditorLayer::OnSceneStop() {
+		m_prevSceneState = m_sceneState;
 		m_sceneState = SceneState::Edit;
 		m_currentScene->OnRuntimeStop();
 	}
 
 	void EditorLayer::UIToolbar() {
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 2));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
 		auto& colors = ImGui::GetStyle().Colors;
@@ -358,15 +381,40 @@ namespace Vortex {
 		ImGui::Begin("##toolbar", nullptr, flags);
 
 		float size = ImGui::GetWindowHeight() - 4.0f;
-		Ref<Texture2D> icon = m_sceneState == SceneState::Edit ? m_playIcon : m_stopIcon;
-		ImGui::SetCursorPosX((ImGui::GetContentRegionMax().x * 0.5f) - (size * 0.5f));
-		if (ImGui::ImageButton((ImTextureID)icon->GetID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1), 0))
-		{
-			if (m_sceneState == SceneState::Edit)
-				OnScenePlay();
-			else if (m_sceneState == SceneState::Play)
-				OnSceneStop();
+		Ref<Texture2D> icon = m_playIcon;
+		if (m_sceneState == SceneState::Play && !isPaused) {
+			icon = m_pauseIcon;
 		}
+		ImGui::SetCursorPosX((ImGui::GetContentRegionMax().x * 0.01f) - (size * 0.5f));
+		if (ImGui::ImageButton("Play-Pause", (ImTextureID)icon->GetID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1))) {
+			if (m_sceneState == SceneState::Play) {
+				if (isPaused) {
+					OnSceneResume();
+				}
+				else {
+					OnScenePause();
+				}
+			}
+			else if (m_sceneState == SceneState::Edit) {
+				OnScenePlay();
+			}
+			/*if (m_sceneState == SceneState::Pause) {
+				OnScenePlay();
+			}
+			else if (m_sceneState == SceneState::Play) {
+				OnScenePause();W
+			}*/
+		}
+		ImGui::SameLine();
+
+		ImGui::SetCursorPosX((ImGui::GetContentRegionMax().x * 0.04f) - (size * 0.5f));
+		if (ImGui::ImageButton("Stop", (ImTextureID)m_stopIcon->GetID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1))) {
+			if (m_sceneState == SceneState::Play) {
+				OnSceneStop();
+			}
+		}
+
+
 		ImGui::PopStyleVar(2);
 		ImGui::PopStyleColor(3);
 		ImGui::End();
@@ -397,6 +445,11 @@ namespace Vortex {
 			m_currentScene = newScene;
 			m_currentScene->OnViewportResize((uint32)m_viewportPanelSize.x, (uint32)m_viewportPanelSize.y);
 			m_sceneHierarchyPanel.SetContext(m_currentScene);
+		}
+
+		m_cameraEntity = m_currentScene->GetPrimaryCamera();
+		if (m_cameraEntity) {
+			m_cameraEntity.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 		}
 	}
 
