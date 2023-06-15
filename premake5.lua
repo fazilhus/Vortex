@@ -28,6 +28,7 @@ group "Dependencies"
     include "Vortex/vendor/glad"
     include "Vortex/vendor/ImGui"
     include "Vortex/vendor/yaml-cpp"
+    include "Vortex/vendor/Box2D"
 
 group "Tools"
     include "Vortex-Editor"
