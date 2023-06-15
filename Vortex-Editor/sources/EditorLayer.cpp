@@ -384,12 +384,18 @@ namespace Vortex {
     }
 
 	void EditorLayer::OpenScene(const std::filesystem::path& path) {
-		m_currentScene = CreateRef<Scene>();
-		m_currentScene->OnViewportResize((uint32)m_viewportPanelSize.x, (uint32)m_viewportPanelSize.y);
-		m_sceneHierarchyPanel.SetContext(m_currentScene);
+		if (path.extension().string() != ".vortex") {
+			VT_CL_WARN("Could not load {0} - not a scene file", path.filename().string());
+			return;
+		}
 
-		SceneSerializer serializer{ m_currentScene };
-		serializer.Deserialize(path.string());
+		Ref<Scene> newScene = CreateRef<Scene>();
+		SceneSerializer serializer{ newScene };
+		if (serializer.Deserialize(path.string())) {
+			m_currentScene = newScene;
+			m_currentScene->OnViewportResize((uint32)m_viewportPanelSize.x, (uint32)m_viewportPanelSize.y);
+			m_sceneHierarchyPanel.SetContext(m_currentScene);
+		}
 	}
 
     void EditorLayer::SaveSceneAs() {

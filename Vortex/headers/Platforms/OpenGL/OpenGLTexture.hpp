@@ -9,6 +9,7 @@ namespace Vortex {
 		uint32 m_width, m_height;
 		uint32 m_rendererID;
 		uint32 m_internalFormat, m_format;
+		bool m_isLoaded;
 
 	public:
 		OpenGLTexture2D(const std::string& path);
@@ -19,6 +20,8 @@ namespace Vortex {
 		virtual uint32 GetHeight() const override { return m_height; }
 		virtual const std::string& GetPath() const override { return m_path; }
 		virtual uint32 GetID() const override { return m_rendererID; }
+
+		virtual bool IsLoaded() const override { return m_isLoaded; }
 
 		virtual void SetData(void* data, uint32 size) override;
 
