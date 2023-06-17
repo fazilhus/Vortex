@@ -183,6 +183,10 @@ namespace Vortex {
 				}
 				ImGui::EndDragDropTarget();
 			}
+			ImGui::SameLine();
+			if (ImGui::Button("Clear Texture")) {
+				component.Texture.reset();
+			}
 
 			ImGui::DragFloat("Tiling Factor", &component.TilingFactor, 0.1f, 0.0f, 100.0f);
 		});
