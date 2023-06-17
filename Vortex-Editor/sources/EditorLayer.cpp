@@ -13,7 +13,7 @@ namespace Vortex {
     EditorLayer::EditorLayer()
 		: Layer("EditorLayer"), m_viewportPanelSize({ 1600, 900 }), m_viewportBounds(),
         m_viewportFocused(false), m_viewportHovered(false), m_gizmoType(-1), 
-		m_prevSceneState(SceneState::Edit), m_sceneState(SceneState::Edit), isPaused(false) {}
+		m_sceneState(SceneState::Edit), isPaused(false) {}
 
     void EditorLayer::OnAttach() {
         Layer::OnAttach();
@@ -315,43 +315,48 @@ namespace Vortex {
         bool shift = Input::IsKeyPressed(Key::LeftShift) || Input::IsKeyPressed(Key::RightShift);
 
         switch (e.GetKeyCode()) {
-            case Key::N: {
+            case Key::N:
                 if (control) NewScene();
                 break;
-            }
-            case Key::O: {
+            case Key::O:
                 if (control) OpenScene();
                 break;
-            }
-            case Key::S: {
-                if (control && shift) SaveSceneAs();
+            case Key::S:
+				if (control) {
+					if (shift) {
+						SaveSceneAs();
+					}
+					else {
+						SaveScene();
+					}
+				}
                 break;
-            }
+			case Key::D:
+				if (control) {
+					OnDuplicateEntity();
+				}
+
             // Gizmos controls
-            case Key::Q: {
+            case Key::Q:
                 if (!ImGuizmo::IsUsing()) {
                     m_gizmoType = -1;
                 }
                 break;
-            }
-            case Key::W: {
+            case Key::W:
                 if (!ImGuizmo::IsUsing()) {
                     m_gizmoType = ImGuizmo::OPERATION::TRANSLATE;
                 }
                 break;
-            }
-            case Key::E: {
+            case Key::E:
                 if (!ImGuizmo::IsUsing()) {
                     m_gizmoType = ImGuizmo::OPERATION::ROTATE;
                 }
                 break;
-            }
-            case Key::R: {
+            case Key::R:
                 if (!ImGuizmo::IsUsing()) {
                     m_gizmoType = ImGuizmo::OPERATION::SCALE;
                 }
                 break;
-            }
         }
     }
 
@@ -365,27 +370,36 @@ namespace Vortex {
     }
 
 	void EditorLayer::OnScenePlay() {
-		m_prevSceneState = m_sceneState;
 		m_sceneState = SceneState::Play;
+
+		m_currentScene = Scene::Copy(m_editorScene);
+		m_sceneHierarchyPanel.SetContext(m_currentScene);
 		m_currentScene->OnRuntimStart();
 	}
 
 	void EditorLayer::OnSceneResume() {
-		m_prevSceneState = m_sceneState;
 		isPaused = false;
 		m_currentScene->OnRuntimeResume();
 	}
 
 	void EditorLayer::OnScenePause() {
-		m_prevSceneState = m_sceneState;
 		isPaused = true;
 		m_currentScene->OnRuntimePause();
 	}
 
 	void EditorLayer::OnSceneStop() {
-		m_prevSceneState = m_sceneState;
 		m_sceneState = SceneState::Edit;
 		m_currentScene->OnRuntimeStop();
+		m_currentScene = m_editorScene;
+		m_sceneHierarchyPanel.SetContext(m_currentScene);
+	}
+
+	void EditorLayer::OnDuplicateEntity() {
+		if (m_sceneState != SceneState::Edit) return;
+
+		if (Entity selectedEntity = m_sceneHierarchyPanel.GetSelectedEntity()) {
+			m_editorScene->DuplicateEntity(selectedEntity);
+		}
 	}
 
 	void EditorLayer::UIToolbar() {
@@ -443,12 +457,20 @@ namespace Vortex {
 
 	void EditorLayer::NewScene() {
 		if (m_sceneState != SceneState::Edit) return;
-        m_currentScene = CreateRef<Scene>();
-        m_currentScene->OnViewportResize((uint32)m_viewportPanelSize.x, (uint32)m_viewportPanelSize.y);
-        m_sceneHierarchyPanel.SetContext(m_currentScene);
+
+        m_editorScene = CreateRef<Scene>();
+		m_editorScenePath = std::filesystem::path();
+		m_editorScene->OnViewportResize((uint32)m_viewportPanelSize.x, (uint32)m_viewportPanelSize.y);
+        m_sceneHierarchyPanel.SetContext(m_editorScene);
+        
+		m_currentScene = m_editorScene;
     }
 
     void EditorLayer::OpenScene() {
+		if (m_sceneState != SceneState::Edit) {
+			OnSceneStop();
+		}
+
         auto filepath = FileIO::OpenFile("Vortex Scene (*.vortex)\0*.vortex\0");
         if (!filepath.empty()) {
 			OpenScene(filepath);
@@ -464,9 +486,12 @@ namespace Vortex {
 		Ref<Scene> newScene = CreateRef<Scene>();
 		SceneSerializer serializer{ newScene };
 		if (serializer.Deserialize(path.string())) {
-			m_currentScene = newScene;
-			m_currentScene->OnViewportResize((uint32)m_viewportPanelSize.x, (uint32)m_viewportPanelSize.y);
-			m_sceneHierarchyPanel.SetContext(m_currentScene);
+			m_editorScene = newScene;
+			m_editorScene->OnViewportResize((uint32)m_viewportPanelSize.x, (uint32)m_viewportPanelSize.y);
+			m_sceneHierarchyPanel.SetContext(m_editorScene);
+			m_editorScenePath = path;
+
+			m_currentScene = m_editorScene;
 		}
 
 		m_cameraEntity = m_currentScene->GetPrimaryCamera();
@@ -475,12 +500,26 @@ namespace Vortex {
 		}
 	}
 
+	void EditorLayer::SaveScene() {
+		if (!m_editorScenePath.empty()) {
+			SerializeScene(m_currentScene, m_editorScenePath);
+		}
+		else {
+			SaveSceneAs();
+		}
+	}
+
     void EditorLayer::SaveSceneAs() {
         auto filepath = FileIO::SaveFile("Vortex Scene (*.vortex)\0*.vortex\0");
         if (!filepath.empty()) {
-            SceneSerializer serializer{ m_currentScene };
-            serializer.Serialize(filepath);
+			SerializeScene(m_currentScene, filepath);
+			m_editorScenePath = filepath;
         }
     }
+
+	void EditorLayer::SerializeScene(Ref<Scene> scene, const std::filesystem::path& path) {
+		SceneSerializer serializer(scene);
+		serializer.Serialize(path.string());
+	}
 
 }

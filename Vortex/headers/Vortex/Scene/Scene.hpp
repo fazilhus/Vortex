@@ -24,6 +24,8 @@ namespace Vortex {
 		Scene() : m_viewportWidth(0), m_viewportHeight(0), m_physicsWorld(nullptr) {}
 		~Scene() = default;
 
+		static Ref<Scene> Copy(Ref<Scene> other);
+
 		Entity CreateEntity(const std::string& tag);
 		Entity CreateEntityWithUUID(UUID id, const std::string& tag);
 		void DestroyEntity(Entity entity);
@@ -37,11 +39,19 @@ namespace Vortex {
 		void OnRuntimePause();
 		void OnRuntimeStop();
 
+		void DuplicateEntity(Entity entity);
+
 		Entity GetPrimaryCamera();
 
 	private:
-		template <typename T>
+		template<typename T>
 		void OnComponentAdded(Entity entity, T& component);
+
+		template<typename T>
+		static void CopyComponent(entt::registry& dst, entt::registry& src, const HashMap<UUID, entt::entity> enttMap);
+
+		template<typename T>
+		static void CopyComponentIfExists(Entity dst, Entity src);
 	};
 
 }

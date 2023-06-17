@@ -23,21 +23,23 @@ namespace Vortex {
 	void SceneHierarchyPanel::OnImGuiRender() {
 		ImGui::Begin("Scene Hierarchy");
 
-		m_context->m_registry.each([&](auto entityID) {
-			Entity entity{ entityID, m_context.get() };
-			DrawEntityMode(entity);
-		});
+		if (m_context) {
+			m_context->m_registry.each([&](auto entityID) {
+				Entity entity{ entityID, m_context.get() };
+				DrawEntityMode(entity);
+				});
 
-		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {
-			m_selectionContext = {};
-		}
-
-		if (ImGui::BeginPopupContextWindow("Create entity", 1 | ImGuiPopupFlags_NoOpenOverItems)) {
-			if (ImGui::MenuItem("Create empty entity")) {
-				m_context->CreateEntity("Empty entity");
+			if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {
+				m_selectionContext = {};
 			}
 
-			ImGui::EndPopup();
+			if (ImGui::BeginPopupContextWindow("Create entity", 1 | ImGuiPopupFlags_NoOpenOverItems)) {
+				if (ImGui::MenuItem("Create empty entity")) {
+					m_context->CreateEntity("Empty entity");
+				}
+
+				ImGui::EndPopup();
+			}
 		}
 
 		ImGui::End();

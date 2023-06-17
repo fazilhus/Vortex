@@ -22,6 +22,9 @@ namespace Vortex {
 
 		Vector<Ref<Scene>> m_scenes;
 		Ref<Scene> m_currentScene;
+		Ref<Scene> m_editorScene;
+		std::filesystem::path m_editorScenePath;
+
 		Entity m_cameraEntity;
 
 		EditorCamera m_editorCamera;
@@ -42,7 +45,6 @@ namespace Vortex {
 			Play = 1
 		};
 
-		SceneState m_prevSceneState;
 		SceneState m_sceneState;
 
 		bool isPaused;
@@ -68,13 +70,18 @@ namespace Vortex {
 		void OnScenePause();
 		void OnSceneStop();
 
+		void OnDuplicateEntity();
+
 		// Toolbar panel
 		void UIToolbar();
 
 		void NewScene();
 		void OpenScene();
 		void OpenScene(const std::filesystem::path& path);
+		void SaveScene();
 		void SaveSceneAs();
+
+		void SerializeScene(Ref<Scene> scene, const std::filesystem::path& path);
 	};
 
 }

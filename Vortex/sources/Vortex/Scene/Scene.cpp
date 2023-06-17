@@ -19,6 +19,32 @@ namespace Vortex {
 		}
 	}
 
+	Ref<Scene> Scene::Copy(Ref<Scene> other) {
+		auto newScene = CreateRef<Scene>();
+		newScene->m_viewportWidth = other->m_viewportWidth;
+		newScene->m_viewportHeight = other->m_viewportHeight;
+
+		auto& srcRegistry = other->m_registry;
+		auto& dstRegistry = newScene->m_registry;
+		HashMap<UUID, entt::entity> enttMap;
+		auto idview = srcRegistry.view<IDComponent>();
+		for (auto e : idview) {
+			UUID id = srcRegistry.get<IDComponent>(e).ID;
+			const auto& name = srcRegistry.get<TagComponent>(e).Tag;
+			auto newEntity = newScene->CreateEntityWithUUID(id, name);
+			enttMap[id] = static_cast<entt::entity>(newEntity);
+		}
+
+		CopyComponent<TransformComponent>(dstRegistry, srcRegistry, enttMap);
+		CopyComponent<SpriteComponent>(dstRegistry, srcRegistry, enttMap);
+		CopyComponent<CameraComponent>(dstRegistry, srcRegistry, enttMap);
+		CopyComponent<NativeScriptComponent>(dstRegistry, srcRegistry, enttMap);
+		CopyComponent<Rigidbody2DComponent>(dstRegistry, srcRegistry, enttMap);
+		CopyComponent<BoxCollider2DComponent>(dstRegistry, srcRegistry, enttMap);
+
+		return newScene;
+	}
+
 	Entity Scene::CreateEntity(const std::string& tag) {
 		return CreateEntityWithUUID(UUID(), tag);
 	}
@@ -179,6 +205,18 @@ namespace Vortex {
 		m_physicsWorld = nullptr;
 	}
 
+	void Scene::DuplicateEntity(Entity entity) {
+		auto name = entity.GetName();
+		auto newEntity = CreateEntity(name);
+
+		CopyComponentIfExists<TransformComponent>(newEntity, entity);
+		CopyComponentIfExists<SpriteComponent>(newEntity, entity);
+		CopyComponentIfExists<CameraComponent>(newEntity, entity);
+		CopyComponentIfExists<NativeScriptComponent>(newEntity, entity);
+		CopyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
+		CopyComponentIfExists<BoxCollider2DComponent>(newEntity, entity);
+	}
+
 	Entity Scene::GetPrimaryCamera() {
 		auto view = m_registry.view<CameraComponent>();
 		for (auto entity : view) {
@@ -193,6 +231,25 @@ namespace Vortex {
 	template<typename T>
 	void Scene::OnComponentAdded(Entity entity, T& component) {
 		//static_assert(false);
+	}
+
+	template<typename T>
+	void Scene::CopyComponent(entt::registry& dst, entt::registry& src, const HashMap<UUID, entt::entity> enttMap) {
+		auto view = src.view<T>();
+		for (auto e : view) {
+			UUID id = src.get<IDComponent>(e).ID;
+			VT_CORE_ASSERT(enttMap.contains(id), "Entity {0} does not exist", id);
+			entt::entity dstEntt = enttMap.at(id);
+			auto& component = src.get<T>(e);
+			dst.emplace_or_replace<T>(dstEntt, component);
+		}
+	}
+
+	template<typename T>
+	void Scene::CopyComponentIfExists(Entity dst, Entity src) {
+		if (src.HasComponent<T>()) {
+			dst.AddOrReplaceComponent<T>(src.GetComponent<T>());
+		}
 	}
 
 	template <>

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Vortex/Core/Core.hpp"
+#include <xhash>
 
 namespace Vortex {
 
@@ -21,11 +22,12 @@ namespace Vortex {
 
 namespace std {
 
-	template<typename T> struct hash;
+	template<typename T>
+	struct hash;
 		
 	template<>
 	struct hash<Vortex::UUID> {
-		size_t operator()(const Vortex::UUID& other) {
+		size_t operator()(const Vortex::UUID& other) const {
 			return static_cast<uint64>(other);
 		}
 	};
