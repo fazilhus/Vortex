@@ -12,7 +12,7 @@ namespace Vortex {
         if (!window) return false;
 
         const auto state = glfwGetKey(window, static_cast<int32>(keycode));
-        return state == GLFW_PRESS || state == GLFW_REPEAT;
+        return state == GLFW_PRESS;
     }
 
     bool Input::IsMouseButtonPressed(const MouseCode button) {

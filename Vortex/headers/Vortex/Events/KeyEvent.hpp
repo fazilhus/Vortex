@@ -20,18 +20,18 @@ namespace Vortex {
 
 	class KeyPressedEvent : public KeyEvent {
 	private:
-		uint16 m_repeatCount;
+		bool m_isRepeat;
 
 	public:
-		KeyPressedEvent(const KeyCode keycode, const uint16 repeatCount)
-			: KeyEvent(keycode), m_repeatCount(repeatCount) {}
+		KeyPressedEvent(const KeyCode keycode, const bool isRepeat)
+			: KeyEvent(keycode), m_isRepeat(isRepeat) {}
 
-		inline uint16 GetRepeatCount() const { return m_repeatCount; }
+		inline bool IsRepeat() const { return m_isRepeat; }
 
 #ifdef VT_DEBUG
 		std::string ToStr() const override {
 			std::stringstream ss;
-			ss << "KeyPressedEvent: " << m_keycode << " pressed " << m_repeatCount << " times" << std::endl;
+			ss << "KeyPressedEvent: " << m_keycode << " pressed =  " << m_isRepeat;
 			return ss.str();
 		}
 #endif

@@ -94,7 +94,7 @@ namespace Vortex {
 			{
 			case GLFW_PRESS:
 			{
-				KeyPressedEvent event(static_cast<KeyCode>(key), 0);
+				KeyPressedEvent event(static_cast<KeyCode>(key), false);
 				data->eventCallback(event);
 				break;
 			}
@@ -106,7 +106,7 @@ namespace Vortex {
 			}
 			case GLFW_REPEAT:
 			{
-				KeyPressedEvent event(static_cast<KeyCode>(key), 1);
+				KeyPressedEvent event(static_cast<KeyCode>(key), true);
 				data->eventCallback(event);
 				break;
 			}
