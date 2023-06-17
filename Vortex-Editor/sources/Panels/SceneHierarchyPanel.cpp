@@ -57,6 +57,7 @@ namespace Vortex {
 					DisplayAddComponentEntry<CameraComponent>("Camera Component");
 					DisplayAddComponentEntry<Rigidbody2DComponent>("Rigidbody 2D Component");
 					DisplayAddComponentEntry<BoxCollider2DComponent>("Box2D Collider Component");
+					DisplayAddComponentEntry<CircleCollider2DComponent>("Circle2D Collider Component");
 					ImGui::EndMenu();
 				}
 				ImGui::EndPopup();
@@ -287,6 +288,15 @@ namespace Vortex {
 		DrawComponent<BoxCollider2DComponent>("Box Collider 2D", entity, [](auto& component) {
 			ImGui::DragFloat2("Offset", glm::value_ptr(component.Offset));
 			ImGui::DragFloat2("Size", glm::value_ptr(component.Size));
+			ImGui::DragFloat("Density", &component.Density, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat("Friction", &component.Friction, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat("Restitution", &component.Restitution, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat("Restitution Threshold", &component.RestitutionThreshold, 0.01f, 0.0f);
+		});
+
+		DrawComponent<CircleCollider2DComponent>("Circle Collider 2D", entity, [](auto& component) {
+			ImGui::DragFloat2("Offset", glm::value_ptr(component.Offset));
+			ImGui::DragFloat("Radius", &component.Radius);
 			ImGui::DragFloat("Density", &component.Density, 0.01f, 0.0f, 1.0f);
 			ImGui::DragFloat("Friction", &component.Friction, 0.01f, 0.0f, 1.0f);
 			ImGui::DragFloat("Restitution", &component.Restitution, 0.01f, 0.0f, 1.0f);

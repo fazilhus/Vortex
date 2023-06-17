@@ -5,6 +5,7 @@
 #include "box2d/b2_body.h"
 #include "box2d/b2_fixture.h"
 #include "box2d/b2_polygon_shape.h"
+#include "box2d/b2_circle_shape.h"
 
 namespace Vortex {
 
@@ -42,6 +43,7 @@ namespace Vortex {
 		CopyComponent<NativeScriptComponent>(dstRegistry, srcRegistry, enttMap);
 		CopyComponent<Rigidbody2DComponent>(dstRegistry, srcRegistry, enttMap);
 		CopyComponent<BoxCollider2DComponent>(dstRegistry, srcRegistry, enttMap);
+		CopyComponent<CircleCollider2DComponent>(dstRegistry, srcRegistry, enttMap);
 
 		return newScene;
 	}
@@ -206,6 +208,22 @@ namespace Vortex {
 				fixtureDef.restitutionThreshold = bc2d.RestitutionThreshold;
 				body->CreateFixture(&fixtureDef);
 			}
+
+			if (entity.HasComponent<CircleCollider2DComponent>()) {
+				auto& cc2d = entity.GetComponent<CircleCollider2DComponent>();
+
+				b2CircleShape circleShape;
+				circleShape.m_p.Set(cc2d.Offset.x, cc2d.Offset.y);
+				circleShape.m_radius = cc2d.Radius;
+
+				b2FixtureDef fixtureDef;
+				fixtureDef.shape = &circleShape;
+				fixtureDef.density = cc2d.Density;
+				fixtureDef.friction = cc2d.Friction;
+				fixtureDef.restitution = cc2d.Restitution;
+				fixtureDef.restitutionThreshold = cc2d.RestitutionThreshold;
+				body->CreateFixture(&fixtureDef);
+			}
 		}
 	}
 
@@ -238,6 +256,7 @@ namespace Vortex {
 		CopyComponentIfExists<NativeScriptComponent>(newEntity, entity);
 		CopyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
 		CopyComponentIfExists<BoxCollider2DComponent>(newEntity, entity);
+		CopyComponentIfExists<CircleCollider2DComponent>(newEntity, entity);
 	}
 
 	Entity Scene::GetPrimaryCamera() {
@@ -249,11 +268,6 @@ namespace Vortex {
 			}
 		}
 		return {entt::null, nullptr};
-	}
-
-	template<typename T>
-	void Scene::OnComponentAdded(Entity entity, T& component) {
-		//static_assert(false);
 	}
 
 	template<typename T>
@@ -273,6 +287,11 @@ namespace Vortex {
 		if (src.HasComponent<T>()) {
 			dst.AddOrReplaceComponent<T>(src.GetComponent<T>());
 		}
+	}
+
+	template<typename T>
+	void Scene::OnComponentAdded(Entity entity, T& component) {
+		//static_assert(false);
 	}
 
 	template <>
@@ -314,6 +333,11 @@ namespace Vortex {
 
 	template<>
 	void Scene::OnComponentAdded<BoxCollider2DComponent>(Entity entity, BoxCollider2DComponent& component) {
+
+	}
+
+	template<>
+	void Scene::OnComponentAdded<CircleCollider2DComponent>(Entity entity, CircleCollider2DComponent& component) {
 
 	}
 
