@@ -58,11 +58,17 @@ namespace Vortex {
 		template<typename T>
 		void OnComponentAdded(Entity entity, T& component);
 
-		template<typename T>
+		template<typename ...T>
 		static void CopyComponent(entt::registry& dst, entt::registry& src, const HashMap<UUID, entt::entity> enttMap);
 
-		template<typename T>
+		template<typename ...T>
+		static void CopyComponent(ComponentGroup<T...>, entt::registry& dst, entt::registry& src, const HashMap<UUID, entt::entity> enttMap);
+
+		template<typename ...T>
 		static void CopyComponentIfExists(Entity dst, Entity src);
+
+		template<typename ...T>
+		static void CopyComponentIfExists(ComponentGroup<T...>, Entity dst, Entity src);
 
 		void OnPhysics2DStart();
 		void OnPhysics2DResume();

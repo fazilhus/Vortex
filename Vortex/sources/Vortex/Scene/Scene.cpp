@@ -39,15 +39,7 @@ namespace Vortex {
 			auto newEntity = newScene->CreateEntityWithUUID(id, name);
 			enttMap[id] = static_cast<entt::entity>(newEntity);
 		}
-
-		CopyComponent<TransformComponent>(dstRegistry, srcRegistry, enttMap);
-		CopyComponent<SpriteComponent>(dstRegistry, srcRegistry, enttMap);
-		CopyComponent<CircleRendererComponent>(dstRegistry, srcRegistry, enttMap);
-		CopyComponent<CameraComponent>(dstRegistry, srcRegistry, enttMap);
-		CopyComponent<NativeScriptComponent>(dstRegistry, srcRegistry, enttMap);
-		CopyComponent<Rigidbody2DComponent>(dstRegistry, srcRegistry, enttMap);
-		CopyComponent<BoxCollider2DComponent>(dstRegistry, srcRegistry, enttMap);
-		CopyComponent<CircleCollider2DComponent>(dstRegistry, srcRegistry, enttMap);
+		CopyComponent(AllComponents{}, dstRegistry, srcRegistry, enttMap);
 
 		return newScene;
 	}
@@ -218,14 +210,7 @@ namespace Vortex {
 		auto name = entity.GetName();
 		auto newEntity = CreateEntity(name);
 
-		CopyComponentIfExists<TransformComponent>(newEntity, entity);
-		CopyComponentIfExists<SpriteComponent>(newEntity, entity);
-		CopyComponentIfExists<CircleRendererComponent>(newEntity, entity);
-		CopyComponentIfExists<CameraComponent>(newEntity, entity);
-		CopyComponentIfExists<NativeScriptComponent>(newEntity, entity);
-		CopyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
-		CopyComponentIfExists<BoxCollider2DComponent>(newEntity, entity);
-		CopyComponentIfExists<CircleCollider2DComponent>(newEntity, entity);
+		CopyComponentIfExists(AllComponents{}, newEntity, entity);
 	}
 
 	Entity Scene::GetPrimaryCamera() {
@@ -335,23 +320,37 @@ namespace Vortex {
 		Renderer2D::EndScene();
 	}
 
-	template<typename T>
+	template<typename ...T>
 	void Scene::CopyComponent(entt::registry& dst, entt::registry& src, const HashMap<UUID, entt::entity> enttMap) {
-		auto view = src.view<T>();
-		for (auto e : view) {
-			UUID id = src.get<IDComponent>(e).ID;
-			VT_CORE_ASSERT(enttMap.contains(id), "Entity {0} does not exist", id);
-			entt::entity dstEntt = enttMap.at(id);
-			auto& component = src.get<T>(e);
-			dst.emplace_or_replace<T>(dstEntt, component);
-		}
+		([&]() {
+			auto view = src.view<T>();
+			for (auto e : view) {
+				UUID id = src.get<IDComponent>(e).ID;
+				VT_CORE_ASSERT(enttMap.contains(id), "Entity {0} does not exist", id);
+				entt::entity dstEntt = enttMap.at(id);
+				auto& component = src.get<T>(e);
+				dst.emplace_or_replace<T>(dstEntt, component);
+			}
+		}(), ...);
 	}
 
-	template<typename T>
+	template<typename ...T>
+	void Scene::CopyComponent(ComponentGroup<T...>, entt::registry& dst, entt::registry& src, const HashMap<UUID, entt::entity> enttMap) {
+		CopyComponent<T...>(dst, src, enttMap);
+	}
+
+	template<typename ...T>
 	void Scene::CopyComponentIfExists(Entity dst, Entity src) {
-		if (src.HasComponent<T>()) {
-			dst.AddOrReplaceComponent<T>(src.GetComponent<T>());
-		}
+		([&]() {
+			if (src.HasComponent<T>()) {
+				dst.AddOrReplaceComponent<T>(src.GetComponent<T>());
+			}
+		}(), ...);
+	}
+
+	template<typename ...T>
+	void Scene::CopyComponentIfExists(ComponentGroup<T...>, Entity dst, Entity src) {
+		CopyComponentIfExists<T...>(dst, src);
 	}
 
 	template<typename T>
