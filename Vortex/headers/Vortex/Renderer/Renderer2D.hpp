@@ -19,6 +19,17 @@ namespace Vortex {
 		int entityID;
 	};
 
+	struct CircleVertex {
+		glm::vec3 worldPos;
+		glm::vec3 localPos;
+		glm::vec4 color;
+		float thickness;
+		float fade;
+
+		// Editor only
+		int entityID;
+	};
+
 	struct RendererStatisics {
 		uint32 drawcallsCount = 0;
 		uint32 quadCount = 0;
@@ -35,12 +46,20 @@ namespace Vortex {
 
 		Ref<VertexArray> quadVao;
 		Ref<VertexBuffer> quadVbo;
-		Ref<Shader> shader;
+		Ref<Shader> quadShader;
 		Ref<Texture2D> texture;
+
+		Ref<VertexArray> circleVao;
+		Ref<VertexBuffer> circleVbo;
+		Ref<Shader> circleShader;
 
 		uint32 quadIndCount = 0;
 		QuadVertex* quadVertexBufferBase = nullptr;
 		QuadVertex* quadVertexBufferPtr = nullptr;
+
+		uint32 circleIndCount = 0;
+		CircleVertex* circleVertexBufferBase = nullptr;
+		CircleVertex* circleVertexBufferPtr = nullptr;
 
 		Array<Ref<Texture2D>, maxTextureSLots> texSlots;
 		uint32 texSlotInd = 1;
@@ -83,6 +102,7 @@ namespace Vortex {
 		static void DrawRotatedQuad(const glm::vec3& pos, const glm::vec2& size, const Ref<Texture2D>& texture, float rot = 0.0f, float tilingFactor = 1.0f, const glm::vec4 tintColor = glm::vec4(1.0f));
 
 		static void DrawSprite(const glm::mat4& transform, SpriteComponent& sprite, int entityID);
+		static void DrawCircle(const glm::mat4& transform, const glm::vec4& color, float thickness = 1.0f, float fade = 0.005f, int entityID = -1);
 
 		static void ResetStats();
 		static RendererStatisics GetStats();

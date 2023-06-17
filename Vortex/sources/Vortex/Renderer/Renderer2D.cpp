@@ -7,7 +7,6 @@ namespace Vortex {
 
 	void Renderer2D::Init() {
 		s_data.quadVao = VertexArray::Create();
-
 		s_data.quadVbo = VertexBuffer::Create(s_data.maxVert * sizeof(QuadVertex));
 		s_data.quadVbo->SetLayout({ 
 			{"a_position", ShaderDataType::Float3},
@@ -20,10 +19,9 @@ namespace Vortex {
 		s_data.quadVao->AddVertexBuffer(s_data.quadVbo);
 
 		s_data.quadVertexBufferBase = new QuadVertex[s_data.maxVert];
-
 		const auto ind = new uint32[s_data.maxInd];
-		uint32 offset = 0;
 
+		uint32 offset = 0;
 		for (uint32 i = 0; i < s_data.maxInd; i += 6) {
 			ind[i + 0] = offset + 0;
 			ind[i + 1] = offset + 1;
@@ -39,7 +37,21 @@ namespace Vortex {
 		Ref<IndexBuffer> ibo = IndexBuffer::Create(ind, s_data.maxInd);
 		s_data.quadVao->AddIndexBuffer(ibo);
 
-		delete ind;
+		delete[] ind;
+
+		s_data.circleVao = VertexArray::Create();
+		s_data.circleVbo = VertexBuffer::Create(s_data.maxVert * sizeof(CircleVertex));
+		s_data.circleVbo->SetLayout({
+			{ "a_worldPos", ShaderDataType::Float3 },
+			{ "a_localPos", ShaderDataType::Float3 },
+			{ "a_color", ShaderDataType::Float4 },
+			{ "a_thickness", ShaderDataType::Float },
+			{ "a_fade", ShaderDataType::Float },
+			{ "a_entityID", ShaderDataType::Int }
+		});
+		s_data.circleVao->AddVertexBuffer(s_data.circleVbo);
+		s_data.circleVao->AddIndexBuffer(ibo);
+		s_data.circleVertexBufferBase = new CircleVertex[s_data.maxInd];
 
 		s_data.texture = Texture2D::Create(1, 1);
 		uint32 texData = 0xffffffff;
@@ -50,9 +62,10 @@ namespace Vortex {
 			samplers[i] = i;
 		}
 
-		s_data.shader = Shader::Create("assets/shaders/shader.glsl");
-		s_data.shader->Bind();
-		s_data.shader->SetIntArray("u_textures", samplers, s_data.maxTextureSLots);
+		s_data.quadShader = Shader::Create("assets/shaders/quadShader.glsl");
+		s_data.circleShader = Shader::Create("assets/shaders/circleShader.glsl");
+		/*s_data.quadShader->Bind();
+		s_data.quadShader->SetIntArray("u_textures", samplers, s_data.maxTextureSLots);*/
 
 		s_data.texSlots[0] = s_data.texture;
 
@@ -84,8 +97,8 @@ namespace Vortex {
 	void Renderer2D::BeginScene(const OrthoCamera& camera) {
 		VT_PROFILE_FUNC();
 
-		s_data.shader->Bind();
-		s_data.shader->SetMat4("u_viewproj", camera.GetViewProjMat());
+		s_data.CameraBuffer.viewproj = camera.GetViewProjMat();
+		s_data.CameraUniformBuffer->SetData(&s_data.CameraBuffer, sizeof(Renderer2DStorage::CameraData));
 
 		StartBatch();
 	}
@@ -105,20 +118,33 @@ namespace Vortex {
 	}
 
 	void Renderer2D::Flush() {
+		if (s_data.quadIndCount) {
+			const auto dataSize = static_cast<uint32>(reinterpret_cast<uint8*>(s_data.quadVertexBufferPtr) - reinterpret_cast<uint8*>(s_data.quadVertexBufferBase));
+			s_data.quadVbo->SetData(s_data.quadVertexBufferBase, dataSize);
+
+			for (uint32 i = 0; i < s_data.texSlotInd; ++i) {
+				VT_CORE_TRACE("Bind texture {0} in slot {1}", s_data.texSlots[i]->GetPath(), i);
+				s_data.texSlots[i]->Bind(i);
+			}
+			s_data.quadShader->Bind();
+			Render::DrawIndexed(s_data.quadVao, s_data.quadIndCount);
+			s_data.stats.drawcallsCount++;
+		}
+
+		if (s_data.circleIndCount) {
+			const auto dataSize = static_cast<uint32>(reinterpret_cast<uint8*>(s_data.circleVertexBufferPtr) - reinterpret_cast<uint8*>(s_data.circleVertexBufferBase));
+			s_data.circleVbo->SetData(s_data.circleVertexBufferBase, dataSize);
+
+			s_data.circleShader->Bind();
+			Render::DrawIndexed(s_data.circleVao, s_data.circleIndCount);
+			s_data.stats.drawcallsCount++;
+		}
+
 		if(s_data.quadIndCount == 0) {
 			return;
 		}
 
-		const auto dataSize = static_cast<uint32>(reinterpret_cast<uint8*>(s_data.quadVertexBufferPtr) - reinterpret_cast<uint8*>(s_data.quadVertexBufferBase));
-		s_data.quadVbo->SetData(s_data.quadVertexBufferBase, dataSize);
-
-		for (uint32 i = 0; i < s_data.texSlotInd; ++i) {
-			VT_CORE_TRACE("Bind texture {0} in slot {1}", s_data.texSlots[i]->GetPath(), i);
-			s_data.texSlots[i]->Bind(i);
-		}
-		s_data.shader->Bind();
-		Render::DrawIndexed(s_data.quadVao, s_data.quadIndCount);
-		s_data.stats.drawcallsCount++;
+		
 	}
 
 	void Renderer2D::DrawQuad(const glm::mat4& transform, const glm::vec4& color, int entityID) {
@@ -319,6 +345,24 @@ namespace Vortex {
 		}
 	}
 
+	void Renderer2D::DrawCircle(const glm::mat4& transform, const glm::vec4& color, float thickness, float fade, int entityID) {
+		VT_PROFILE_FUNC();
+
+		for (std::size_t i = 0; i < 4; ++i) {
+			s_data.circleVertexBufferPtr->worldPos = transform * s_data.quadVertexPos[i];
+			s_data.circleVertexBufferPtr->localPos = s_data.quadVertexPos[i] * 2.0f;
+			s_data.circleVertexBufferPtr->color = color;
+			s_data.circleVertexBufferPtr->thickness = thickness;
+			s_data.circleVertexBufferPtr->fade = fade;
+			s_data.circleVertexBufferPtr->entityID = entityID;
+			s_data.circleVertexBufferPtr++;
+		}
+
+		s_data.circleIndCount += 6;
+
+		s_data.stats.quadCount++;
+	}
+
 	void Renderer2D::ResetStats() {
 		memset(&s_data.stats, 0, sizeof(RendererStatisics));
 	}
@@ -330,6 +374,10 @@ namespace Vortex {
 	void Renderer2D::StartBatch() {
 		s_data.quadIndCount = 0;
 		s_data.quadVertexBufferPtr = s_data.quadVertexBufferBase;
+
+		s_data.circleIndCount = 0;
+		s_data.circleVertexBufferPtr = s_data.circleVertexBufferBase;
+
 		s_data.texSlotInd = 1;
 	}
 

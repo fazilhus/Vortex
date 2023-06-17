@@ -53,6 +53,7 @@ namespace Vortex {
 				if (ImGui::BeginMenu("Add Component")) {
 					DisplayAddComponentEntry<TransformComponent>("Transform Component");
 					DisplayAddComponentEntry<SpriteComponent>("Sprite Component");
+					DisplayAddComponentEntry<CircleRendererComponent>("Circle Renderer Component");
 					DisplayAddComponentEntry<CameraComponent>("Camera Component");
 					DisplayAddComponentEntry<Rigidbody2DComponent>("Rigidbody 2D Component");
 					DisplayAddComponentEntry<BoxCollider2DComponent>("Box2D Collider Component");
@@ -189,6 +190,12 @@ namespace Vortex {
 			}
 
 			ImGui::DragFloat("Tiling Factor", &component.TilingFactor, 0.1f, 0.0f, 100.0f);
+		});
+
+		DrawComponent<CircleRendererComponent>("Circle Renderer Component", entity, [&](auto& component) {
+			ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+			ImGui::DragFloat("Thickness", &component.Thickness, 0.025f, 0.0f, 1.0f);
+			ImGui::DragFloat("Fade", &component.Fade, 0.00025, 0.0f, 1.0f);
 		});
 
 		DrawComponent<CameraComponent>("Camera Component", entity, [&](auto& component) {

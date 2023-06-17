@@ -177,6 +177,14 @@ namespace Vortex {
 					VT_CORE_TRACE("SceneSerializer::Deserialize Color {0} {1} {2} {3}", src.Color.r, src.Color.g, src.Color.b, src.Color.a);
 				}
 
+				auto circleRendererComponent = entity["CircleRendererComponent"];
+				if (circleRendererComponent) {
+					auto& src = deserializedEntity.AddComponent<CircleRendererComponent>();
+					src.Color = circleRendererComponent["Color"].as<glm::vec4>();
+					src.Thickness = circleRendererComponent["Thickness"].as<float>();
+					src.Fade = circleRendererComponent["Fade"].as<float>();
+				}
+
 				auto cameraComponent = entity["CameraComponent"];
 				if (cameraComponent) {
 					auto& cc = deserializedEntity.AddComponent<CameraComponent>();
@@ -258,6 +266,18 @@ namespace Vortex {
 			out << YAML::Key << "Color" << YAML::Value << spriteComponent.Color;
 
 			out << YAML::EndMap; // SpriteRendererComponent
+		}
+
+		if (entity.HasComponent<CircleRendererComponent>()) {
+			out << YAML::Key << "CircleRendererComponent";
+			out << YAML::BeginMap;
+
+			auto& circleRendererComponent = entity.GetComponent<CircleRendererComponent>();
+			out << YAML::Key << "Color" << YAML::Value << circleRendererComponent.Color;
+			out << YAML::Key << "Thickness" << YAML::Value << circleRendererComponent.Thickness;
+			out << YAML::Key << "Fade" << YAML::Value << circleRendererComponent.Fade;
+
+			out << YAML::EndMap;
 		}
 
 		if (entity.HasComponent<CameraComponent>()) {

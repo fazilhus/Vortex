@@ -37,6 +37,7 @@ namespace Vortex {
 
 		CopyComponent<TransformComponent>(dstRegistry, srcRegistry, enttMap);
 		CopyComponent<SpriteComponent>(dstRegistry, srcRegistry, enttMap);
+		CopyComponent<CircleRendererComponent>(dstRegistry, srcRegistry, enttMap);
 		CopyComponent<CameraComponent>(dstRegistry, srcRegistry, enttMap);
 		CopyComponent<NativeScriptComponent>(dstRegistry, srcRegistry, enttMap);
 		CopyComponent<Rigidbody2DComponent>(dstRegistry, srcRegistry, enttMap);
@@ -112,11 +113,22 @@ namespace Vortex {
 		if (mainCamera) {
 			Renderer2D::BeginScene(*mainCamera, cameraTransform);
 
-			auto group = m_registry.group<TransformComponent>(entt::get<SpriteComponent>);
-			for (auto entity : group) {
-				auto [transform, sprite] = m_registry.get<TransformComponent, SpriteComponent>(entity);
-				VT_CORE_TRACE("Scene::OnUpdate drawquad call pos {0} {1} {2}", transform.Translation.x, transform.Translation.y, transform.Translation.z);
-				Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
+			{
+				auto group = m_registry.group<TransformComponent>(entt::get<SpriteComponent>);
+				for (auto entity : group) {
+					auto [transform, sprite] = m_registry.get<TransformComponent, SpriteComponent>(entity);
+					VT_CORE_TRACE("Scene::OnUpdate drawquad call pos {0} {1} {2}", transform.Translation.x, transform.Translation.y, transform.Translation.z);
+					Renderer2D::DrawSprite(transform.GetTransform(), sprite, static_cast<int>(entity));
+				}
+			}
+
+			{
+				auto view = m_registry.view<TransformComponent, CircleRendererComponent>();
+				for (auto entity : view) {
+					auto [transform, circle] = m_registry.get<TransformComponent, CircleRendererComponent>(entity);
+					VT_CORE_TRACE("Scene::OnUpdate drawcircle call pos {0} {1} {2}", transform.Translation.x, transform.Translation.y, transform.Translation.z);
+					Renderer2D::DrawCircle(transform.GetTransform(), circle.Color, circle.Thickness, circle.Fade, static_cast<int>(entity));
+				}
 			}
 
 			Renderer2D::EndScene();
@@ -127,12 +139,22 @@ namespace Vortex {
 	void Scene::OnUpdateEditor(Timestep ts, EditorCamera& camera) {
 		Renderer2D::BeginScene(camera);
 
-		auto group = m_registry.group<TransformComponent>(entt::get<SpriteComponent>);
-		for (auto entity : group)
 		{
-			auto [transform, sprite] = group.get<TransformComponent, SpriteComponent>(entity);
+			auto group = m_registry.group<TransformComponent>(entt::get<SpriteComponent>);
+			for (auto entity : group) {
+				auto [transform, sprite] = m_registry.get<TransformComponent, SpriteComponent>(entity);
+				VT_CORE_TRACE("Scene::OnUpdateEditor drawquad call pos {0} {1} {2}", transform.Translation.x, transform.Translation.y, transform.Translation.z);
+				Renderer2D::DrawSprite(transform.GetTransform(), sprite, static_cast<int>(entity));
+			}
+		}
 
-			Renderer2D::DrawSprite(transform.GetTransform(), sprite, (int)entity);
+		{
+			auto view = m_registry.view<TransformComponent, CircleRendererComponent>();
+			for (auto entity : view) {
+				auto [transform, circle] = m_registry.get<TransformComponent, CircleRendererComponent>(entity);
+				VT_CORE_TRACE("Scene::OnUpdateEditor drawcircle call pos {0} {1} {2}", transform.Translation.x, transform.Translation.y, transform.Translation.z);
+				Renderer2D::DrawCircle(transform.GetTransform(), circle.Color, circle.Thickness, circle.Fade, static_cast<int>(entity));
+			}
 		}
 
 		Renderer2D::EndScene();
@@ -211,6 +233,7 @@ namespace Vortex {
 
 		CopyComponentIfExists<TransformComponent>(newEntity, entity);
 		CopyComponentIfExists<SpriteComponent>(newEntity, entity);
+		CopyComponentIfExists<CircleRendererComponent>(newEntity, entity);
 		CopyComponentIfExists<CameraComponent>(newEntity, entity);
 		CopyComponentIfExists<NativeScriptComponent>(newEntity, entity);
 		CopyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
@@ -264,6 +287,11 @@ namespace Vortex {
 
 	template <>
 	void Scene::OnComponentAdded<SpriteComponent>(Entity entity, SpriteComponent& component) {
+
+	}
+
+	template <>
+	void Scene::OnComponentAdded<CircleRendererComponent>(Entity entity, CircleRendererComponent& component) {
 
 	}
 
