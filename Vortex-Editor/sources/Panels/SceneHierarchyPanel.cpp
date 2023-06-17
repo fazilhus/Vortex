@@ -49,61 +49,11 @@ namespace Vortex {
 
 			if (ImGui::BeginPopupContextWindow("Entity Properties", 1 | ImGuiPopupFlags_NoOpenOverItems)) {
 				if (ImGui::BeginMenu("Add Component")) {
-					if (!m_selectionContext.HasComponent<TransformComponent>()) {
-						if (ImGui::MenuItem("Transform Component")) {
-							VT_CORE_TRACE("Added Transform Component to entity {0}", (uint32)m_selectionContext);
-							m_selectionContext.AddComponent<TransformComponent>();
-							ImGui::CloseCurrentPopup();
-						}
-					}
-					else {
-						VT_CORE_WARN("Entity {0} already has Transform Component", (uint32)m_selectionContext);
-					}
-
-					if (!m_selectionContext.HasComponent<SpriteComponent>()) {
-						if (ImGui::MenuItem("Sprite Component")) {
-							VT_CORE_TRACE("Added Sprite Component to entity {0}", (uint32)m_selectionContext);
-							m_selectionContext.AddComponent<SpriteComponent>();
-							ImGui::CloseCurrentPopup();
-						}
-					}
-					else {
-						VT_CORE_WARN("Entity {0} already has Sprite Component", (uint32)m_selectionContext);
-					}
-
-					if (!m_selectionContext.HasComponent<CameraComponent>()) {
-						if (ImGui::MenuItem("Camera Component")) {
-							VT_CORE_TRACE("Added Camera Component to entity {0}", (uint32)m_selectionContext);
-							m_selectionContext.AddComponent<CameraComponent>();
-							ImGui::CloseCurrentPopup();
-						}
-					}
-					else {
-						VT_CORE_WARN("Entity {0} already has Camera Component", (uint32)m_selectionContext);
-					}
-
-					if (!m_selectionContext.HasComponent<Rigidbody2DComponent>()) {
-						if (ImGui::MenuItem("Rigidbody2D Component")) {
-							VT_CORE_TRACE("Added Rigidbody2D Component to entity {0}", (uint32)m_selectionContext);
-							m_selectionContext.AddComponent<Rigidbody2DComponent>();
-							ImGui::CloseCurrentPopup();
-						}
-					}
-					else {
-						VT_CORE_WARN("Entity {0} already has Rigidbody2D Component", (uint32)m_selectionContext);
-					}
-
-					if (!m_selectionContext.HasComponent<BoxCollider2DComponent>()) {
-						if (ImGui::MenuItem("Box Collider2D Component")) {
-							VT_CORE_TRACE("Added Box Collider2D Component to entity {0}", (uint32)m_selectionContext);
-							m_selectionContext.AddComponent<BoxCollider2DComponent>();
-							ImGui::CloseCurrentPopup();
-						}
-					}
-					else {
-						VT_CORE_WARN("Entity {0} already has Box Collider2D Component", (uint32)m_selectionContext);
-					}
-
+					DisplayAddComponentEntry<TransformComponent>("Transform Component");
+					DisplayAddComponentEntry<SpriteComponent>("Sprite Component");
+					DisplayAddComponentEntry<CameraComponent>("Camera Component");
+					DisplayAddComponentEntry<Rigidbody2DComponent>("Rigidbody 2D Component");
+					DisplayAddComponentEntry<BoxCollider2DComponent>("Box2D Collider Component");
 					ImGui::EndMenu();
 				}
 				ImGui::EndPopup();
@@ -175,6 +125,20 @@ namespace Vortex {
 
 				ImGui::TreePop();
 			}
+		}
+	}
+
+	template<typename Component>
+	void SceneHierarchyPanel::DisplayAddComponentEntry(const std::string& entry) {
+		if (!m_selectionContext.HasComponent<Component>()) {
+			if (ImGui::MenuItem(entry.c_str())) {
+				VT_CORE_TRACE("Added {0} to entity {1}", entry, (uint32)m_selectionContext);
+				m_selectionContext.AddComponent<Component>();
+				ImGui::CloseCurrentPopup();
+			}
+		}
+		else {
+			VT_CORE_WARN("Entity {0} already has {1}", (uint32)m_selectionContext, entry);
 		}
 	}
 
@@ -309,7 +273,7 @@ namespace Vortex {
 
 		DrawComponent<BoxCollider2DComponent>("Box Collider 2D", entity, [](auto& component) {
 			ImGui::DragFloat2("Offset", glm::value_ptr(component.Offset));
-			ImGui::DragFloat2("Size", glm::value_ptr(component.Offset));
+			ImGui::DragFloat2("Size", glm::value_ptr(component.Size));
 			ImGui::DragFloat("Density", &component.Density, 0.01f, 0.0f, 1.0f);
 			ImGui::DragFloat("Friction", &component.Friction, 0.01f, 0.0f, 1.0f);
 			ImGui::DragFloat("Restitution", &component.Restitution, 0.01f, 0.0f, 1.0f);
