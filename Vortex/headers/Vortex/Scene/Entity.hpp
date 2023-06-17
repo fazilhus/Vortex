@@ -1,6 +1,8 @@
 #pragma once
 #include <entt/entt.hpp>
 #include "Vortex/Scene/Scene.hpp"
+#include "Vortex/Scene/Components.hpp"
+#include "Vortex/Core/UUID.hpp"
 
 namespace Vortex {
 
@@ -41,13 +43,6 @@ namespace Vortex {
 			return m_scene->m_registry.all_of<T>(m_entityHandle);
 		}
 
-		operator bool() const { return m_entityHandle != entt::null; }
-		operator uint32() const { return static_cast<uint32>(m_entityHandle); }
-		operator entt::entity() const { return m_entityHandle; }
-
-		bool operator==(const Entity& other) { return m_entityHandle == other.m_entityHandle && m_scene == other.m_scene; }
-		bool operator!=(const Entity& other) { return !(*this == other); }
-
 		template <typename T>
 		T& GetComponent() {
 			if (!HasComponent<T>()) {
@@ -56,6 +51,15 @@ namespace Vortex {
 			}
 			return m_scene->m_registry.get<T>(m_entityHandle);
 		}
+
+		operator bool() const { return m_entityHandle != entt::null; }
+		operator uint32() const { return static_cast<uint32>(m_entityHandle); }
+		operator entt::entity() const { return m_entityHandle; }
+
+		bool operator==(const Entity& other) { return m_entityHandle == other.m_entityHandle && m_scene == other.m_scene; }
+		bool operator!=(const Entity& other) { return !(*this == other); }
+
+		UUID GetUUID() { return GetComponent<IDComponent>().ID; }
 	};
 
 }

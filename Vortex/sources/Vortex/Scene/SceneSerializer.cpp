@@ -136,7 +136,7 @@ namespace Vortex {
 	}
 
 	void SceneSerializer::SerializeRuntime(const std::string& filepath) {
-		VT_CORE_ASSERT(false, "SceneSerializer::SerializeRuntime not implemented");
+		VT_CORE_ASSERT(false, "SceneSerializer::SerializeRuntime is not implemented");
 	}
 
 	bool SceneSerializer::Deserialize(const std::string& filepath) {
@@ -148,11 +148,9 @@ namespace Vortex {
 		VT_CORE_TRACE("Deserializing scene '{0}'", sceneName);
 
 		auto entities = data["Entities"];
-		if (entities)
-		{
-			for (auto entity : entities)
-			{
-				uint64_t uuid = entity["Entity"].as<uint64_t>(); // TODO
+		if (entities) {
+			for (auto entity : entities) {
+				uint64_t uuid = entity["Entity"].as<uint64>();
 
 				std::string name;
 				auto tagComponent = entity["TagComponent"];
@@ -161,11 +159,10 @@ namespace Vortex {
 
 				VT_CORE_TRACE("Deserialized entity with ID = {0}, name = {1}", uuid, name);
 
-				Entity deserializedEntity = m_scene->CreateEntity(name);
+				Entity deserializedEntity = m_scene->CreateEntityWithUUID(uuid, name);
 
 				auto transformComponent = entity["TransformComponent"];
-				if (transformComponent)
-				{
+				if (transformComponent) {
 					// Entities always have transforms
 					auto& tc = deserializedEntity.GetComponent<TransformComponent>();
 					tc.Translation = transformComponent["Translation"].as<glm::vec3>();
@@ -174,16 +171,14 @@ namespace Vortex {
 				}
 
 				auto spriteComponent = entity["SpriteComponent"];
-				if (spriteComponent)
-				{
+				if (spriteComponent) {
 					auto& src = deserializedEntity.AddComponent<SpriteComponent>();
 					src.Color = spriteComponent["Color"].as<glm::vec4>();
 					VT_CORE_TRACE("SceneSerializer::Deserialize Color {0} {1} {2} {3}", src.Color.r, src.Color.g, src.Color.b, src.Color.a);
 				}
 
 				auto cameraComponent = entity["CameraComponent"];
-				if (cameraComponent)
-				{
+				if (cameraComponent) {
 					auto& cc = deserializedEntity.AddComponent<CameraComponent>();
 
 					auto cameraProps = cameraComponent["Camera"];
@@ -202,16 +197,14 @@ namespace Vortex {
 				}
 
 				auto rigidbody2DComponent = entity["Rigidbody2DComponent"];
-				if (rigidbody2DComponent)
-				{
+				if (rigidbody2DComponent) {
 					auto& rb2d = deserializedEntity.AddComponent<Rigidbody2DComponent>();
 					rb2d.Type = RigidBody2DBodyTypeFromString(rigidbody2DComponent["BodyType"].as<std::string>());
 					rb2d.FixedRotation = rigidbody2DComponent["FixedRotation"].as<bool>();
 				}
 
 				auto boxCollider2DComponent = entity["BoxCollider2DComponent"];
-				if (boxCollider2DComponent)
-				{
+				if (boxCollider2DComponent) {
 					auto& bc2d = deserializedEntity.AddComponent<BoxCollider2DComponent>();
 					bc2d.Offset = boxCollider2DComponent["Offset"].as<glm::vec2>();
 					bc2d.Size = boxCollider2DComponent["Size"].as<glm::vec2>();
@@ -227,16 +220,15 @@ namespace Vortex {
 	}
 
 	bool SceneSerializer::DeserializeRuntime(const std::string& filepath) {
-		VT_CORE_ASSERT(false, "SceneSerializer::DeserializeRuntime not implemented");
+		VT_CORE_ASSERT(false, "SceneSerializer::DeserializeRuntime is not implemented");
 		return false;
 	}
 
 	void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity entity) {
 		out << YAML::BeginMap; // Entity
-		out << YAML::Key << "Entity" << YAML::Value << (uint32)entity;
+		out << YAML::Key << "Entity" << YAML::Value << entity.GetUUID();
 
-		if (entity.HasComponent<TagComponent>())
-		{
+		if (entity.HasComponent<TagComponent>()) {
 			out << YAML::Key << "TagComponent";
 			out << YAML::BeginMap; // TagComponent
 
@@ -246,8 +238,7 @@ namespace Vortex {
 			out << YAML::EndMap; // TagComponent
 		}
 
-		if (entity.HasComponent<TransformComponent>())
-		{
+		if (entity.HasComponent<TransformComponent>()) {
 			out << YAML::Key << "TransformComponent";
 			out << YAML::BeginMap; // TransformComponent
 
@@ -259,8 +250,7 @@ namespace Vortex {
 			out << YAML::EndMap; // TransformComponent
 		}
 
-		if (entity.HasComponent<SpriteComponent>())
-		{
+		if (entity.HasComponent<SpriteComponent>()) {
 			out << YAML::Key << "SpriteComponent";
 			out << YAML::BeginMap; // SpriteRendererComponent
 
@@ -270,8 +260,7 @@ namespace Vortex {
 			out << YAML::EndMap; // SpriteRendererComponent
 		}
 
-		if (entity.HasComponent<CameraComponent>())
-		{
+		if (entity.HasComponent<CameraComponent>()) {
 			out << YAML::Key << "CameraComponent";
 			out << YAML::BeginMap; // CameraComponent
 

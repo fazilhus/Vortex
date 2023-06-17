@@ -20,8 +20,8 @@ namespace Vortex {
 			}
 		}
 
-		static float padding = 16.0f;
-		static float thumbnailSize = 80.0f;
+		static float padding = 12.0f;
+		static float thumbnailSize = 48.0f;
 		float cellSize = thumbnailSize + padding;
 
 		float panelWidth = ImGui::GetContentRegionAvail().x;

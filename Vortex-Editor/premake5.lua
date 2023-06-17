@@ -53,6 +53,8 @@ project "Vortex-Editor"
         optimize "on"
 
     filter "configurations:Dist"
+        kind "WindowedApp"
+        entrypoint "mainCRTStartup"
         defines "VT_DIST"
 
         runtime "Release"

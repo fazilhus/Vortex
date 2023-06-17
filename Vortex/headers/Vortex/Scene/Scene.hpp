@@ -2,6 +2,7 @@
 #include <entt/entt.hpp>
 #include "Vortex/Core/Timestep.hpp"
 #include "Vortex/Renderer/Cameras/EditorCamera.hpp"
+#include "Vortex/Core/UUID.hpp"
 
 class b2World;
 
@@ -24,6 +25,7 @@ namespace Vortex {
 		~Scene() = default;
 
 		Entity CreateEntity(const std::string& tag);
+		Entity CreateEntityWithUUID(UUID id, const std::string& tag);
 		void DestroyEntity(Entity entity);
 
 		void OnUpdate(Timestep ts);

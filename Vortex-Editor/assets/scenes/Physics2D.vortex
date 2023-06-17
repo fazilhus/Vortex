@@ -1,6 +1,6 @@
 Scene: Untitled
 Entities:
-  - Entity: 2
+  - Entity: 5134011587522944740
     TagComponent:
       Tag: Floor
     TransformComponent:
@@ -8,7 +8,7 @@ Entities:
       Rotation: [0, 0, 0]
       Scale: [6.7419672, 0.460678041, 1]
     SpriteComponent:
-      Color: [1, 1, 1, 1]
+      Color: [0.949806929, 0.455301404, 0.0660097376, 1]
     Rigidbody2DComponent:
       BodyType: Static
       FixedRotation: false
@@ -19,12 +19,12 @@ Entities:
       Friction: 0.5
       Restitution: 0
       RestitutionThreshold: 0.5
-  - Entity: 1
+  - Entity: 15045535320033348975
     TagComponent:
       Tag: Sprite
     TransformComponent:
-      Translation: [0, 0, 0.0225147791]
-      Rotation: [0, 0, -0.261799395]
+      Translation: [0.0495706201, 0.271503896, 0.0225147791]
+      Rotation: [0, 0, -0.235084534]
       Scale: [0.361159712, 0.375572056, 0.848135769]
     SpriteComponent:
       Color: [1, 1, 1, 1]
@@ -38,7 +38,7 @@ Entities:
       Friction: 0.100000001
       Restitution: 0.819999993
       RestitutionThreshold: 0.5
-  - Entity: 0
+  - Entity: 4793924497264767156
     TagComponent:
       Tag: Camera
     TransformComponent:
@@ -49,7 +49,7 @@ Entities:
       Camera:
         ProjectionType: 0
         PerspectiveFOV: 0.785398185
-        PerspectiveNear: 0.01
+        PerspectiveNear: 0.00999999978
         PerspectiveFar: 1000
         OrthographicSize: 10
         OrthographicNear: -1

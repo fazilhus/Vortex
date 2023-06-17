@@ -1,14 +1,23 @@
 #pragma once
+#include "Vortex/Core/UUID.hpp"
+#include "Vortex/Scene/SceneCamera.hpp"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include "Vortex/Scene/SceneCamera.hpp"
-#include "Vortex/Scene/ScriptableEntity.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #define GLM_FORCE_QUAT_DATA_WXYZ
 #include <glm/gtx/quaternion.hpp>
 
 namespace Vortex {
+
+	struct IDComponent {
+		UUID ID;
+
+		IDComponent() = default;
+		IDComponent(const UUID& id) : ID(id) {}
+		IDComponent(const IDComponent&) = default;
+	};
 
 	struct TagComponent {
 		std::string Tag;
@@ -54,6 +63,8 @@ namespace Vortex {
 		CameraComponent() = default;
 		CameraComponent(const CameraComponent&) = default;
 	};
+
+	class ScriptableEntity;
 
 	struct NativeScriptComponent {
 		ScriptableEntity* instance = nullptr;

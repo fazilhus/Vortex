@@ -2,7 +2,7 @@
 #include "Platforms/OpenGL/OpenGLShader.hpp"
 #include "Vortex/Controllers/CameraController.hpp"
 #include "Vortex/Scene/SceneSerializer.hpp"
-#include "Vortex/Utils/FileIO.hpp"
+#include "Vortex/Utils/Platform.hpp"
 #include "ImGuizmo.h"
 #include "Vortex/Math/Math.hpp"
 
@@ -11,7 +11,7 @@ namespace Vortex {
 	extern const std::filesystem::path g_assetPath;
 
     EditorLayer::EditorLayer()
-        : Layer("EditorLayer"), m_viewportPanelSize({ 1600, 900 }),
+		: Layer("EditorLayer"), m_viewportPanelSize({ 1600, 900 }), m_viewportBounds(),
         m_viewportFocused(false), m_viewportHovered(false), m_gizmoType(-1), 
 		m_prevSceneState(SceneState::Edit), m_sceneState(SceneState::Edit), isPaused(false) {}
 
@@ -220,7 +220,26 @@ namespace Vortex {
 		if (ImGui::BeginDragDropTarget()) {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM")) {
 				const wchar_t* path = (const wchar_t*)payload->Data;
-				OpenScene(std::filesystem::path(g_assetPath) / path);
+				std::filesystem::path filePath = std::filesystem::path(path);
+
+				if (filePath.extension().string() == ".vortex")
+				{
+					OpenScene(std::filesystem::path(g_assetPath) / path);
+				}
+				else if (filePath.extension().string() == ".png")
+				{
+					std::filesystem::path texturePath = std::filesystem::path(g_assetPath) / path;
+					Ref<Texture2D> texture = Texture2D::Create(texturePath.string());
+					if (texture->IsLoaded())
+					{
+						if (m_hoveredEntity && m_hoveredEntity.HasComponent<SpriteComponent>())
+							m_hoveredEntity.GetComponent<SpriteComponent>().Texture = texture;
+					}
+					else
+					{
+						VT_CL_WARN("Could not load texture {0}", texturePath.filename().string());
+					}
+				}
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -276,7 +295,9 @@ namespace Vortex {
         VT_PROFILE_FUNC();
         VT_CORE_TRACE("EditorLayer::OnEvent {0}", e.GetName());
 
-        m_editorCamera.OnEvent(e);
+		if (m_sceneState == SceneState::Edit) {
+			m_editorCamera.OnEvent(e);
+		}
 
         ImGuiIO& io = ImGui::GetIO();
         e.m_handled |= e.IsInCat(EventCatMouse) & io.WantCaptureMouse;
@@ -421,6 +442,7 @@ namespace Vortex {
 	}
 
 	void EditorLayer::NewScene() {
+		if (m_sceneState != SceneState::Edit) return;
         m_currentScene = CreateRef<Scene>();
         m_currentScene->OnViewportResize((uint32)m_viewportPanelSize.x, (uint32)m_viewportPanelSize.y);
         m_sceneHierarchyPanel.SetContext(m_currentScene);

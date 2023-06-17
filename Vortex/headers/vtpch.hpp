@@ -24,8 +24,6 @@
 #include "Vortex/Core/Window.hpp"
 #include "Vortex/Core/Input.hpp"
 #include "Vortex/Core/Codes.hpp"
-#include "Vortex/Core/Platform.hpp"
-#include "Vortex/Core/PlatformAPI.hpp"
 #include "Vortex/Core/Timestep.hpp"
 #include "Vortex/Core/Timer.hpp"
 
@@ -55,6 +53,10 @@
 
 #include "Vortex/Scene/Scene.hpp"
 #include "Vortex/Scene/Components.hpp"
+#include "Vortex/Scene/Entity.hpp"
+#include "Vortex/Scene/ScriptableEntity.hpp"
+
+#include "Vortex/Utils/Platform.hpp"
 
 // GLFW
 #include <GLFW/glfw3.h>

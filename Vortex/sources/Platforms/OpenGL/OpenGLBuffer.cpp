@@ -103,7 +103,7 @@ namespace Vortex {
 		vb->Bind();
 
 		const auto& layout = vb->GetLayout();
-		for (const auto item : layout) {
+		for (const auto& item : layout) {
 			switch (item.type) {
 				case ShaderDataType::Float:
 				case ShaderDataType::Float2:
@@ -115,7 +115,7 @@ namespace Vortex {
 						ShaderDataTypeToOpenGLType(item.type),
 						item.normalized ? GL_TRUE : GL_FALSE,
 						layout.GetStride(),
-						(const void*)item.offset);
+						reinterpret_cast<const void*>(item.offset));
 					m_vertexBufferInd++;
 					break;
 				case ShaderDataType::Int:
@@ -239,7 +239,7 @@ namespace Vortex {
 	OpenGLFrameBuffer::OpenGLFrameBuffer(const FrameBufferSpec& spec)
 	: m_rendererID(0), m_depthAttachment(0), m_spec(spec),
 	m_depthAttachmentSpecification(FramebufferTextureFormat::None) {
-		for (auto spec : m_spec.attachments.Attachments) {
+		for (auto& spec : m_spec.attachments.Attachments) {
 			if (!Utils::IsDepthFormat(spec.TextureFormat)) {
 				m_colorAttachmentSpecifications.emplace_back(spec);
 			}

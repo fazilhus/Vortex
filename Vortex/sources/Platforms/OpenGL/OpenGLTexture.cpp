@@ -91,6 +91,6 @@ namespace Vortex {
 	}
 
 	bool OpenGLTexture2D::operator==(const Texture& other) const {
-		return m_rendererID == reinterpret_cast<const OpenGLTexture2D&>(other).m_rendererID;
+		return m_rendererID == other.GetID();
 	}
 }

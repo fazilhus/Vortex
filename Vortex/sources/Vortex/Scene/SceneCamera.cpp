@@ -1,7 +1,7 @@
 #include <vtpch.hpp>
 #include "Vortex/Scene/SceneCamera.hpp"
 
-#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace Vortex {
 
@@ -39,7 +39,7 @@ namespace Vortex {
 		if (m_projectionType == ProjectionType::Perspective) {
 			m_projection = glm::perspective(m_perspectiveFOV, m_aspectRatio, m_perspectiveNear, m_perspectiveFar);
 		}
-		else if (m_projectionType == ProjectionType::Orthographic) {
+		else {
 			float orthoLeft = -m_orthographicSize * m_aspectRatio * 0.5f;
 			float orthoRight = m_orthographicSize * m_aspectRatio * 0.5f;
 			float orthoBottom = -m_orthographicSize * 0.5f;

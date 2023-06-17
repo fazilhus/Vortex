@@ -17,7 +17,7 @@ namespace Vortex {
 		void PopLayer(Ref<Layer> l);
 		void PopOverlay(Ref<Layer> o);
 
-		inline uint8 GetSize() const { return m_layers.size(); }
+		inline std::size_t GetSize() const { return m_layers.size(); }
 
 		inline Vector<Ref<Layer>>::iterator begin() { return m_layers.begin(); }
 		inline Vector<Ref<Layer>>::const_iterator begin() const { return m_layers.begin(); }
