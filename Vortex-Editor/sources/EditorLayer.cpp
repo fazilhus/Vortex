@@ -13,7 +13,7 @@ namespace Vortex {
     EditorLayer::EditorLayer()
 		: Layer("EditorLayer"), m_viewportPanelSize({ 1600, 900 }), m_viewportBounds(),
         m_viewportFocused(false), m_viewportHovered(false), m_gizmoType(-1), 
-		m_sceneState(SceneState::Edit), isPaused(false) {}
+		m_sceneState(SceneState::Edit), m_isPaused(false), m_showColliders(false) {}
 
     void EditorLayer::OnAttach() {
         Layer::OnAttach();
@@ -77,12 +77,10 @@ namespace Vortex {
 		{
 			VT_PROFILE_SCOPE("Draw all");
 
-			if (!isPaused) {
+			if (!m_isPaused) {
 				switch (m_sceneState) {
 				case SceneState::Play:
-					if (!isPaused) {
-						m_currentScene->OnUpdate(ts);
-					}
+					m_currentScene->OnUpdate(ts);
 					break;
 				case SceneState::Edit:
 					m_editorCamera.OnUpdate(ts);
@@ -109,6 +107,8 @@ namespace Vortex {
 				m_hoveredEntity = pixelData == -1 ? Entity{} : Entity{ (entt::entity)pixelData, m_currentScene.get() };
 				VT_CORE_INFO("EditorLayer::OnUpdate pixel data : {0}", pixelData);
 			}
+
+			OnOverlayRender();
 
 			m_frameBuffer->Unbind();
 		}
@@ -198,6 +198,12 @@ namespace Vortex {
 
         m_sceneHierarchyPanel.OnImGuiRender();
 		m_contentBrowserPanel.OnImGuiRender();
+
+		ImGui::Begin("Settings");
+
+		ImGui::Checkbox("Show Colliders", &m_showColliders);
+
+		ImGui::End();
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
         ImGui::Begin("Viewport");
@@ -308,6 +314,49 @@ namespace Vortex {
         dispatcher.Dispatch<MouseButtonPressedEvent>(VT_BIND_EVENT_FN(EditorLayer::OnMouseButtonPressed));
     }
 
+	void EditorLayer::OnOverlayRender() {
+		if (m_sceneState == SceneState::Play && !m_isPaused) {
+			Entity camera = m_currentScene->GetPrimaryCamera();
+			Renderer2D::BeginScene(camera.GetComponent<CameraComponent>().Camera, camera.GetComponent<TransformComponent>().GetTransform());
+		}
+		else {
+			Renderer2D::BeginScene(m_editorCamera);
+		}
+
+		if (m_showColliders) {
+			{
+				auto view = m_currentScene->GetAllEntitiesWith<TransformComponent, BoxCollider2DComponent>();
+				for (auto entity : view) {
+					auto [tc, bc2d] = view.get<TransformComponent, BoxCollider2DComponent>(entity);
+					glm::vec3 translation = tc.Translation + glm::vec3(bc2d.Offset, 0.001f);
+					glm::vec3 scale = tc.Scale * glm::vec3(bc2d.Size * 2.0f, 1.0f);
+
+					glm::mat4 transform = glm::translate(glm::mat4(1.0f), translation)
+						* glm::rotate(glm::mat4(1.0f), tc.Rotation.z, glm::vec3(0.0f, 0.0f, 1.0f))
+						* glm::scale(glm::mat4(1.0f), scale);
+
+					Renderer2D::DrawRect(transform, glm::vec4(0, 1, 0, 1));
+				}
+			}
+
+			{
+				auto view = m_currentScene->GetAllEntitiesWith<TransformComponent, CircleCollider2DComponent>();
+				for (auto entity : view) {
+					auto [tc, cc2d] = view.get<TransformComponent, CircleCollider2DComponent>(entity);
+					glm::vec3 translation = tc.Translation + glm::vec3(cc2d.Offset, 0.001f);
+					glm::vec3 scale = tc.Scale * glm::vec3(cc2d.Radius * 2.0f);
+
+					glm::mat4 transform = glm::translate(glm::mat4(1.0f), translation)
+						* glm::scale(glm::mat4(1.0f), scale);
+
+					Renderer2D::DrawCircle(transform, glm::vec4(0, 1, 0, 1), 0.01f);
+				}
+			}
+		}
+
+		Renderer2D::EndScene();
+	}
+
     bool EditorLayer::OnKeyPressed(KeyPressedEvent& e) {
         if (e.GetRepeatCount() > 0) return false;
 
@@ -378,12 +427,12 @@ namespace Vortex {
 	}
 
 	void EditorLayer::OnSceneResume() {
-		isPaused = false;
+		m_isPaused = false;
 		m_currentScene->OnRuntimeResume();
 	}
 
 	void EditorLayer::OnScenePause() {
-		isPaused = true;
+		m_isPaused = true;
 		m_currentScene->OnRuntimePause();
 	}
 
@@ -417,13 +466,13 @@ namespace Vortex {
 
 		float size = ImGui::GetWindowHeight() - 4.0f;
 		Ref<Texture2D> icon = m_playIcon;
-		if (m_sceneState == SceneState::Play && !isPaused) {
+		if (m_sceneState == SceneState::Play && !m_isPaused) {
 			icon = m_pauseIcon;
 		}
 		ImGui::SetCursorPosX((ImGui::GetContentRegionMax().x * 0.01f) - (size * 0.5f));
 		if (ImGui::ImageButton("Play-Pause", (ImTextureID)icon->GetID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1))) {
 			if (m_sceneState == SceneState::Play) {
-				if (isPaused) {
+				if (m_isPaused) {
 					OnSceneResume();
 				}
 				else {
@@ -442,7 +491,7 @@ namespace Vortex {
 		}
 		ImGui::SameLine();
 
-		ImGui::SetCursorPosX((ImGui::GetContentRegionMax().x * 0.04f) - (size * 0.5f));
+		ImGui::SetCursorPosX((ImGui::GetContentRegionMax().x * 0.01f + 40.0f) - (size * 0.5f));
 		if (ImGui::ImageButton("Stop", (ImTextureID)m_stopIcon->GetID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1))) {
 			if (m_sceneState == SceneState::Play) {
 				OnSceneStop();

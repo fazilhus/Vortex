@@ -47,7 +47,9 @@ namespace Vortex {
 
 		SceneState m_sceneState;
 
-		bool isPaused;
+		bool m_isPaused;
+
+		bool m_showColliders;
 
 
 	public:
@@ -60,6 +62,7 @@ namespace Vortex {
 		virtual void OnUpdate(Timestep ts) override;
 		virtual void OnImGuiRender() override;
 		virtual void OnEvent(Event& e) override;
+		void OnOverlayRender();
 
 	private:
 		bool OnKeyPressed(KeyPressedEvent& e);

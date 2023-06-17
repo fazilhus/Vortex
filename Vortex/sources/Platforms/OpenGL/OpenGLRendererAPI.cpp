@@ -71,7 +71,7 @@ namespace Vortex {
 
 	void OpenGLRendererAPI::DrawLines(const Ref<VertexArray>& va, uint32 vertexCount) {
 		va->Bind();
-		glDrawArrays(GL_LINE, 0, vertexCount);
+		glDrawArrays(GL_LINES, 0, vertexCount);
 	}
 
 	void OpenGLRendererAPI::SetLineWidth(float width) {

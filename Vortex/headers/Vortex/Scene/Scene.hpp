@@ -43,6 +43,11 @@ namespace Vortex {
 
 		Entity GetPrimaryCamera();
 
+		template <typename ...Components>
+		auto GetAllEntitiesWith() {
+			return m_registry.view<Components...>();
+		}
+
 	private:
 		template<typename T>
 		void OnComponentAdded(Entity entity, T& component);

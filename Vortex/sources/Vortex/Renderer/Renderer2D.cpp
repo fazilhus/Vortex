@@ -369,6 +369,7 @@ namespace Vortex {
 	void Renderer2D::DrawCircle(const glm::mat4& transform, const glm::vec4& color, float thickness, float fade, int entityID) {
 		VT_PROFILE_FUNC();
 
+		VT_CORE_INFO("Renderer2D::DrawCircle drawing circle");
 		for (std::size_t i = 0; i < 4; ++i) {
 			s_data.circleVertexBufferPtr->worldPos = transform * s_data.quadVertexPos[i];
 			s_data.circleVertexBufferPtr->localPos = s_data.quadVertexPos[i] * 2.0f;
@@ -425,6 +426,7 @@ namespace Vortex {
 	}
 
 	void Renderer2D::DrawRect(const glm::vec3& pos, const glm::vec2& dim, const glm::vec4& color, int entityID) {
+		VT_CORE_INFO("Renderer2D::DrawRect drawing rect from pos and dim");
 		glm::vec3 p0 = glm::vec3(pos.x - dim.x * 0.5f, pos.y - dim.y * 0.5f, pos.z);
 		glm::vec3 p1 = glm::vec3(pos.x + dim.x * 0.5f, pos.y - dim.y * 0.5f, pos.z);
 		glm::vec3 p2 = glm::vec3(pos.x + dim.x * 0.5f, pos.y + dim.y * 0.5f, pos.z);
@@ -437,6 +439,7 @@ namespace Vortex {
 	}
 
 	void Renderer2D::DrawRect(const glm::mat4& transform, const glm::vec4& color, int entityID) {
+		VT_CORE_INFO("Renderer2D::DrawRect drawing rect from transform");
 		glm::vec3 lineVertices[4];
 		for (size_t i = 0; i < 4; i++)
 			lineVertices[i] = transform * s_data.quadVertexPos[i];
