@@ -44,8 +44,8 @@ layout(location = 0) in Vertex Input;
 layout(location = 3) in flat float v_texInd;
 layout(location = 4) in flat int v_entityID;
 
-layout(location = 0) out vec4 color;
-layout(location = 1) out int color2;
+layout(location = 0) out vec4 o_color;
+layout(location = 1) out int o_entityID;
 
 layout(binding = 0) uniform sampler2D u_textures[32];
 
@@ -87,6 +87,6 @@ void main() {
 		case 31: texColor *= texture(u_textures[31], Input.texPos * Input.tilingFactor); break;
 	}
 
-	color = texColor;
-	color2 = v_entityID;
+	o_color = texColor;
+	o_entityID = v_entityID;
 }

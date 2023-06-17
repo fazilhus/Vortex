@@ -18,7 +18,7 @@ namespace Vortex {
 		m_window->SetVSync(false);
 		m_window->SetEventCallback(VT_BIND_EVENT_FN(Application::OnEvent));
 
-		Renderer::Init({true, true});
+		Renderer::Init({true, true, true});
 
 		m_imguiLayer = std::make_shared<ImGuiLayer>();
 		PushOverlay(m_imguiLayer);

@@ -30,6 +30,14 @@ namespace Vortex {
 		int entityID;
 	};
 
+	struct LineVertex {
+		glm::vec3 pos;
+		glm::vec4 color;
+
+		// Editor only
+		int entityID;
+	};
+
 	struct RendererStatisics {
 		uint32 drawcallsCount = 0;
 		uint32 quadCount = 0;
@@ -53,6 +61,10 @@ namespace Vortex {
 		Ref<VertexBuffer> circleVbo;
 		Ref<Shader> circleShader;
 
+		Ref<VertexArray> lineVao;
+		Ref<VertexBuffer> lineVbo;
+		Ref<Shader> lineShader;
+
 		uint32 quadIndCount = 0;
 		QuadVertex* quadVertexBufferBase = nullptr;
 		QuadVertex* quadVertexBufferPtr = nullptr;
@@ -60,6 +72,12 @@ namespace Vortex {
 		uint32 circleIndCount = 0;
 		CircleVertex* circleVertexBufferBase = nullptr;
 		CircleVertex* circleVertexBufferPtr = nullptr;
+
+		uint32 lineIndCount = 0;
+		LineVertex* lineVertexBufferBase = nullptr;
+		LineVertex* lineVertexBufferPtr = nullptr;
+
+		float lineWidth = 2.0f;
 
 		Array<Ref<Texture2D>, maxTextureSLots> texSlots;
 		uint32 texSlotInd = 1;
@@ -103,6 +121,9 @@ namespace Vortex {
 
 		static void DrawSprite(const glm::mat4& transform, SpriteComponent& sprite, int entityID);
 		static void DrawCircle(const glm::mat4& transform, const glm::vec4& color, float thickness = 1.0f, float fade = 0.005f, int entityID = -1);
+		static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color, int entityID = -1);
+		static void DrawRect(const glm::vec3& pos, const glm::vec2& dim, const glm::vec4& color, int entityID = -1);
+		static void DrawRect(const glm::mat4& transform, const glm::vec4& color, int entityID = -1);
 
 		static void ResetStats();
 		static RendererStatisics GetStats();

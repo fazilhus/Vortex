@@ -53,6 +53,16 @@ namespace Vortex {
 		s_data.circleVao->AddIndexBuffer(ibo);
 		s_data.circleVertexBufferBase = new CircleVertex[s_data.maxInd];
 
+		s_data.lineVao = VertexArray::Create();
+		s_data.lineVbo = VertexBuffer::Create(s_data.maxVert * sizeof(LineVertex));
+		s_data.lineVbo->SetLayout({
+			{ "a_position", ShaderDataType::Float3 },
+			{ "a_color", ShaderDataType::Float4 },
+			{ "a_entityID", ShaderDataType::Int }
+		});
+		s_data.lineVao->AddVertexBuffer(s_data.lineVbo);
+		s_data.lineVertexBufferBase = new LineVertex[s_data.maxInd];
+
 		s_data.texture = Texture2D::Create(1, 1);
 		uint32 texData = 0xffffffff;
 		s_data.texture->SetData(&texData, sizeof(uint32));
@@ -64,6 +74,7 @@ namespace Vortex {
 
 		s_data.quadShader = Shader::Create("assets/shaders/quadShader.glsl");
 		s_data.circleShader = Shader::Create("assets/shaders/circleShader.glsl");
+		s_data.lineShader = Shader::Create("assets/shaders/lineShader.glsl");
 		/*s_data.quadShader->Bind();
 		s_data.quadShader->SetIntArray("u_textures", samplers, s_data.maxTextureSLots);*/
 
@@ -137,6 +148,16 @@ namespace Vortex {
 
 			s_data.circleShader->Bind();
 			Render::DrawIndexed(s_data.circleVao, s_data.circleIndCount);
+			s_data.stats.drawcallsCount++;
+		}
+
+		if (s_data.lineIndCount) {
+			const auto dataSize = static_cast<uint32>(reinterpret_cast<uint8*>(s_data.lineVertexBufferPtr) - reinterpret_cast<uint8*>(s_data.lineVertexBufferBase));
+			s_data.lineVbo->SetData(s_data.lineVertexBufferBase, dataSize);
+
+			s_data.lineShader->Bind();
+			Render::SetLineWidth(s_data.lineWidth);
+			Render::DrawLines(s_data.lineVao, s_data.lineIndCount);
 			s_data.stats.drawcallsCount++;
 		}
 
@@ -378,12 +399,52 @@ namespace Vortex {
 		s_data.circleIndCount = 0;
 		s_data.circleVertexBufferPtr = s_data.circleVertexBufferBase;
 
+		s_data.lineIndCount = 0;
+		s_data.lineVertexBufferPtr = s_data.lineVertexBufferBase;
+
 		s_data.texSlotInd = 1;
 	}
 
 	void Renderer2D::NextBatch() {
 		Flush();
 		StartBatch();
+	}
+
+	void Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color, int entityID) {
+		s_data.lineVertexBufferPtr->pos = p0;
+		s_data.lineVertexBufferPtr->color = color;
+		s_data.lineVertexBufferPtr->entityID = entityID;
+		s_data.lineVertexBufferPtr++;
+
+		s_data.lineVertexBufferPtr->pos = p1;
+		s_data.lineVertexBufferPtr->color = color;
+		s_data.lineVertexBufferPtr->entityID = entityID;
+		s_data.lineVertexBufferPtr++;
+
+		s_data.lineIndCount += 2;
+	}
+
+	void Renderer2D::DrawRect(const glm::vec3& pos, const glm::vec2& dim, const glm::vec4& color, int entityID) {
+		glm::vec3 p0 = glm::vec3(pos.x - dim.x * 0.5f, pos.y - dim.y * 0.5f, pos.z);
+		glm::vec3 p1 = glm::vec3(pos.x + dim.x * 0.5f, pos.y - dim.y * 0.5f, pos.z);
+		glm::vec3 p2 = glm::vec3(pos.x + dim.x * 0.5f, pos.y + dim.y * 0.5f, pos.z);
+		glm::vec3 p3 = glm::vec3(pos.x - dim.x * 0.5f, pos.y + dim.y * 0.5f, pos.z);
+
+		DrawLine(p0, p1, color);
+		DrawLine(p1, p2, color);
+		DrawLine(p2, p3, color);
+		DrawLine(p3, p0, color);
+	}
+
+	void Renderer2D::DrawRect(const glm::mat4& transform, const glm::vec4& color, int entityID) {
+		glm::vec3 lineVertices[4];
+		for (size_t i = 0; i < 4; i++)
+			lineVertices[i] = transform * s_data.quadVertexPos[i];
+
+		DrawLine(lineVertices[0], lineVertices[1], color);
+		DrawLine(lineVertices[1], lineVertices[2], color);
+		DrawLine(lineVertices[2], lineVertices[3], color);
+		DrawLine(lineVertices[3], lineVertices[0], color);
 	}
 
 }

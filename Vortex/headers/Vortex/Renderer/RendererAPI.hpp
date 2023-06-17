@@ -23,6 +23,8 @@ namespace Vortex {
 		virtual void SetClearColor(const glm::vec4& color) = 0;
 		virtual void Clear() = 0;
 		virtual void DrawIndexed(const Ref<VertexArray>& va, uint32 count = 0) = 0;
+		virtual void DrawLines(const Ref<VertexArray>& va, uint32 vertexCount) = 0;
+		virtual void SetLineWidth(float width) = 0;
 
 		inline static API GetAPI() { return s_api; }
 
