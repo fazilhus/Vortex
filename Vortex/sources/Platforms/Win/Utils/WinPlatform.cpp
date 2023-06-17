@@ -1,5 +1,5 @@
 #include <vtpch.hpp>
-#include "Vortex/Utils/FileIO.hpp"
+#include "Vortex/Utils/Platform.hpp"
 
 #include <commdlg.h>
 #include <GLFW/glfw3.h>
@@ -53,6 +53,20 @@ namespace Vortex {
 			return ofn.lpstrFile;
 		}
 		return std::string{};
+	}
+
+	float Platform::GetTimeSec() {
+		LARGE_INTEGER t, fr;
+		QueryPerformanceCounter(&t);
+		QueryPerformanceFrequency(&fr);
+		return t.QuadPart / (float)fr.QuadPart;
+	}
+
+	float Platform::GetTimeMil() {
+		LARGE_INTEGER t, fr;
+		QueryPerformanceCounter(&t);
+		QueryPerformanceFrequency(&fr);
+		return (1000.0f * t.QuadPart) / (float)fr.QuadPart;
 	}
 
 }

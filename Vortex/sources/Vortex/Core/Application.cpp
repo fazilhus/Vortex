@@ -2,6 +2,7 @@
 #include "Vortex/Core/Application.hpp"
 #include "Vortex/Core/Timestep.hpp"
 #include "Vortex/Renderer/Renderer.hpp"
+#include "Vortex/Utils/Platform.hpp"
 
 namespace Vortex {
 
@@ -32,7 +33,7 @@ namespace Vortex {
 		while (m_running) {
 			{
 				VT_PROFILE_SCOPE("run loop");
-				float time = (float)Platform::GetTimeSec();
+				float time = Platform::GetTimeSec();
 				Timestep timestep = time - m_lastFrameTime;
 				m_lastFrameTime = time;
 
