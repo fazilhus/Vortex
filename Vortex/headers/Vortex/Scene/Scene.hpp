@@ -22,7 +22,7 @@ namespace Vortex {
 
 	public:
 		Scene() : m_viewportWidth(0), m_viewportHeight(0), m_physicsWorld(nullptr) {}
-		~Scene() = default;
+		~Scene();
 
 		static Ref<Scene> Copy(Ref<Scene> other);
 
@@ -31,6 +31,7 @@ namespace Vortex {
 		void DestroyEntity(Entity entity);
 
 		void OnUpdate(Timestep ts);
+		void OnUpdateSimulation(Timestep ts, EditorCamera& camera);
 		void OnUpdateEditor(Timestep ts, EditorCamera& camera);
 		void OnViewportResize(uint32 width, uint32 height);
 
@@ -38,6 +39,11 @@ namespace Vortex {
 		void OnRuntimeResume();
 		void OnRuntimePause();
 		void OnRuntimeStop();
+
+		void OnSimulateStart();
+		void OnSimulateResume();
+		void OnSimulatePause();
+		void OnSimulateStop();
 
 		void DuplicateEntity(Entity entity);
 
@@ -57,6 +63,13 @@ namespace Vortex {
 
 		template<typename T>
 		static void CopyComponentIfExists(Entity dst, Entity src);
+
+		void OnPhysics2DStart();
+		void OnPhysics2DResume();
+		void OnPhysics2DPause();
+		void OnPhysics2DStop();
+
+		void RenderScene(EditorCamera& camera);
 	};
 
 }

@@ -34,7 +34,7 @@ namespace Vortex {
 		// Panels
 		SceneHierarchyPanel m_sceneHierarchyPanel;
 		ContentBrowserPanel m_contentBrowserPanel;
-		Ref<Texture2D> m_playIcon, m_stopIcon, m_pauseIcon;
+		Ref<Texture2D> m_playIcon, m_simulateIcon, m_stopIcon, m_pauseIcon;
 
 		Timestep m_frametime;
 
@@ -42,7 +42,8 @@ namespace Vortex {
 
 		enum class SceneState {
 			Edit = 0,
-			Play = 1
+			Play = 1,
+			Simulate = 2
 		};
 
 		SceneState m_sceneState;
@@ -69,6 +70,7 @@ namespace Vortex {
 		bool OnMouseButtonPressed(MouseButtonPressedEvent& e);
 
 		void OnScenePlay();
+		void OnSceneSimulate();
 		void OnSceneResume();
 		void OnScenePause();
 		void OnSceneStop();

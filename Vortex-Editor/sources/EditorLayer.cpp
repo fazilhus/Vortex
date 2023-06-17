@@ -28,6 +28,7 @@ namespace Vortex {
         );
 
 		m_playIcon = Texture2D::Create("res/icons/play-button.png");
+		m_simulateIcon = Texture2D::Create("res/icons/simulate-button.png");
 		m_stopIcon = Texture2D::Create("res/icons/stop-button.png");
 		m_pauseIcon = Texture2D::Create("res/icons/pause-button.png");
 
@@ -81,6 +82,10 @@ namespace Vortex {
 				switch (m_sceneState) {
 				case SceneState::Play:
 					m_currentScene->OnUpdate(ts);
+					break;
+				case SceneState::Simulate:
+					m_editorCamera.OnUpdate(ts);
+					m_currentScene->OnUpdateSimulation(ts, m_editorCamera);
 					break;
 				case SceneState::Edit:
 					m_editorCamera.OnUpdate(ts);
@@ -205,6 +210,26 @@ namespace Vortex {
 
 		ImGui::End();
 
+		ImGui::Begin("Debug");
+
+		std::string state;
+		switch(m_sceneState) {
+		case SceneState::Play:
+			state = "Play";
+			break;
+		case SceneState::Simulate:
+			state = "Simulate";
+			break;
+		case SceneState::Edit:
+			state = "Edit";
+			break;
+		}
+
+		ImGui::Text("Scene State %s", state.c_str());
+		ImGui::Text("Paused %s", m_isPaused ? "Yes" : "No");
+
+		ImGui::End();
+
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
         ImGui::Begin("Viewport");
         auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
@@ -317,6 +342,7 @@ namespace Vortex {
 	void EditorLayer::OnOverlayRender() {
 		if (m_sceneState == SceneState::Play && !m_isPaused) {
 			Entity camera = m_currentScene->GetPrimaryCamera();
+			if (!camera) return;
 			Renderer2D::BeginScene(camera.GetComponent<CameraComponent>().Camera, camera.GetComponent<TransformComponent>().GetTransform());
 		}
 		else {
@@ -419,6 +445,8 @@ namespace Vortex {
     }
 
 	void EditorLayer::OnScenePlay() {
+		if (m_sceneState == SceneState::Simulate) OnSceneStop();
+
 		m_sceneState = SceneState::Play;
 
 		m_currentScene = Scene::Copy(m_editorScene);
@@ -426,19 +454,52 @@ namespace Vortex {
 		m_currentScene->OnRuntimStart();
 	}
 
+	void EditorLayer::OnSceneSimulate() {
+		if (m_sceneState == SceneState::Play) OnSceneStop();
+
+		m_sceneState = SceneState::Simulate;
+
+		m_currentScene = Scene::Copy(m_editorScene);
+		m_sceneHierarchyPanel.SetContext(m_currentScene);
+		m_currentScene->OnSimulateStart();
+	}
+
 	void EditorLayer::OnSceneResume() {
 		m_isPaused = false;
-		m_currentScene->OnRuntimeResume();
+		if (m_sceneState == SceneState::Play) {
+			m_currentScene->OnRuntimeResume();
+		}
+		else if (m_sceneState == SceneState::Simulate) {
+			m_currentScene->OnSimulateResume();
+		}
+		else {
+			OnSceneStop();
+		}
 	}
 
 	void EditorLayer::OnScenePause() {
 		m_isPaused = true;
-		m_currentScene->OnRuntimePause();
+		if (m_sceneState == SceneState::Play) {
+			m_currentScene->OnRuntimePause();
+		}
+		else if (m_sceneState == SceneState::Simulate) {
+			m_currentScene->OnSimulatePause();
+		}
+		else {
+			OnSceneStop();
+		}
 	}
 
 	void EditorLayer::OnSceneStop() {
+		m_isPaused = false;
+		if (m_sceneState == SceneState::Play) {
+			m_currentScene->OnRuntimeStop();
+		}
+		else if (m_sceneState == SceneState::Simulate) {
+			m_currentScene->OnSimulateStop();
+		}
 		m_sceneState = SceneState::Edit;
-		m_currentScene->OnRuntimeStop();
+
 		m_currentScene = m_editorScene;
 		m_sceneHierarchyPanel.SetContext(m_currentScene);
 	}
@@ -454,7 +515,7 @@ namespace Vortex {
 	void EditorLayer::UIToolbar() {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0, 0));
-		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3, 0.3, 0.3, 0.5));
 		auto& colors = ImGui::GetStyle().Colors;
 		const auto& buttonHovered = colors[ImGuiCol_ButtonHovered];
 		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(buttonHovered.x, buttonHovered.y, buttonHovered.z, 0.5f));
@@ -465,35 +526,62 @@ namespace Vortex {
 		ImGui::Begin("##toolbar", nullptr, flags);
 
 		float size = ImGui::GetWindowHeight() - 4.0f;
-		Ref<Texture2D> icon = m_playIcon;
-		if (m_sceneState == SceneState::Play && !m_isPaused) {
-			icon = m_pauseIcon;
+		bool toolbarEnabled = (bool)m_currentScene;
+		ImVec4 tintColor = ImVec4(1, 1, 1, 1);
+		if (!toolbarEnabled) {
+			tintColor.w = 0.5f;
 		}
-		ImGui::SetCursorPosX((ImGui::GetContentRegionMax().x * 0.01f) - (size * 0.5f));
-		if (ImGui::ImageButton("Play-Pause", (ImTextureID)icon->GetID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1))) {
-			if (m_sceneState == SceneState::Play) {
-				if (m_isPaused) {
-					OnSceneResume();
-				}
-				else {
-					OnScenePause();
-				}
-			}
-			else if (m_sceneState == SceneState::Edit) {
-				OnScenePlay();
-			}
-			/*if (m_sceneState == SceneState::Pause) {
-				OnScenePlay();
-			}
-			else if (m_sceneState == SceneState::Play) {
-				OnScenePause();W
-			}*/
-		}
-		ImGui::SameLine();
 
-		ImGui::SetCursorPosX((ImGui::GetContentRegionMax().x * 0.01f + 40.0f) - (size * 0.5f));
-		if (ImGui::ImageButton("Stop", (ImTextureID)m_stopIcon->GetID(), ImVec2(size, size), ImVec2(0, 0), ImVec2(1, 1))) {
-			if (m_sceneState == SceneState::Play) {
+		{
+			Ref<Texture2D> icon = m_playIcon;
+			if (m_sceneState == SceneState::Play && !m_isPaused) {
+				icon = m_pauseIcon;
+			}
+			ImGui::SetCursorPosX((ImGui::GetContentRegionMax().x * 0.01f) - (size * 0.5f));
+			if (ImGui::ImageButton("Play-Pause", (ImTextureID)icon->GetID(), ImVec2(size, size),
+				ImVec2(0, 0), ImVec2(1, 1), ImVec4(0.0f, 0.0f, 0.0f, 0.0f), tintColor)) {
+				if (m_sceneState == SceneState::Play) {
+					if (m_isPaused) {
+						OnSceneResume();
+					}
+					else {
+						OnScenePause();
+					}
+				}
+				else if (m_sceneState == SceneState::Edit) {
+					OnScenePlay();
+				}
+			}
+			ImGui::SameLine();
+		}
+
+		{
+			Ref<Texture2D> icon = m_simulateIcon;
+			if (m_sceneState == SceneState::Simulate && !m_isPaused) {
+				icon = m_pauseIcon;
+			}
+			//ImGui::SetCursorPosX((ImGui::GetContentRegionMax().x * 0.15f) - (size * 0.5f));
+			if (ImGui::ImageButton("Simulate-Pause", (ImTextureID)icon->GetID(), ImVec2(size, size),
+				ImVec2(0, 0), ImVec2(1, 1), ImVec4(0.0f, 0.0f, 0.0f, 0.0f), tintColor)) {
+				if (m_sceneState == SceneState::Simulate) {
+					if (m_isPaused) {
+						OnSceneResume();
+					}
+					else {
+						OnScenePause();
+					}
+				}
+				else if (m_sceneState == SceneState::Edit) {
+					OnSceneSimulate();
+				}
+			}
+			ImGui::SameLine();
+		}
+
+		//ImGui::SetCursorPosX((ImGui::GetContentRegionMax().x * 0.02f) - (size * 0.5f));
+		if (ImGui::ImageButton("Stop", (ImTextureID)m_stopIcon->GetID(), ImVec2(size, size), 
+			ImVec2(0, 0), ImVec2(1, 1), ImVec4(0.0f, 0.0f, 0.0f, 0.0f), tintColor)) {
+			if (m_sceneState == SceneState::Play || m_sceneState == SceneState::Simulate) {
 				OnSceneStop();
 			}
 		}

@@ -20,6 +20,10 @@ namespace Vortex {
 		}
 	}
 
+	Scene::~Scene() {
+		delete m_physicsWorld;
+	}
+
 	Ref<Scene> Scene::Copy(Ref<Scene> other) {
 		auto newScene = CreateRef<Scene>();
 		newScene->m_viewportWidth = other->m_viewportWidth;
@@ -138,28 +142,31 @@ namespace Vortex {
 		mainCamera.release();
 	}
 
+	void Scene::OnUpdateSimulation(Timestep ts, EditorCamera& camera) {
+		const int32_t velocityIterations = 6;
+		const int32_t positionIterations = 2;
+		m_physicsWorld->Step(ts, velocityIterations, positionIterations);
+
+		// Retrieve transform from Box2D
+		auto view = m_registry.view<Rigidbody2DComponent>();
+		for (auto e : view)
+		{
+			Entity entity = { e, this };
+			auto& transform = entity.GetComponent<TransformComponent>();
+			auto& rb2d = entity.GetComponent<Rigidbody2DComponent>();
+
+			b2Body* body = (b2Body*)rb2d.RuntimeBody;
+			const auto& position = body->GetPosition();
+			transform.Translation.x = position.x;
+			transform.Translation.y = position.y;
+			transform.Rotation.z = body->GetAngle();
+		}
+
+		RenderScene(camera);
+	}
+
 	void Scene::OnUpdateEditor(Timestep ts, EditorCamera& camera) {
-		Renderer2D::BeginScene(camera);
-
-		{
-			auto group = m_registry.group<TransformComponent>(entt::get<SpriteComponent>);
-			for (auto entity : group) {
-				auto [transform, sprite] = m_registry.get<TransformComponent, SpriteComponent>(entity);
-				VT_CORE_TRACE("Scene::OnUpdateEditor drawquad call pos {0} {1} {2}", transform.Translation.x, transform.Translation.y, transform.Translation.z);
-				Renderer2D::DrawSprite(transform.GetTransform(), sprite, static_cast<int>(entity));
-			}
-		}
-
-		{
-			auto view = m_registry.view<TransformComponent, CircleRendererComponent>();
-			for (auto entity : view) {
-				auto [transform, circle] = m_registry.get<TransformComponent, CircleRendererComponent>(entity);
-				VT_CORE_TRACE("Scene::OnUpdateEditor drawcircle call pos {0} {1} {2}", transform.Translation.x, transform.Translation.y, transform.Translation.z);
-				Renderer2D::DrawCircle(transform.GetTransform(), circle.Color, circle.Thickness, circle.Fade, static_cast<int>(entity));
-			}
-		}
-
-		Renderer2D::EndScene();
+		RenderScene(camera);
 	}
 
 	void Scene::OnViewportResize(uint32 width, uint32 height) {
@@ -176,6 +183,63 @@ namespace Vortex {
 	}
 
 	void Scene::OnRuntimStart() {
+		OnPhysics2DStart();
+	}
+
+	void Scene::OnRuntimeResume() {
+		OnPhysics2DResume();
+	}
+
+	void Scene::OnRuntimePause() {
+		OnPhysics2DPause();
+	}
+
+	void Scene::OnRuntimeStop() {
+		OnPhysics2DStop();
+	}
+
+	void Scene::OnSimulateStart() {
+		OnPhysics2DStart();
+	}
+
+	void Scene::OnSimulateResume() {
+		OnPhysics2DResume();
+	}
+
+	void Scene::OnSimulatePause() {
+		OnPhysics2DPause();
+	}
+
+	void Scene::OnSimulateStop() {
+		OnPhysics2DStop();
+	}
+
+	void Scene::DuplicateEntity(Entity entity) {
+		auto name = entity.GetName();
+		auto newEntity = CreateEntity(name);
+
+		CopyComponentIfExists<TransformComponent>(newEntity, entity);
+		CopyComponentIfExists<SpriteComponent>(newEntity, entity);
+		CopyComponentIfExists<CircleRendererComponent>(newEntity, entity);
+		CopyComponentIfExists<CameraComponent>(newEntity, entity);
+		CopyComponentIfExists<NativeScriptComponent>(newEntity, entity);
+		CopyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
+		CopyComponentIfExists<BoxCollider2DComponent>(newEntity, entity);
+		CopyComponentIfExists<CircleCollider2DComponent>(newEntity, entity);
+	}
+
+	Entity Scene::GetPrimaryCamera() {
+		auto view = m_registry.view<CameraComponent>();
+		for (auto entity : view) {
+			const auto& camera = view.get<CameraComponent>(entity);
+			if (camera.Primary) {
+				return Entity{ entity, this };
+			}
+		}
+		return {entt::null, nullptr};
+	}
+
+	void Scene::OnPhysics2DStart() {
 		m_physicsWorld = new b2World({ 0.0f, -9.8f });
 
 		auto view = m_registry.view<Rigidbody2DComponent>();
@@ -227,11 +291,11 @@ namespace Vortex {
 		}
 	}
 
-	void Scene::OnRuntimeResume() {
+	void Scene::OnPhysics2DResume() {
 		m_physicsWorld->SetAllowSleeping(false);
 	}
 
-	void Scene::OnRuntimePause() {
+	void Scene::OnPhysics2DPause() {
 		m_physicsWorld->SetAllowSleeping(true);
 
 		auto bodies = m_physicsWorld->GetBodyList();
@@ -240,34 +304,35 @@ namespace Vortex {
 		}
 	}
 
-	void Scene::OnRuntimeStop() {
+	void Scene::OnPhysics2DStop() {
 		delete m_physicsWorld;
 		m_physicsWorld = nullptr;
 	}
 
-	void Scene::DuplicateEntity(Entity entity) {
-		auto name = entity.GetName();
-		auto newEntity = CreateEntity(name);
+	void Scene::RenderScene(EditorCamera& camera) {
+		Renderer2D::BeginScene(camera);
 
-		CopyComponentIfExists<TransformComponent>(newEntity, entity);
-		CopyComponentIfExists<SpriteComponent>(newEntity, entity);
-		CopyComponentIfExists<CircleRendererComponent>(newEntity, entity);
-		CopyComponentIfExists<CameraComponent>(newEntity, entity);
-		CopyComponentIfExists<NativeScriptComponent>(newEntity, entity);
-		CopyComponentIfExists<Rigidbody2DComponent>(newEntity, entity);
-		CopyComponentIfExists<BoxCollider2DComponent>(newEntity, entity);
-		CopyComponentIfExists<CircleCollider2DComponent>(newEntity, entity);
-	}
+		// Draw sprites
+		{
+			auto group = m_registry.group<TransformComponent>(entt::get<SpriteComponent>);
+			for (auto entity : group) {
+				auto [transform, sprite] = group.get<TransformComponent, SpriteComponent>(entity);
 
-	Entity Scene::GetPrimaryCamera() {
-		auto view = m_registry.view<CameraComponent>();
-		for (auto entity : view) {
-			const auto& camera = view.get<CameraComponent>(entity);
-			if (camera.Primary) {
-				return Entity{ entity, this };
+				Renderer2D::DrawSprite(transform.GetTransform(), sprite, static_cast<int>(entity));
 			}
 		}
-		return {entt::null, nullptr};
+
+		// Draw circles
+		{
+			auto view = m_registry.view<TransformComponent, CircleRendererComponent>();
+			for (auto entity : view) {
+				auto [transform, circle] = view.get<TransformComponent, CircleRendererComponent>(entity);
+
+				Renderer2D::DrawCircle(transform.GetTransform(), circle.Color, circle.Thickness, circle.Fade, static_cast<int>(entity));
+			}
+		}
+
+		Renderer2D::EndScene();
 	}
 
 	template<typename T>
