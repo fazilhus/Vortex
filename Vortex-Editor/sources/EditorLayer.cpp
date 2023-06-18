@@ -210,25 +210,35 @@ namespace Vortex {
 
 		ImGui::End();
 
-		ImGui::Begin("Debug");
+		{
+			ImGui::Begin("Debug");
 
-		std::string state;
-		switch(m_sceneState) {
-		case SceneState::Play:
-			state = "Play";
-			break;
-		case SceneState::Simulate:
-			state = "Simulate";
-			break;
-		case SceneState::Edit:
-			state = "Edit";
-			break;
+			std::string state;
+			switch (m_sceneState) {
+			case SceneState::Play:
+				state = "Play";
+				break;
+			case SceneState::Simulate:
+				state = "Simulate";
+				break;
+			case SceneState::Edit:
+				state = "Edit";
+				break;
+			}
+
+			ImGui::Text("Scene State %s", state.c_str());
+			ImGui::Text("Paused %s", m_isPaused ? "Yes" : "No");
+			if (m_hoveredEntity) {
+				ImGui::Text("Hovered Entity %s, %i", m_hoveredEntity.GetName().c_str(), m_hoveredEntity.GetUUID());
+			}
+			if (Entity selected = m_sceneHierarchyPanel.GetSelectedEntity()) {
+				auto selectedName = selected.GetName();
+				auto selectedID = selected.GetUUID();
+				ImGui::Text("Selected Entity %s %i", selectedName.c_str(), selectedID);
+			}
+
+			ImGui::End();
 		}
-
-		ImGui::Text("Scene State %s", state.c_str());
-		ImGui::Text("Paused %s", m_isPaused ? "Yes" : "No");
-
-		ImGui::End();
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
         ImGui::Begin("Viewport");
@@ -378,6 +388,11 @@ namespace Vortex {
 					Renderer2D::DrawCircle(transform, glm::vec4(0, 1, 0, 1), 0.01f);
 				}
 			}
+		}
+
+		if (Entity selected = m_sceneHierarchyPanel.GetSelectedEntity()) {
+			auto transform = selected.GetComponent<TransformComponent>().GetTransform();
+			Renderer2D::DrawRect(transform, glm::vec4{1.0f, 1.0f, 0.0f, 1.0f});
 		}
 
 		Renderer2D::EndScene();
