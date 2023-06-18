@@ -214,6 +214,7 @@ namespace Vortex {
 
 		ImGui::End();
 
+#ifdef VT_DEBUG
 		{
 			ImGui::Begin("Debug");
 
@@ -243,6 +244,7 @@ namespace Vortex {
 
 			ImGui::End();
 		}
+#endif
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
         ImGui::Begin("Viewport");
