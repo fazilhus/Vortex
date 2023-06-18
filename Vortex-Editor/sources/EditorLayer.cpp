@@ -188,6 +188,10 @@ namespace Vortex {
                     OpenScene();
                 }
 
+				if (ImGui::MenuItem("Save", "Ctrl+S")) {
+					SaveScene();
+				}
+
                 if (ImGui::MenuItem("Save as...", "Ctrl+Shift+S")) {
                     SaveSceneAs();
                 }
