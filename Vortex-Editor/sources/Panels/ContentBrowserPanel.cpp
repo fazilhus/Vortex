@@ -32,8 +32,7 @@ namespace Vortex {
 
 		for (auto& dirEntry : std::filesystem::directory_iterator(m_currentDir)) {
 			const auto& path = dirEntry.path();
-			auto relPath = std::filesystem::relative(path, g_assetPath);
-			std::string filename = relPath.filename().string();
+			std::string filename = path.filename().string();
 
 			ImGui::PushID(filename.c_str());
 			Ref<Texture2D> icon = dirEntry.is_directory() ? m_dirIcon : m_fileIcon;
@@ -41,6 +40,7 @@ namespace Vortex {
 			ImGui::ImageButton((ImTextureID)icon->GetID(), { thumbnailSize, thumbnailSize }, { 0, 1 }, { 1, 0 });
 
 			if (ImGui::BeginDragDropSource()) {
+				auto relPath = std::filesystem::relative(path, g_assetPath);
 				const wchar_t* itemPath = relPath.c_str();
 				ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", itemPath, (wcslen(itemPath) + 1) * sizeof(wchar_t));
 				ImGui::EndDragDropSource();
