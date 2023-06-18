@@ -32,6 +32,7 @@ group "Dependencies"
 
 group "Tools"
     include "Vortex-Editor"
+    include "Sandbox"
 
 group ""
     include "Vortex"

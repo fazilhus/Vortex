@@ -35,7 +35,7 @@ namespace Vortex {
         m_currentScene = CreateRef<Scene>();
         m_sceneHierarchyPanel.SetContext(m_currentScene);
 
-		auto commandLineArgs = Application::Get().GetCommandlineArgs();
+		auto commandLineArgs = Application::Get().GetAppSpec().CommandlineArgs;
 		if (commandLineArgs.Count > 1)
 		{
 			auto sceneFilePath = commandLineArgs[1];
