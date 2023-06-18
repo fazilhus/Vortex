@@ -11,6 +11,8 @@ namespace Vortex {
 		virtual const std::string& GetPath() const = 0;
 		virtual uint32 GetID() const = 0;
 
+		virtual bool IsLoaded() const = 0;
+
 		virtual void Bind(uint32 slot = 0) const = 0;
 
 		virtual void SetData(void* data, uint32 size) = 0;

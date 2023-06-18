@@ -60,7 +60,7 @@ namespace Vortex {
 
 	void EditorCamera::UpdateProjection() {
 		m_aspectRatio = m_viewportWidth / m_viewportHeight;
-		m_projection = glm::perspective(m_fov, m_aspectRatio, m_nearClip, m_farClip);
+		m_projection = glm::perspective(glm::radians(m_fov), m_aspectRatio, m_nearClip, m_farClip);
 	}
 
 	void EditorCamera::UpdateView() {

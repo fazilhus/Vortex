@@ -8,7 +8,7 @@ namespace Vortex {
 
 	class EditorApp : public Application {
 	public:
-		EditorApp(AppCommandlineArgs args) : Application("Vortex Editor", args) {
+		EditorApp(AppSpec spec) : Application(spec) {
 			Ref<Layer> sl2d = CreateRef<EditorLayer>();
 			PushLayer(sl2d);
 		}
@@ -16,7 +16,11 @@ namespace Vortex {
 	};
 
 	Application* CreateApplication(AppCommandlineArgs args) {
-		return new EditorApp(args);
+		AppSpec spec;
+		spec.Name = "Vortex-Editor";
+		spec.WorkingDirectory = "../Vortex-Editor";
+		spec.CommandlineArgs = args;
+		return new EditorApp(spec);
 	}
 
 }

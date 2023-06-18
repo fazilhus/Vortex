@@ -9,6 +9,8 @@
 
 namespace Vortex {
 
+	extern const std::filesystem::path g_assetPath;
+
 	SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& scene) {
 		SetContext(scene);
 	}
@@ -21,21 +23,23 @@ namespace Vortex {
 	void SceneHierarchyPanel::OnImGuiRender() {
 		ImGui::Begin("Scene Hierarchy");
 
-		m_context->m_registry.each([&](auto entityID) {
-			Entity entity{ entityID, m_context.get() };
-			DrawEntityMode(entity);
-		});
+		if (m_context) {
+			m_context->m_registry.each([&](auto entityID) {
+				Entity entity{ entityID, m_context.get() };
+				DrawEntityMode(entity);
+				});
 
-		if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {
-			m_selectionContext = {};
-		}
-
-		if (ImGui::BeginPopupContextWindow("Create entity", 1 | ImGuiPopupFlags_NoOpenOverItems)) {
-			if (ImGui::MenuItem("Create empty entity")) {
-				m_context->CreateEntity("Empty entity");
+			if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {
+				m_selectionContext = {};
 			}
 
-			ImGui::EndPopup();
+			if (ImGui::BeginPopupContextWindow("Create entity", 1 | ImGuiPopupFlags_NoOpenOverItems)) {
+				if (ImGui::MenuItem("Create empty entity")) {
+					m_context->CreateEntity("Empty entity");
+				}
+
+				ImGui::EndPopup();
+			}
 		}
 
 		ImGui::End();
@@ -47,34 +51,13 @@ namespace Vortex {
 
 			if (ImGui::BeginPopupContextWindow("Entity Properties", 1 | ImGuiPopupFlags_NoOpenOverItems)) {
 				if (ImGui::BeginMenu("Add Component")) {
-					if (ImGui::MenuItem("Transform Component")) {
-						if (!m_selectionContext.HasComponent<TransformComponent>()) {
-							VT_CORE_TRACE("Added Transform Component to entity {0}", (uint32)m_selectionContext);
-							m_selectionContext.AddComponent<TransformComponent>();
-						}
-						else {
-							VT_CORE_WARN("Entity {0} already has Transform Component", (uint32)m_selectionContext);
-						}
-					}
-					if (ImGui::MenuItem("Sprite Component")) {
-						if (!m_selectionContext.HasComponent<SpriteComponent>()) {
-							VT_CORE_TRACE("Added Sprite Component to entity {0}", (uint32)m_selectionContext);
-							m_selectionContext.AddComponent<SpriteComponent>();
-						}
-						else {
-							VT_CORE_WARN("Entity {0} already has Sprite Component", (uint32)m_selectionContext);
-						}
-					}
-					if (ImGui::MenuItem("Camera Component")) {
-						if (!m_selectionContext.HasComponent<CameraComponent>()) {
-							VT_CORE_TRACE("Added Camera Component to entity {0}", (uint32)m_selectionContext);
-							m_selectionContext.AddComponent<CameraComponent>();
-						}
-						else {
-							VT_CORE_WARN("Entity {0} already has Camera Component", (uint32)m_selectionContext);
-						}
-					}
-
+					DisplayAddComponentEntry<TransformComponent>("Transform Component");
+					DisplayAddComponentEntry<SpriteComponent>("Sprite Component");
+					DisplayAddComponentEntry<CircleRendererComponent>("Circle Renderer Component");
+					DisplayAddComponentEntry<CameraComponent>("Camera Component");
+					DisplayAddComponentEntry<Rigidbody2DComponent>("Rigidbody 2D Component");
+					DisplayAddComponentEntry<BoxCollider2DComponent>("Box2D Collider Component");
+					DisplayAddComponentEntry<CircleCollider2DComponent>("Circle2D Collider Component");
 					ImGui::EndMenu();
 				}
 				ImGui::EndPopup();
@@ -149,6 +132,20 @@ namespace Vortex {
 		}
 	}
 
+	template<typename Component>
+	void SceneHierarchyPanel::DisplayAddComponentEntry(const std::string& entry) {
+		if (!m_selectionContext.HasComponent<Component>()) {
+			if (ImGui::MenuItem(entry.c_str())) {
+				VT_CORE_TRACE("Added {0} to entity {1}", entry, (uint32)m_selectionContext);
+				m_selectionContext.AddComponent<Component>();
+				ImGui::CloseCurrentPopup();
+			}
+		}
+		else {
+			VT_CORE_WARN("Entity {0} already has {1}", (uint32)m_selectionContext, entry);
+		}
+	}
+
 	void SceneHierarchyPanel::DrawComponents(Entity entity) {
 		if (entity.HasComponent<TagComponent>()) {
 			auto& tag = entity.GetComponent<TagComponent>().Tag;
@@ -169,43 +166,38 @@ namespace Vortex {
 			DrawVec3Control("Scale", component.Scale, 1.0f);
 		});
 
-		/*if (entity.HasComponent<TransformComponent>()) {
-			if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), flags, "Transform")) {
-				auto removed = DrawDeleteComponentPopup();
-
-				auto& tc = entity.GetComponent<TransformComponent>();
-				DrawVec3Control("Translation", tc.Translation);
-				auto rot = glm::degrees(tc.Rotation);
-				DrawVec3Control("Rotation", rot);
-				tc.Rotation = glm::radians(rot);
-				DrawVec3Control("Scale", tc.Scale, 1.0f);
-
-				if (removed) {
-					entity.RemoveComponent<TransformComponent>();
-				}
-
-				ImGui::TreePop();
-			}
-		}*/
-
 		DrawComponent<SpriteComponent>("Sprite Component", entity, [&](auto& component) {
 			ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+
+			ImGui::Button("Texture", ImVec2{ 100.0f, 0.0f });
+			if (ImGui::BeginDragDropTarget()) {
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("CONTENT_BROWSER_ITEM"))
+				{
+					const wchar_t* path = (const wchar_t*)payload->Data;
+					std::filesystem::path texturePath = std::filesystem::path(g_assetPath) / path;
+					Ref<Texture2D> texture = Texture2D::Create(texturePath.string());
+					if (texture->IsLoaded()) {
+						component.Texture = texture;
+					}
+					else {
+						VT_CL_WARN("Could not load texture {0}", texturePath.filename().string());
+					}
+				}
+				ImGui::EndDragDropTarget();
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("Clear Texture")) {
+				component.Texture.reset();
+			}
+
+			ImGui::DragFloat("Tiling Factor", &component.TilingFactor, 0.1f, 0.0f, 100.0f);
 		});
 
-		/*if (entity.HasComponent<SpriteComponent>()) {
-			if (ImGui::TreeNodeEx((void*)typeid(SpriteComponent).hash_code(), flags, "Sprite")) {
-				auto removed = DrawDeleteComponentPopup();
-
-				auto& color = entity.GetComponent<SpriteComponent>().Color;
-				ImGui::ColorEdit4("Color", glm::value_ptr(color));
-
-				if (removed) {
-					entity.RemoveComponent<SpriteComponent>();
-				}
-
-				ImGui::TreePop();
-			}
-		}*/
+		DrawComponent<CircleRendererComponent>("Circle Renderer Component", entity, [&](auto& component) {
+			ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+			ImGui::DragFloat("Thickness", &component.Thickness, 0.025f, 0.0f, 1.0f);
+			ImGui::DragFloat("Fade", &component.Fade, 0.00025, 0.0f, 1.0f);
+		});
 
 		DrawComponent<CameraComponent>("Camera Component", entity, [&](auto& component) {
 			auto& camera = component.Camera;
@@ -269,20 +261,47 @@ namespace Vortex {
 			}
 		});
 
-		/*if (entity.HasComponent<CameraComponent>()) {
-			if (ImGui::TreeNodeEx((void*)typeid(CameraComponent).hash_code(), flags, "Camera")) {
-				auto removed = DrawDeleteComponentPopup();
+		DrawComponent<Rigidbody2DComponent>("Rigidbody 2D", entity, [](auto& component) {
+			const char* bodyTypeStrings[] = { "Static", "Dynamic", "Kinematic" };
+			const char* currentBodyTypeString = bodyTypeStrings[(int)component.Type];
+			if (ImGui::BeginCombo("Body Type", currentBodyTypeString))
+			{
+				for (int i = 0; i < 2; i++)
+				{
+					bool isSelected = currentBodyTypeString == bodyTypeStrings[i];
+					if (ImGui::Selectable(bodyTypeStrings[i], isSelected))
+					{
+						currentBodyTypeString = bodyTypeStrings[i];
+						component.Type = (Rigidbody2DComponent::BodyType)i;
+					}
 
-				auto& cameraComponent = entity.GetComponent<CameraComponent>();
-				
-
-				if (removed) {
-					entity.RemoveComponent<CameraComponent>();
+					if (isSelected)
+						ImGui::SetItemDefaultFocus();
 				}
 
-				ImGui::TreePop();
+				ImGui::EndCombo();
 			}
-		}*/
+
+			ImGui::Checkbox("Fixed Rotation", &component.FixedRotation);
+		});
+
+		DrawComponent<BoxCollider2DComponent>("Box Collider 2D", entity, [](auto& component) {
+			ImGui::DragFloat2("Offset", glm::value_ptr(component.Offset), 0.01f);
+			ImGui::DragFloat2("Size", glm::value_ptr(component.Size), 0.01f);
+			ImGui::DragFloat("Density", &component.Density, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat("Friction", &component.Friction, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat("Restitution", &component.Restitution, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat("Restitution Threshold", &component.RestitutionThreshold, 0.01f, 0.0f);
+		});
+
+		DrawComponent<CircleCollider2DComponent>("Circle Collider 2D", entity, [](auto& component) {
+			ImGui::DragFloat2("Offset", glm::value_ptr(component.Offset), 0.01f);
+			ImGui::DragFloat("Radius", &component.Radius, 0.01);
+			ImGui::DragFloat("Density", &component.Density, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat("Friction", &component.Friction, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat("Restitution", &component.Restitution, 0.01f, 0.0f, 1.0f);
+			ImGui::DragFloat("Restitution Threshold", &component.RestitutionThreshold, 0.01f, 0.0f);
+		});
 	}
 
 	void SceneHierarchyPanel::DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue, float columnWidth) {

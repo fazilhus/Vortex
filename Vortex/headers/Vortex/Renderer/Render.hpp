@@ -6,7 +6,7 @@ namespace Vortex {
 
 	class Render {
 	private:
-		static Scope<RendererAPI> s_rendererAPI;
+		static inline Scope<RendererAPI> s_rendererAPI{ RendererAPI::Create() };
 
 	public:
 		inline static void Init(const RendererConfig& cfg) {
@@ -25,8 +25,16 @@ namespace Vortex {
 			s_rendererAPI->Clear();
 		}
 
-		inline static void DrawIndexed(const Ref<VertexArray>& va, uint32 count = 0) {
-			s_rendererAPI->DrawIndexed(va, count);
+		inline static void DrawIndexed(const Ref<VertexArray>& va, uint32 indexCount = 0) {
+			s_rendererAPI->DrawIndexed(va, indexCount);
+		}
+
+		inline static void DrawLines(const Ref<VertexArray>& va, uint32 vertexCount = 0) {
+			s_rendererAPI->DrawLines(va, vertexCount);
+		}
+
+		inline static void SetLineWidth(float width) {
+			s_rendererAPI->SetLineWidth(width);
 		}
 	};
 

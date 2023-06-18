@@ -23,9 +23,15 @@ namespace Vortex {
 		}
 	};
 
+	struct AppSpec {
+		std::string Name = "Vortex App";
+		std::string WorkingDirectory;
+		AppCommandlineArgs CommandlineArgs;
+	};
+
 	class Application {
 	private:
-		AppCommandlineArgs m_commandlineArgs;
+		AppSpec m_spec;
 		Scope<Window> m_window;
 		bool m_running = true;
 		Ref<ImGuiLayer> m_imguiLayer;
@@ -40,7 +46,7 @@ namespace Vortex {
 		friend int ::main(int argc, char** argv);
 
 	public:
-		Application(const std::string& appName = "Vortex Engine", AppCommandlineArgs args = AppCommandlineArgs{});
+		Application(const AppSpec& spec);
 		virtual ~Application();
 
 		void OnEvent(Event& e);
@@ -55,7 +61,7 @@ namespace Vortex {
 		Window& GetWindow() const { return *m_window; }
 		static Application& Get() { return *s_instance; }
 		Ref<ImGuiLayer> GetImGuiLayer() const { return m_imguiLayer; }
-		AppCommandlineArgs GetCommandlineArgs() const { return m_commandlineArgs; }
+		const AppSpec GetAppSpec() const { return m_spec; }
 
 	private:
 		void Run();

@@ -12,7 +12,7 @@ namespace Vortex {
 				return nullptr; 
 			}
 			case RendererAPI::API::OPENGL:
-				VT_CORE_INFO("Created texture from img, path: {0}", path);
+				VT_CORE_WARN("Created texture from img, path: {0}", path);
 				return CreateRef<OpenGLTexture2D>(path);
 		}
 		VT_CORE_ERROR("Unknown renderer api");

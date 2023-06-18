@@ -38,6 +38,13 @@ namespace Vortex {
 		else {
 			glDisable(GL_DEPTH_TEST);
 		}
+
+		if (cfg.enableLineSmooth) {
+			glEnable(GL_LINE_SMOOTH);
+		}
+		else {
+			glDisable(GL_LINE_SMOOTH);
+		}
 	}
 
 	void OpenGLRendererAPI::SetViewport(uint4 x, uint4 y, uint4 width, uint4 height) {
@@ -56,9 +63,19 @@ namespace Vortex {
 
 	void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& va, uint32 count) {
 		VT_PROFILE_FUNC();
+		va->Bind();
 		auto c = count ? count : va->GetIndexBuffer()->GetCount();
 		glDrawElements(GL_TRIANGLES, c, GL_UNSIGNED_INT, nullptr);
 		//glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	void OpenGLRendererAPI::DrawLines(const Ref<VertexArray>& va, uint32 vertexCount) {
+		va->Bind();
+		glDrawArrays(GL_LINES, 0, vertexCount);
+	}
+
+	void OpenGLRendererAPI::SetLineWidth(float width) {
+		glLineWidth(width);
 	}
 
 }

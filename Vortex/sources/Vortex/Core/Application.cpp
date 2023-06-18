@@ -2,22 +2,26 @@
 #include "Vortex/Core/Application.hpp"
 #include "Vortex/Core/Timestep.hpp"
 #include "Vortex/Renderer/Renderer.hpp"
+#include "Vortex/Utils/Platform.hpp"
 
 namespace Vortex {
 
 	Application* Application::s_instance = nullptr;
 
-	Application::Application(const std::string& appName, AppCommandlineArgs args) 
-		: m_commandlineArgs(args), m_lastFrameTime(0.0f) {
+	Application::Application(const AppSpec& spec) 
+		: m_spec(spec), m_lastFrameTime(0.0f) {
 		VT_CORE_ASSERT(!s_instance, "Application already exists");
 		s_instance = this;
 
-		m_window = Window::Create({ appName, 1600, 900 });
+		if (!m_spec.WorkingDirectory.empty()) {
+			std::filesystem::current_path(m_spec.WorkingDirectory);
+		}
+		m_window = Window::Create({ spec.Name, 1600, 900 });
 		m_running = true;
 		m_window->SetVSync(false);
 		m_window->SetEventCallback(VT_BIND_EVENT_FN(Application::OnEvent));
 
-		Renderer::Init({true, true});
+		Renderer::Init({true, true, true});
 
 		m_imguiLayer = std::make_shared<ImGuiLayer>();
 		PushOverlay(m_imguiLayer);
@@ -32,7 +36,7 @@ namespace Vortex {
 		while (m_running) {
 			{
 				VT_PROFILE_SCOPE("run loop");
-				float time = (float)Platform::GetTimeSec();
+				float time = Platform::GetTimeSec();
 				Timestep timestep = time - m_lastFrameTime;
 				m_lastFrameTime = time;
 

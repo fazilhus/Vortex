@@ -10,6 +10,25 @@
 namespace YAML {
 
 	template <>
+	struct convert<glm::vec2> {
+		static Node encode(const glm::vec2& rhs) {
+			Node node;
+			node.push_back(rhs.x);
+			node.push_back(rhs.y);
+			node.SetStyle(EmitterStyle::Flow);
+			return node;
+		}
+
+		static bool decode(const Node& node, glm::vec2& rhs) {
+			if (!node.IsSequence() || node.size() != 2) return false;
+
+			rhs.x = node[0].as<float>();
+			rhs.y = node[1].as<float>();
+			return true;
+		}
+	};
+
+	template <>
 	struct convert<glm::vec3> {
 		static Node encode(const glm::vec3& rhs) {
 			Node node;
@@ -57,6 +76,12 @@ namespace YAML {
 
 namespace Vortex {
 
+	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec2& v) {
+		out << YAML::Flow;
+		out << YAML::BeginSeq << v.x << v.y << YAML::EndSeq;
+		return out;
+	}
+
 	YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec3& v) {
 		out << YAML::Flow;
 		out << YAML::BeginSeq << v.x << v.y << v.z << YAML::EndSeq;
@@ -67,6 +92,26 @@ namespace Vortex {
 		out << YAML::Flow;
 		out << YAML::BeginSeq << v.x << v.y << v.z << v.w << YAML::EndSeq;
 		return out;
+	}
+
+	static std::string RigidBody2DBodyTypeToString(Rigidbody2DComponent::BodyType bodyType) {
+		switch (bodyType) {
+		case Rigidbody2DComponent::BodyType::Static:    return "Static";
+		case Rigidbody2DComponent::BodyType::Dynamic:   return "Dynamic";
+		case Rigidbody2DComponent::BodyType::Kinematic: return "Kinematic";
+		}
+
+		VT_CORE_ASSERT(false, "Unknown body type");
+		return {};
+	}
+
+	static Rigidbody2DComponent::BodyType RigidBody2DBodyTypeFromString(const std::string& bodyTypeString) {
+		if (bodyTypeString == "Static")    return Rigidbody2DComponent::BodyType::Static;
+		if (bodyTypeString == "Dynamic")   return Rigidbody2DComponent::BodyType::Dynamic;
+		if (bodyTypeString == "Kinematic") return Rigidbody2DComponent::BodyType::Kinematic;
+
+		VT_CORE_ASSERT(false, "Unknown body type");
+		return Rigidbody2DComponent::BodyType::Static;
 	}
 
 	void SceneSerializer::Serialize(const std::string& filepath) {
@@ -91,11 +136,19 @@ namespace Vortex {
 	}
 
 	void SceneSerializer::SerializeRuntime(const std::string& filepath) {
-		VT_CORE_ASSERT(false, "SceneSerializer::SerializeRuntime not implemented");
+		VT_CORE_ASSERT(false, "SceneSerializer::SerializeRuntime is not implemented");
 	}
 
 	bool SceneSerializer::Deserialize(const std::string& filepath) {
-		YAML::Node data = YAML::LoadFile(filepath);
+		YAML::Node data;
+		try {
+			data = YAML::LoadFile(filepath);
+		}
+		catch (YAML::ParserException e) {
+			VT_CORE_ERROR("Failed to load file '{0}'\n    {1}", filepath, e.what());
+			return false;
+		}
+
 		if (!data["Scene"])
 			return false;
 
@@ -103,11 +156,9 @@ namespace Vortex {
 		VT_CORE_TRACE("Deserializing scene '{0}'", sceneName);
 
 		auto entities = data["Entities"];
-		if (entities)
-		{
-			for (auto entity : entities)
-			{
-				uint64_t uuid = entity["Entity"].as<uint64_t>(); // TODO
+		if (entities) {
+			for (auto entity : entities) {
+				uint64_t uuid = entity["Entity"].as<uint64>();
 
 				std::string name;
 				auto tagComponent = entity["TagComponent"];
@@ -116,11 +167,10 @@ namespace Vortex {
 
 				VT_CORE_TRACE("Deserialized entity with ID = {0}, name = {1}", uuid, name);
 
-				Entity deserializedEntity = m_scene->CreateEntity(name);
+				Entity deserializedEntity = m_scene->CreateEntityWithUUID(uuid, name);
 
 				auto transformComponent = entity["TransformComponent"];
-				if (transformComponent)
-				{
+				if (transformComponent) {
 					// Entities always have transforms
 					auto& tc = deserializedEntity.GetComponent<TransformComponent>();
 					tc.Translation = transformComponent["Translation"].as<glm::vec3>();
@@ -129,16 +179,27 @@ namespace Vortex {
 				}
 
 				auto spriteComponent = entity["SpriteComponent"];
-				if (spriteComponent)
-				{
+				if (spriteComponent) {
 					auto& src = deserializedEntity.AddComponent<SpriteComponent>();
 					src.Color = spriteComponent["Color"].as<glm::vec4>();
+					if (spriteComponent["TexturePath"])
+						src.Texture = Texture2D::Create(spriteComponent["TexturePath"].as<std::string>());
+
+					if (spriteComponent["TilingFactor"])
+						src.TilingFactor = spriteComponent["TilingFactor"].as<float>();
 					VT_CORE_TRACE("SceneSerializer::Deserialize Color {0} {1} {2} {3}", src.Color.r, src.Color.g, src.Color.b, src.Color.a);
 				}
 
+				auto circleRendererComponent = entity["CircleRendererComponent"];
+				if (circleRendererComponent) {
+					auto& src = deserializedEntity.AddComponent<CircleRendererComponent>();
+					src.Color = circleRendererComponent["Color"].as<glm::vec4>();
+					src.Thickness = circleRendererComponent["Thickness"].as<float>();
+					src.Fade = circleRendererComponent["Fade"].as<float>();
+				}
+
 				auto cameraComponent = entity["CameraComponent"];
-				if (cameraComponent)
-				{
+				if (cameraComponent) {
 					auto& cc = deserializedEntity.AddComponent<CameraComponent>();
 
 					auto cameraProps = cameraComponent["Camera"];
@@ -155,6 +216,35 @@ namespace Vortex {
 					cc.Primary = cameraComponent["Primary"].as<bool>();
 					cc.FixedAspectRatio = cameraComponent["FixedAspectRatio"].as<bool>();
 				}
+
+				auto rigidbody2DComponent = entity["Rigidbody2DComponent"];
+				if (rigidbody2DComponent) {
+					auto& rb2d = deserializedEntity.AddComponent<Rigidbody2DComponent>();
+					rb2d.Type = RigidBody2DBodyTypeFromString(rigidbody2DComponent["BodyType"].as<std::string>());
+					rb2d.FixedRotation = rigidbody2DComponent["FixedRotation"].as<bool>();
+				}
+
+				auto boxCollider2DComponent = entity["BoxCollider2DComponent"];
+				if (boxCollider2DComponent) {
+					auto& bc2d = deserializedEntity.AddComponent<BoxCollider2DComponent>();
+					bc2d.Offset = boxCollider2DComponent["Offset"].as<glm::vec2>();
+					bc2d.Size = boxCollider2DComponent["Size"].as<glm::vec2>();
+					bc2d.Density = boxCollider2DComponent["Density"].as<float>();
+					bc2d.Friction = boxCollider2DComponent["Friction"].as<float>();
+					bc2d.Restitution = boxCollider2DComponent["Restitution"].as<float>();
+					bc2d.RestitutionThreshold = boxCollider2DComponent["RestitutionThreshold"].as<float>();
+				}
+
+				auto circleCollider2DComponent = entity["CircleCollider2DComponent"];
+				if (circleCollider2DComponent) {
+					auto& cc2d = deserializedEntity.AddComponent<CircleCollider2DComponent>();
+					cc2d.Offset = circleCollider2DComponent["Offset"].as<glm::vec2>();
+					cc2d.Radius = circleCollider2DComponent["Radius"].as<float>();
+					cc2d.Density = circleCollider2DComponent["Density"].as<float>();
+					cc2d.Friction = circleCollider2DComponent["Friction"].as<float>();
+					cc2d.Restitution = circleCollider2DComponent["Restitution"].as<float>();
+					cc2d.RestitutionThreshold = circleCollider2DComponent["RestitutionThreshold"].as<float>();
+				}
 			}
 		}
 
@@ -162,16 +252,15 @@ namespace Vortex {
 	}
 
 	bool SceneSerializer::DeserializeRuntime(const std::string& filepath) {
-		VT_CORE_ASSERT(false, "SceneSerializer::DeserializeRuntime not implemented");
+		VT_CORE_ASSERT(false, "SceneSerializer::DeserializeRuntime is not implemented");
 		return false;
 	}
 
 	void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity entity) {
 		out << YAML::BeginMap; // Entity
-		out << YAML::Key << "Entity" << YAML::Value << (uint32)entity;
+		out << YAML::Key << "Entity" << YAML::Value << entity.GetUUID();
 
-		if (entity.HasComponent<TagComponent>())
-		{
+		if (entity.HasComponent<TagComponent>()) {
 			out << YAML::Key << "TagComponent";
 			out << YAML::BeginMap; // TagComponent
 
@@ -181,8 +270,7 @@ namespace Vortex {
 			out << YAML::EndMap; // TagComponent
 		}
 
-		if (entity.HasComponent<TransformComponent>())
-		{
+		if (entity.HasComponent<TransformComponent>()) {
 			out << YAML::Key << "TransformComponent";
 			out << YAML::BeginMap; // TransformComponent
 
@@ -194,19 +282,34 @@ namespace Vortex {
 			out << YAML::EndMap; // TransformComponent
 		}
 
-		if (entity.HasComponent<SpriteComponent>())
-		{
+		if (entity.HasComponent<SpriteComponent>()) {
 			out << YAML::Key << "SpriteComponent";
 			out << YAML::BeginMap; // SpriteRendererComponent
 
 			auto& spriteComponent = entity.GetComponent<SpriteComponent>();
 			out << YAML::Key << "Color" << YAML::Value << spriteComponent.Color;
 
+			if (spriteComponent.Texture) {
+				out << YAML::Key << "TexturePath" << YAML::Value << spriteComponent.Texture->GetPath();
+				out << YAML::Key << "TilingFactor" << YAML::Value << spriteComponent.TilingFactor;
+			}
+
 			out << YAML::EndMap; // SpriteRendererComponent
 		}
 
-		if (entity.HasComponent<CameraComponent>())
-		{
+		if (entity.HasComponent<CircleRendererComponent>()) {
+			out << YAML::Key << "CircleRendererComponent";
+			out << YAML::BeginMap;
+
+			auto& circleRendererComponent = entity.GetComponent<CircleRendererComponent>();
+			out << YAML::Key << "Color" << YAML::Value << circleRendererComponent.Color;
+			out << YAML::Key << "Thickness" << YAML::Value << circleRendererComponent.Thickness;
+			out << YAML::Key << "Fade" << YAML::Value << circleRendererComponent.Fade;
+
+			out << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<CameraComponent>()) {
 			out << YAML::Key << "CameraComponent";
 			out << YAML::BeginMap; // CameraComponent
 
@@ -228,6 +331,47 @@ namespace Vortex {
 			out << YAML::Key << "FixedAspectRatio" << YAML::Value << cameraComponent.FixedAspectRatio;
 
 			out << YAML::EndMap; // CameraComponent
+		}
+
+		if (entity.HasComponent<Rigidbody2DComponent>()) {
+			out << YAML::Key << "Rigidbody2DComponent";
+			out << YAML::BeginMap; // Rigidbody2DComponent
+
+			auto& rb2dComponent = entity.GetComponent<Rigidbody2DComponent>();
+			out << YAML::Key << "BodyType" << YAML::Value << RigidBody2DBodyTypeToString(rb2dComponent.Type);
+			out << YAML::Key << "FixedRotation" << YAML::Value << rb2dComponent.FixedRotation;
+
+			out << YAML::EndMap; // Rigidbody2DComponent
+		}
+
+		if (entity.HasComponent<BoxCollider2DComponent>()) {
+			out << YAML::Key << "BoxCollider2DComponent";
+			out << YAML::BeginMap; // BoxCollider2DComponent
+
+			auto& bc2dComponent = entity.GetComponent<BoxCollider2DComponent>();
+			out << YAML::Key << "Offset" << YAML::Value << bc2dComponent.Offset;
+			out << YAML::Key << "Size" << YAML::Value << bc2dComponent.Size;
+			out << YAML::Key << "Density" << YAML::Value << bc2dComponent.Density;
+			out << YAML::Key << "Friction" << YAML::Value << bc2dComponent.Friction;
+			out << YAML::Key << "Restitution" << YAML::Value << bc2dComponent.Restitution;
+			out << YAML::Key << "RestitutionThreshold" << YAML::Value << bc2dComponent.RestitutionThreshold;
+
+			out << YAML::EndMap; // BoxCollider2DComponent
+		}
+
+		if (entity.HasComponent<CircleCollider2DComponent>()) {
+			out << YAML::Key << "CircleCollider2DComponent";
+			out << YAML::BeginMap; // CircleCollider2DComponent
+
+			auto& cc2dComponent = entity.GetComponent<CircleCollider2DComponent>();
+			out << YAML::Key << "Offset" << YAML::Value << cc2dComponent.Offset;
+			out << YAML::Key << "Radius" << YAML::Value << cc2dComponent.Radius;
+			out << YAML::Key << "Density" << YAML::Value << cc2dComponent.Density;
+			out << YAML::Key << "Friction" << YAML::Value << cc2dComponent.Friction;
+			out << YAML::Key << "Restitution" << YAML::Value << cc2dComponent.Restitution;
+			out << YAML::Key << "RestitutionThreshold" << YAML::Value << cc2dComponent.RestitutionThreshold;
+
+			out << YAML::EndMap; // CircleCollider2DComponent
 		}
 
 		out << YAML::EndMap; // Entity

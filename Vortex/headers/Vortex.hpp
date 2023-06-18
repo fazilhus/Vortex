@@ -12,11 +12,11 @@
 #include "Vortex/Events/AppEvent.hpp"
 #include "Vortex/Events/KeyEvent.hpp"
 #include "Vortex/Events/MouseEvent.hpp"
-#include "Vortex/ECS/ECS.hpp"
 #include "Vortex/Scene/Scene.hpp"
 #include "Vortex/Scene/Components.hpp"
 #include "Vortex/Scene/Entity.hpp"
 #include "Vortex/Scene/ScriptableEntity.hpp"
+#include "Vortex/Utils/Platform.hpp"
 //-------------------------------------
 
 

@@ -360,3 +360,4 @@ Vortex/vendor/imgui/examples
 Vulkan*.exe
 premake*.exe
 Vortex-Editor/res/cache
+Vortex-Editor/assets/cache

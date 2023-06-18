@@ -24,3 +24,6 @@
 [submodule "Vortex/vendor/ImGuizmo"]
 	path = Vortex/vendor/ImGuizmo
 	url = ../../fazilhus/ImGuizmo.git
+[submodule "Vortex/vendor/Box2D"]
+	path = Vortex/vendor/Box2D
+	url = ../../fazilhus/box2d

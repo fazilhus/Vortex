@@ -4,6 +4,7 @@
 #include "Vortex/Renderer/Texture.hpp"
 #include "Vortex/Renderer/Cameras/Camera.hpp"
 #include "Vortex/Renderer/Cameras/EditorCamera.hpp"
+#include "Vortex/Scene/Components.hpp"
 
 namespace Vortex {
 
@@ -13,6 +14,25 @@ namespace Vortex {
 		glm::vec2 texPos;
 		float texInd;
 		float tilingFactor;
+
+		// Editor only
+		int entityID;
+	};
+
+	struct CircleVertex {
+		glm::vec3 worldPos;
+		glm::vec3 localPos;
+		glm::vec4 color;
+		float thickness;
+		float fade;
+
+		// Editor only
+		int entityID;
+	};
+
+	struct LineVertex {
+		glm::vec3 pos;
+		glm::vec4 color;
 
 		// Editor only
 		int entityID;
@@ -34,12 +54,30 @@ namespace Vortex {
 
 		Ref<VertexArray> quadVao;
 		Ref<VertexBuffer> quadVbo;
-		Ref<Shader> shader;
+		Ref<Shader> quadShader;
 		Ref<Texture2D> texture;
+
+		Ref<VertexArray> circleVao;
+		Ref<VertexBuffer> circleVbo;
+		Ref<Shader> circleShader;
+
+		Ref<VertexArray> lineVao;
+		Ref<VertexBuffer> lineVbo;
+		Ref<Shader> lineShader;
 
 		uint32 quadIndCount = 0;
 		QuadVertex* quadVertexBufferBase = nullptr;
 		QuadVertex* quadVertexBufferPtr = nullptr;
+
+		uint32 circleIndCount = 0;
+		CircleVertex* circleVertexBufferBase = nullptr;
+		CircleVertex* circleVertexBufferPtr = nullptr;
+
+		uint32 lineIndCount = 0;
+		LineVertex* lineVertexBufferBase = nullptr;
+		LineVertex* lineVertexBufferPtr = nullptr;
+
+		float lineWidth = 2.0f;
 
 		Array<Ref<Texture2D>, maxTextureSLots> texSlots;
 		uint32 texSlotInd = 1;
@@ -81,7 +119,11 @@ namespace Vortex {
 		static void DrawRotatedQuad(const glm::vec2& pos, const glm::vec2& size, const Ref<Texture2D>& texture, float rot = 0.0f, float tilingFactor = 1.0f, const glm::vec4 tintColor = glm::vec4(1.0f));
 		static void DrawRotatedQuad(const glm::vec3& pos, const glm::vec2& size, const Ref<Texture2D>& texture, float rot = 0.0f, float tilingFactor = 1.0f, const glm::vec4 tintColor = glm::vec4(1.0f));
 
-		//static void DrawSprite(const glm::mat4& transform, SpriteComponent& sprite, int entityID);
+		static void DrawSprite(const glm::mat4& transform, SpriteComponent& sprite, int entityID);
+		static void DrawCircle(const glm::mat4& transform, const glm::vec4& color, float thickness = 1.0f, float fade = 0.005f, int entityID = -1);
+		static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color, int entityID = -1);
+		static void DrawRect(const glm::vec3& pos, const glm::vec2& dim, const glm::vec4& color, int entityID = -1);
+		static void DrawRect(const glm::mat4& transform, const glm::vec4& color, int entityID = -1);
 
 		static void ResetStats();
 		static RendererStatisics GetStats();

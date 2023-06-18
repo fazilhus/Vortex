@@ -1,6 +1,8 @@
 #pragma once
 #include <entt/entt.hpp>
 #include "Vortex/Scene/Scene.hpp"
+#include "Vortex/Scene/Components.hpp"
+#include "Vortex/Core/UUID.hpp"
 
 namespace Vortex {
 
@@ -26,6 +28,14 @@ namespace Vortex {
 			return component;
 		}
 
+		template <typename T, typename... Args>
+		T& AddOrReplaceComponent(Args&& ...args) {
+			VT_CORE_INFO("Added {0} to entity {1}", typeid(T).name(), (uint32)m_entityHandle);
+			T& component = m_scene->m_registry.emplace_or_replace<T>(m_entityHandle, std::forward<Args>(args)...);
+			m_scene->OnComponentAdded<T>(*this, component);
+			return component;
+		}
+
 		template <typename T>
 		bool RemoveComponent() {
 			if (!HasComponent<T>()) {
@@ -41,13 +51,6 @@ namespace Vortex {
 			return m_scene->m_registry.all_of<T>(m_entityHandle);
 		}
 
-		operator bool() const { return m_entityHandle != entt::null; }
-		operator uint32() const { return static_cast<uint32>(m_entityHandle); }
-		operator entt::entity() const { return m_entityHandle; }
-
-		bool operator==(const Entity& other) { return m_entityHandle == other.m_entityHandle && m_scene == other.m_scene; }
-		bool operator!=(const Entity& other) { return !(*this == other); }
-
 		template <typename T>
 		T& GetComponent() {
 			if (!HasComponent<T>()) {
@@ -56,6 +59,16 @@ namespace Vortex {
 			}
 			return m_scene->m_registry.get<T>(m_entityHandle);
 		}
+
+		operator bool() const { return m_entityHandle != entt::null; }
+		operator uint32() const { return static_cast<uint32>(m_entityHandle); }
+		operator entt::entity() const { return m_entityHandle; }
+
+		bool operator==(const Entity& other) { return m_entityHandle == other.m_entityHandle && m_scene == other.m_scene; }
+		bool operator!=(const Entity& other) { return !(*this == other); }
+
+		UUID GetUUID() { return GetComponent<IDComponent>().ID; }
+		std::string GetName() { return GetComponent<TagComponent>().Tag; }
 	};
 
 }

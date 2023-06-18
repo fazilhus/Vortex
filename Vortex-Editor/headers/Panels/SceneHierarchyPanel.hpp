@@ -28,6 +28,9 @@ namespace Vortex {
 		void DrawComponents(Entity entity);
 		void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValue = 0.0f, float columnWidth = 100.0f);
 		bool DrawDeleteComponentPopup();
+
+		template <typename Component>
+		void DisplayAddComponentEntry(const std::string& entry);
 	};
 
 }

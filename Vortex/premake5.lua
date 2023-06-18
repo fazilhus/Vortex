@@ -28,7 +28,7 @@ project "Vortex"
         "vendor/stb/**.h",
         "vendor/stb/**.cpp",
         "vendor/ImGuizmo/ImGuizmo.h",
-        "vendor/ImGuizmo/ImGuizmo.cpp"
+        "vendor/ImGuizmo/ImGuizmo.cpp",
     }
 
     includedirs {
@@ -44,7 +44,8 @@ project "Vortex"
         "%{includedir.imguizmo}",
         "%{includedir.shaderc}",
         "%{includedir.SPIRV_Cross}",
-        "%{includedir.VulkanSDK}"
+        "%{includedir.VulkanSDK}",
+        "%{includedir.box2d}"
     }
 
     links {
@@ -52,7 +53,8 @@ project "Vortex"
         "opengl32.lib",
         "GLAD",
         "ImGui",
-        "yaml-cpp"
+        "yaml-cpp",
+        "Box2D"
     }
 
     filter "files:vendor/ImGuizmo/**.cpp"
