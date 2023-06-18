@@ -182,6 +182,11 @@ namespace Vortex {
 				if (spriteComponent) {
 					auto& src = deserializedEntity.AddComponent<SpriteComponent>();
 					src.Color = spriteComponent["Color"].as<glm::vec4>();
+					if (spriteComponent["TexturePath"])
+						src.Texture = Texture2D::Create(spriteComponent["TexturePath"].as<std::string>());
+
+					if (spriteComponent["TilingFactor"])
+						src.TilingFactor = spriteComponent["TilingFactor"].as<float>();
 					VT_CORE_TRACE("SceneSerializer::Deserialize Color {0} {1} {2} {3}", src.Color.r, src.Color.g, src.Color.b, src.Color.a);
 				}
 
@@ -283,6 +288,11 @@ namespace Vortex {
 
 			auto& spriteComponent = entity.GetComponent<SpriteComponent>();
 			out << YAML::Key << "Color" << YAML::Value << spriteComponent.Color;
+
+			if (spriteComponent.Texture) {
+				out << YAML::Key << "TexturePath" << YAML::Value << spriteComponent.Texture->GetPath();
+				out << YAML::Key << "TilingFactor" << YAML::Value << spriteComponent.TilingFactor;
+			}
 
 			out << YAML::EndMap; // SpriteRendererComponent
 		}
